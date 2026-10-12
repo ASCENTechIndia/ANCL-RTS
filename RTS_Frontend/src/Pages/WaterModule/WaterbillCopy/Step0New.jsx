@@ -529,8 +529,8 @@ const FrmWaterConnectionApplication = () => {
 
     if (isBndService && !selectedBndRecord) {
       await Swal.fire({
-        icon: "warning",
-        text: "Select Atleast one Record",
+        // icon: "warning",
+        text: "Select At least one Record in Death Details search",
         confirmButtonColor: "#1e3a8a",
       });
       return;
@@ -544,16 +544,14 @@ const FrmWaterConnectionApplication = () => {
       });
       return;
     }
-
-    if (!isValidEmail(formData.email)) {
+    if (!formData.firstName.trim()) {
       Swal.fire({
 
-        text: "Please enter a valid Email ID.",
+        text: "Please enter First Name.",
         confirmButtonColor: "#1e3a8a",
       });
       return;
     }
-
     if (!formData.middleName.trim()) {
       Swal.fire({
 
@@ -572,18 +570,19 @@ const FrmWaterConnectionApplication = () => {
       return;
     }
 
-    if (!formData.firstName.trim()) {
+     if (!formData.firstNameMarathi.trim()) {
       Swal.fire({
 
-        text: "Please enter First Name.",
+        text: "Please enter First Name in Marathi.",
         confirmButtonColor: "#1e3a8a",
       });
       return;
     }
+
     if (!formData.middleNameMarathi.trim()) {
       Swal.fire({
 
-        text: "Please enter मधले नाव.",
+        text: "Please enter Middle Name in Marathi.",
         confirmButtonColor: "#1e3a8a",
       });
       return;
@@ -593,15 +592,6 @@ const FrmWaterConnectionApplication = () => {
       Swal.fire({
 
         text: "Please enter Last Name.",
-        confirmButtonColor: "#1e3a8a",
-      });
-      return;
-    }
-
-    if (!formData.firstNameMarathi.trim()) {
-      Swal.fire({
-
-        text: "Please enter First Name in Marathi.",
         confirmButtonColor: "#1e3a8a",
       });
       return;
@@ -655,6 +645,15 @@ const FrmWaterConnectionApplication = () => {
     if (!formData.email.trim()) {
       Swal.fire({
         text: "Please enter Email.",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      Swal.fire({
+
+        text: "Please enter a valid Email ID.",
         confirmButtonColor: "#1e3a8a",
       });
       return;
