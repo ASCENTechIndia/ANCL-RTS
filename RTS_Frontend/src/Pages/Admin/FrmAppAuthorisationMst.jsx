@@ -997,7 +997,9 @@ const FrmAppAuthorisationMst = () => {
       }
     }
 
-    if (showVerificationGrid && Number(departId) !== 7 && Number(departId) !== 290) {
+    if (showVerificationGrid && 
+        authAction !== "Reject" &&
+        Number(departId) !== 7 && Number(departId) !== 290) {
       // if (showVerificationGrid) {
       const hasAnyDocs = verificationDocs.length > 0;
       if (!hasAnyDocs) {
@@ -3232,7 +3234,7 @@ const FrmAppAuthorisationMst = () => {
               </div>
             )}
 
-            {showAmount && (
+            {showAmount && (authAction != "Reject") && (
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
                 <div className="sm:w-40 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label required className="font-medium" text="Enter Amount" />

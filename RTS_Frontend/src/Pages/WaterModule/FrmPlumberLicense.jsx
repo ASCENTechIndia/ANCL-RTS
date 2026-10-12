@@ -47,9 +47,9 @@ const FrmPlumberLicense = () => {
         businessName: "",
         tradeLicenceNo: "",
         renewalLicenseNo: "",
-        renewalDate: new Date().toISOString().split("T")[0],
-        fromDate: new Date().toISOString().split("T")[0],
-        toDate: new Date().toISOString().split("T")[0],
+        renewalDate: new Date(),
+        fromDate: new Date(),
+        toDate: new Date(),
         renewalAadhaar: "",
         renewalFirstName: "",
         renewalMiddleName: "",
@@ -226,7 +226,7 @@ const FrmPlumberLicense = () => {
             if (values.mobileNo && !/^\d{10}$/.test(values.mobileNo)) {
                 Swal.fire({
                     // icon: "warning",
-                    text: "Invalid Mobile No.",
+                    text: "Please enter valid Mobile No.",
                 });
                 return;
             }
@@ -240,7 +240,7 @@ const FrmPlumberLicense = () => {
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
                 Swal.fire({
                     // icon: "warning",
-                    text: "Invalid Email Address.",
+                    text: "Please enter valid Email Address.",
                 });
                 return;
             }
@@ -255,6 +255,13 @@ const FrmPlumberLicense = () => {
                 Swal.fire({
                     // icon: "warning",
                     text: "PanNo can not be blank.",
+                });
+                return;
+            }
+            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            if (!panRegex.test(values.panNo.trim().toUpperCase())) {
+                Swal.fire({
+                    text: "Please enter a valid PAN Card Number.",
                 });
                 return;
             }
@@ -289,10 +296,38 @@ const FrmPlumberLicense = () => {
                 });
                 return;
             }
+            if (!values.renewalDate) {
+                Swal.fire({
+                    text: "Renewal Date can not be blank.",
+                });
+                return;
+            }
+
+            if (!values.fromDate) {
+                Swal.fire({
+                    text: "From Date can not be blank.",
+                });
+                return;
+            }
+
+            if (!values.toDate) {
+                Swal.fire({
+                    text: "To Date can not be blank.",
+                });
+                return;
+            }
+
+            if (new Date(values.fromDate) > new Date(values.toDate)) {
+                Swal.fire({
+                    text: "From Date cannot be greater than To Date.",
+                });
+                return;
+            }
+
             if (!/^\d{12}$/.test(values.renewalAadhaar)) {
                 Swal.fire({
                     // icon: "warning",
-                    text: "Invalid Aadhar No.",
+                    text: "Please enter valid Aadhar No.",
                 });
                 return;
             }
@@ -317,10 +352,17 @@ const FrmPlumberLicense = () => {
                 });
                 return;
             }
+            if (!values.renewalMobile) {
+                Swal.fire({
+                    // icon: "warning",
+                    text: "Please enter Mobile No.",
+                });
+                return;
+            }
             if (values.renewalMobile && !/^\d{10}$/.test(values.renewalMobile)) {
                 Swal.fire({
                     // icon: "warning",
-                    text: "Invalid Mobile No.",
+                    text: "Please enter valid Mobile No.",
                 });
                 return;
             }
@@ -334,7 +376,7 @@ const FrmPlumberLicense = () => {
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.renewalEmail)) {
                 Swal.fire({
                     // icon: "warning",
-                    text: "Invalid Email Address.",
+                    text: "Please enter valid Email Address.",
                 });
                 return;
             }
@@ -803,7 +845,7 @@ const FrmPlumberLicense = () => {
 
                                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                                         <div className="flex shrink-0 items-center sm:w-48 sm:justify-between">
-                                            <Label text="Renewal Date" />
+                                            <Label text="Renewal Date" required />
                                             <span>:</span>
                                         </div>
 
@@ -817,7 +859,7 @@ const FrmPlumberLicense = () => {
 
                                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                                         <div className="flex shrink-0 items-center sm:w-48 sm:justify-between">
-                                            <Label text="From Date" />
+                                            <Label text="From Date" required />
                                             <span>:</span>
                                         </div>
 
@@ -831,7 +873,7 @@ const FrmPlumberLicense = () => {
 
                                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                                         <div className="flex shrink-0 items-center sm:w-48 sm:justify-between">
-                                            <Label text="To Date" />
+                                            <Label text="To Date" required />
                                             <span>:</span>
                                         </div>
 
@@ -989,7 +1031,7 @@ const FrmPlumberLicense = () => {
                             )}
 
                             <div className="flex flex-wrap items-center justify-center gap-3 pt-7">
-                                <Button type="submit" disabled={loadingMasters}>{mode === "N" ? "Submit" : "Save"}</Button>
+                                <Button type="submit" disabled={loadingMasters}>{mode === "N" ? "Submit" : "Submit"}</Button>
                                 <Button
                                     type="button"
                                     variant="outline"
