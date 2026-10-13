@@ -1965,7 +1965,7 @@ const FrmAppAuthorisationMst = () => {
     const showConnectionInMain = isFaultyService || isWaterService || isWaterBillService;
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
             <Label text="Service" />
@@ -2224,7 +2224,7 @@ const FrmAppAuthorisationMst = () => {
         {showPlumberDetails && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Plumber License Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="Pan No" />
@@ -2274,7 +2274,7 @@ const FrmAppAuthorisationMst = () => {
         {showWaterAppDetail && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Water Application Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="Conn No" />
@@ -2324,7 +2324,7 @@ const FrmAppAuthorisationMst = () => {
         {showWaterAppEntry && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Water Application Entry</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="Applicant Name" />
@@ -2374,7 +2374,7 @@ const FrmAppAuthorisationMst = () => {
         {showWaterRegDetail && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Water Registration Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="Connection No" />
@@ -2454,7 +2454,7 @@ const FrmAppAuthorisationMst = () => {
         {showMarketNew && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Market / Trade License Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="परवाना क्रमांक" />
@@ -2595,7 +2595,7 @@ const FrmAppAuthorisationMst = () => {
         {showMarketCategory && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Market Category Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="License No" />
@@ -2715,7 +2715,7 @@ const FrmAppAuthorisationMst = () => {
         {showCPTradeName && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">CP Trade Name</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="लिंग" />
@@ -2737,7 +2737,7 @@ const FrmAppAuthorisationMst = () => {
         {showAddOwn && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Add Owner/Director</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="लिंग" />
@@ -2752,7 +2752,7 @@ const FrmAppAuthorisationMst = () => {
         {showTransfer && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Transfer Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="नाते" />
@@ -2774,7 +2774,7 @@ const FrmAppAuthorisationMst = () => {
         {showNameTrade && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Name Trade</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="लिंग" />
@@ -2796,7 +2796,7 @@ const FrmAppAuthorisationMst = () => {
         {showMarketExpire && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">License Expire Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="नाते" />
@@ -2818,7 +2818,7 @@ const FrmAppAuthorisationMst = () => {
         {showLicenseCancel && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">License Cancel Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="लिंग" />
@@ -2875,7 +2875,7 @@ const FrmAppAuthorisationMst = () => {
         {showFaultyMeter && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Faulty Meter Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="नळ जोडणी धारकाचे नाव" />
@@ -2918,7 +2918,7 @@ const FrmAppAuthorisationMst = () => {
         {showUnauthorisedConn && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Unauthorised Connection Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="विषय" />
@@ -3106,7 +3106,7 @@ const FrmAppAuthorisationMst = () => {
             </div>
           )}
 
-          {showCertificateInfo && (
+          {/* {showCertificateInfo && (
             <div className="border rounded-lg p-4">
               <div className="flex justify-start">
                 <Button
@@ -3118,9 +3118,9 @@ const FrmAppAuthorisationMst = () => {
                 </Button>
               </div>
             </div>
-          )}
+          )} */}
 
-          {showTradeCertificateInfo && (
+          {/* {showTradeCertificateInfo && (
             <div className="border rounded-lg p-4">
               <div className="flex justify-start">
                 <Button
@@ -3132,9 +3132,9 @@ const FrmAppAuthorisationMst = () => {
                 </Button>
               </div>
             </div>
-          )}
+          )} */}
 
-          {showCertificatePopup && (
+          {/* {showCertificatePopup && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
@@ -3160,9 +3160,9 @@ const FrmAppAuthorisationMst = () => {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
-          {showTradePopup && (
+          {/* {showTradePopup && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
@@ -3188,7 +3188,7 @@ const FrmAppAuthorisationMst = () => {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           <div className="border rounded-lg p-4">
             <div className="font-semibold text-md mb-4">Authorization</div>
