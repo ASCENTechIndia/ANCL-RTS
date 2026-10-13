@@ -1054,7 +1054,7 @@ const FrmTrackApplication = () => {
         ...step,
         action: actionElement,
         status: (
-          <span className={`px-2 py-1 rounded text-xs font-medium ${statusBadgeClass}`}>
+          <span className={`inline-block w-24 px-2 py-1 rounded text-xs font-medium ${statusBadgeClass}`}>
             {formatStatusLabel(step.status)}
           </span>
         ),
