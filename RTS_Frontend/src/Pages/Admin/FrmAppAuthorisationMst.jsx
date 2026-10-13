@@ -1057,8 +1057,8 @@ const FrmAppAuthorisationMst = () => {
         status: authAction,
         reasonForReject: authAction === "Reject" ? rejectReason : remark,
         amount: parseInt(amount) || 0,
-        mode: authAction === "Reject" ? "HODV" : authMode,
-        // mode: authMode === "HO" ? "HODV" : authMode,
+        // mode: authAction === "Reject" ? "HODV" : authMode,
+        mode: authMode,
         clerkId: authMode === "HODV" && authAction === "Accept" ? selectedClerk : null,
         // tinyUrl: authMode === "CKV" ? generateTinyUrl(selectedData.applino) : "",
       };

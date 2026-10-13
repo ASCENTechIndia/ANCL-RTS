@@ -878,7 +878,7 @@ const applicationAuthRepo = async ({ userId, applicationNo, status, reasonForRej
     const result = await withTxTMC(async (connection) => {
       const query = `
         BEGIN
-          aorts_appliauth_ins(
+          aorts_appliauththane_ins(
             :in_userid,
             :in_applicationno,
             :in_status,
