@@ -418,6 +418,81 @@ const FrmTrackApplication = () => {
     }
   };
 
+  const downloadReceipt = async (applino, serviceId, ulbId) => {
+    try {
+      Swal.fire({
+        title: "Generating Receipt...",
+        text: "Please wait while your payment receipt is being prepared.",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const response = await axios.post(
+        `${BASE_URL}/api/FrmAfterTransactionTMC/paymentacknowledgement`,
+        {
+          serviceId: String(serviceId),
+          appNo: String(applino),
+          ulbId: String(ulbId),
+        },
+        {
+          headers: { Authorization: `Bearer ${token || localStorage.getItem("token")}` },
+        }
+      );
+
+      Swal.close();
+
+      const result = response?.data;
+
+      if (result?.success && result?.pdfUrl) {
+        window.open(result.pdfUrl, "_blank", "noopener,noreferrer");
+
+        Swal.fire({
+          text: "Payment receipt generated successfully!",
+          confirmButtonColor: "#1e3a8a",
+          timer: 2000,
+        });
+
+        return true;
+      } else {
+        Swal.fire({
+          text: result?.message || "Unable to generate payment receipt.",
+          confirmButtonColor: "#1e3a8a",
+        });
+        return false;
+      }
+    } catch (error) {
+      console.error("Error downloading receipt:", error);
+      Swal.close();
+
+      let errorMessage = "Unable to generate payment receipt.";
+
+      if (error?.response?.data instanceof Blob) {
+        try {
+          const errorText = await error.response.data.text();
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData?.message || errorData?.data?.message || errorMessage;
+        } catch {
+          errorMessage = "Unable to generate payment receipt.";
+        }
+      } else {
+        errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message ||
+          errorMessage;
+      }
+
+      Swal.fire({
+        text: errorMessage,
+        confirmButtonColor: "#1e3a8a",
+      });
+      return false;
+    }
+  };
+
   const fetchExistingCertificate = async (applino) => {
     try {
       const response = await axios.post(
@@ -648,6 +723,28 @@ const FrmTrackApplication = () => {
         Swal.fire({
           text: "Application verification pending. Please wait for approval.",
           confirmButtonColor: '#1e3a8a',
+        });
+      }
+      return;
+    }
+
+    if (stepName === "Payment Entry" && status === "Done") {
+      Swal.fire({
+        text: "Generating payment receipt...",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      const success = await downloadReceipt(appNo, serviceId, ulbId);
+
+      Swal.close();
+
+      if (success) {
+        Swal.fire({
+          text: "Receipt downloaded successfully!",
+          confirmButtonColor: "#1e3a8a",
+          timer: 2000,
         });
       }
       return;
@@ -898,6 +995,17 @@ const FrmTrackApplication = () => {
             onClick={() => !isAuthRejected && handleStepAction(step, "Make Payment")}
           >
             Make Payment
+          </Button>
+        );
+      }
+      else if (step.step === "Payment Entry" && step.status === "Done") {
+        actionElement = (
+          <Button
+            type="button"
+            className="bg-blue-700 hover:bg-blue-800 text-white text-xs px-3 py-1"
+            onClick={() => handleStepAction(step, "Download Receipt")}
+          >
+            Download Receipt
           </Button>
         );
       }
