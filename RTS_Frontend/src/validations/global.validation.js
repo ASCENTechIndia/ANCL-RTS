@@ -148,7 +148,7 @@ export const propertyRebateValidationSchema = z.object({
     .refine((val) => {
       if (!val || val.trim() === "") return true;
       return aadharRegex.test(val);
-    }, "Invalid Aadhar No"),
+    }, "Please enter valid Aadhar No"),
   pincode: z.string()
     .min(1, "Pincode cannot be blank")
     .regex(/^\d{6}$/, "Invalid Pincode"),

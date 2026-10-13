@@ -309,7 +309,7 @@ const FrmRoadCutting = () => {
 
     if (values.aadharNo.length !== 12 || !/^\d+$/.test(values.aadharNo)) {
       Swal.fire({
-        text: "Invalid Aadhar No - must be 12 digits",
+        text: "Please enter valid Aadhar No.",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
