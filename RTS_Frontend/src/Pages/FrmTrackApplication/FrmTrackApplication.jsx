@@ -955,7 +955,7 @@ const FrmTrackApplication = () => {
             <Button
               key="first"
               type="button"
-              className="bg-blue-900 hover:bg-blue-800 text-white text-xs px-2 py-0.5 h-7"
+              className="bg-blue-900 hover:bg-blue-800 text-white text-xs px-2 py-0.5 h-7 w-35"
               onClick={() => handleStepAction(step, "First Appeal")}
             >
               First Appeal
@@ -967,7 +967,7 @@ const FrmTrackApplication = () => {
             <Button
               key="second"
               type="button"
-              className="bg-green-700 hover:bg-green-800 text-white text-xs px-2 py-0.5 h-7"
+              className="bg-green-700 hover:bg-green-800 text-white text-xs px-2 py-0.5 h-7 w-35"
               onClick={() => handleStepAction(step, "Second Appeal")}
             >
               Second Appeal
@@ -989,8 +989,8 @@ const FrmTrackApplication = () => {
             disabled={isAuthRejected}
             className={
               isAuthRejected
-                ? "bg-gray-300 text-gray-900 text-xs px-3 py-1 cursor-not-allowed"
-                : "bg-blue-900 hover:bg-blue-800 text-white text-xs px-3 py-1"
+                ? "bg-gray-300 text-gray-900 text-xs px-3 py-1 cursor-not-allowed w-35"
+                : "bg-blue-900 hover:bg-blue-800 text-white text-xs px-3 py-1 w-35"
             }
             onClick={() => !isAuthRejected && handleStepAction(step, "Make Payment")}
           >
@@ -1002,7 +1002,7 @@ const FrmTrackApplication = () => {
         actionElement = (
           <Button
             type="button"
-            className="bg-blue-700 hover:bg-blue-800 text-white text-xs px-3 py-1"
+            className="bg-blue-700 hover:bg-blue-800 text-white text-xs px-3 py-1 w-35"
             onClick={() => handleStepAction(step, "Download Receipt")}
           >
             Download Receipt
@@ -1013,7 +1013,7 @@ const FrmTrackApplication = () => {
         actionElement = (
           <Button
             type="button"
-            className="bg-gray-600 hover:bg-gray-700 text-white text-xs px-3 py-1"
+            className="bg-gray-600 hover:bg-gray-700 text-white text-xs px-3 py-1 w-35"
             onClick={() => handleStepAction(step, "View")}
           >
             View
@@ -1025,7 +1025,7 @@ const FrmTrackApplication = () => {
           actionElement = (
             <Button
               type="button"
-              className="bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1"
+              className="bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 w-35"
               onClick={() => handleStepAction(step, "Certificate Download")}
             >
               Download Certificate
@@ -1035,7 +1035,7 @@ const FrmTrackApplication = () => {
           actionElement = (
             <Button
               type="button"
-              className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1"
+              className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 w-35"
               onClick={() => handleStepAction(step, "Certificate Download")}
             >
               Check Status
