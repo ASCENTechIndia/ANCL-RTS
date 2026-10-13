@@ -114,7 +114,7 @@ const saveServiceApplication = asyncHandler(async (req, res) => {
   }
 
   if (aadharNo && !/^\d{12}$/.test(String(aadharNo))) {
-    throw new AppError("Invalid Aadhar No", 400);
+    throw new AppError("Please enter valid Aadhar No", 400);
   }
 
   // Service 60 / 62 requires Sector + Village

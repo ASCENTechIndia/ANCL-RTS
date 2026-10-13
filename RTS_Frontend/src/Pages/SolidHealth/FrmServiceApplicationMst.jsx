@@ -756,6 +756,7 @@ const fetchVillages = async (sectorId) => {
                       onChange={handleChange}
                       className="w-full h-9"
                       type="email"
+                      maxLength={30}
                     />
                   </div>
 

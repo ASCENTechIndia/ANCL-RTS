@@ -1971,7 +1971,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Service" />
             <span>:</span>
           </div>
-          <span>{SERVICNAME || ""}</span>
+          <span className="min-w-0 break-all flex-1">{SERVICNAME || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -1979,7 +1979,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Zone" />
             <span>:</span>
           </div>
-          <span>{zoneName || ""}</span>
+          <span className="min-w-0 break-all flex-1">{zoneName || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -1987,7 +1987,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Application No" />
             <span>:</span>
           </div>
-          <span>{APLINO || ""}</span>
+          <span className="min-w-0 break-all flex-1">{APLINO || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -1995,7 +1995,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Application Date" />
             <span>:</span>
           </div>
-          <span>{formattedDate}</span>
+          <span className="min-w-0 break-all flex-1">{formattedDate}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -2003,7 +2003,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Applicant Name" />
             <span>:</span>
           </div>
-          <span>{applicantName || ""}</span>
+          <span className="min-w-0 break-all flex-1">{applicantName || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -2011,7 +2011,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Mobile No" />
             <span>:</span>
           </div>
-          <span>{waterMobileNo || ""}</span>
+          <span className="min-w-0 break-all flex-1">{waterMobileNo || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -2019,7 +2019,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Email" />
             <span>:</span>
           </div>
-          <span>{waterEmail || ""}</span>
+          <span className="min-w-0 break-all flex-1">{waterEmail || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -2027,7 +2027,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Aadhar No" />
             <span>:</span>
           </div>
-          <span>{waterAadharNo || ""}</span>
+          <span className="min-w-0 break-all flex-1">{waterAadharNo || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -2035,7 +2035,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Address" />
             <span>:</span>
           </div>
-          <span>{waterAddress || ""}</span>
+          <span className="min-w-0 break-all flex-1">{waterAddress || ""}</span>
         </div>
 
         {showConnectionInMain && connectionNo && (
@@ -2044,7 +2044,7 @@ const FrmAppAuthorisationMst = () => {
               <Label text="Connection No" />
               <span>:</span>
             </div>
-            <span>{connectionNo}</span>
+            <span className="min-w-0 break-all flex-1">{connectionNo}</span>
           </div>
         )}
 
@@ -2054,7 +2054,7 @@ const FrmAppAuthorisationMst = () => {
               <Label text="Purpose" />
               <span>:</span>
             </div>
-            <span>{PURPOSE}</span>
+            <span className="min-w-0 break-all flex-1">{PURPOSE}</span>
           </div>
         )}
 
@@ -2065,14 +2065,14 @@ const FrmAppAuthorisationMst = () => {
                 <Label text="Consumer Type" />
                 <span>:</span>
               </div>
-              <span>{CONS_NAME}</span>
+              <span className="min-w-0 break-all flex-1">{CONS_NAME}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="Meter Type" />
                 <span>:</span>
               </div>
-              <span>{METER_NAME}</span>
+              <span className="min-w-0 break-all flex-1">{METER_NAME}</span>
             </div>
           </>
         )}
@@ -2084,14 +2084,14 @@ const FrmAppAuthorisationMst = () => {
                 <Label text="Sector" />
                 <span>:</span>
               </div>
-              <span>{SECTOR_NAME}</span>
+              <span className="min-w-0 break-all flex-1">{SECTOR_NAME}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="Village" />
                 <span>:</span>
               </div>
-              <span>{VILLAGE_NAME}</span>
+              <span className="min-w-0 break-all flex-1">{VILLAGE_NAME}</span>
             </div>
           </>
         )}
@@ -2103,28 +2103,28 @@ const FrmAppAuthorisationMst = () => {
                 <Label text="Locality" />
                 <span>:</span>
               </div>
-              <span>{LOCALITY || ""}</span>
+              <span className="min-w-0 break-all flex-1">{LOCALITY || ""}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="LandMark" />
                 <span>:</span>
               </div>
-              <span>{LANDMARK || ""}</span>
+              <span className="min-w-0 break-all flex-1">{LANDMARK || ""}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="Pincode" />
                 <span>:</span>
               </div>
-              <span>{PINCODE || ""}</span>
+              <span className="min-w-0 break-all flex-1">{PINCODE || ""}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="तक्रारीचे स्वरूप" />
                 <span>:</span>
               </div>
-              <span>{REFNO || ""}</span>
+              <span className="min-w-0 break-all flex-1">{REFNO || ""}</span>
             </div>
           </>
         )}

@@ -720,6 +720,23 @@ const FrmWaterConnectionApplication = () => {
       });
       return;
     }
+
+    if (!isFireBrigadeService && !isBndService && !formData.connectionNo.trim()) {
+      Swal.fire({
+        text: "Please enter Connection No.",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
+    if (isSewerageService && !formData.sewrageType) {
+      Swal.fire({
+        text: "Please select Sewerage Type.",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
     if (isFireBrigadeService && !formData.nocPurpose) {
       await Swal.fire({
         text: "Please select NOC Purpose.",
@@ -1594,7 +1611,7 @@ const FrmWaterConnectionApplication = () => {
 
                 <Input
                   type="email"
-                  maxLength={25}
+                  maxLength={30}
                   value={
                     formData.email
                   }
