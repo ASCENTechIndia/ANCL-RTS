@@ -154,7 +154,7 @@ const FrmServiceApplicationMst = () => {
       console.error("Error fetching zones:", error);
       setZoneList([]);
       Swal.fire({
-        text: "Failed to load Prabhag list. Please try again.",
+        text: "Failed to load Zone list. Please try again.",
         confirmButtonColor: '#1e3a8a',
       });
     }
@@ -357,10 +357,18 @@ const fetchVillages = async (sectorId) => {
       }
     }
 
+    if (!values.zoneId || values.zoneId === "0" || values.zoneId === "") {
+      Swal.fire({
+        text: "Please Select Zone",
+        confirmButtonColor: '#1e3a8a',
+      });
+      return false;
+    }
+
     if (!isSectorVisible) {
       if (!values.zoneId || values.zoneId === "0" || values.zoneId === "") {
         Swal.fire({
-          text: "Please Select Prabhag",
+          text: "Please Select Zone",
           confirmButtonColor: '#1e3a8a',
         });
         return false;
@@ -517,14 +525,16 @@ const fetchVillages = async (sectorId) => {
         landmark: values.landmark?.trim() || "",
         pincode: values.pincode ? Number(values.pincode) : 0,
         source: config.source,
+        zoneId: values.zoneId ? Number(values.zoneId) : null,
       };
 
     if (isSectorVisible) {
       savePayload.sectorId = values.sectorId ? Number(values.sectorId) : null;
       savePayload.villageId = values.villageId ? Number(values.villageId) : null;
-    } else {
-      savePayload.zoneId = values.zoneId ? Number(values.zoneId) : null;
-    }
+    } 
+    // else {
+    //   savePayload.zoneId = values.zoneId ? Number(values.zoneId) : null;
+    // }
 
       const saveResponse = await axios.post(
         `${BASE_URL}/api/FrmServiceApplicationMst/save`,
@@ -797,7 +807,7 @@ const fetchVillages = async (sectorId) => {
                   </div>
 
 
-                  {isSectorVisible ? (
+                  {isSectorVisible && (
                     <>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                         <div className="sm:w-36 shrink-0 flex justify-start sm:justify-between items-center">
@@ -866,33 +876,33 @@ const fetchVillages = async (sectorId) => {
                       </div>
 
                     </>
-                  ) : (
-
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-36 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label required text="Prabhag" />
-                        <span>:</span>
-                      </div>
-                      <Select
-                        value={values.zoneId}
-                        onValueChange={(value) => setFieldValue("zoneId", value)}
-                      >
-                        <SelectTrigger className="w-full h-9">
-                          <SelectValue placeholder="-- Select Prabhag --" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.isArray(zoneList) && zoneList.map((zone) => (
-                            <SelectItem 
-                              key={zone.wardid || zone.WARDID} 
-                              value={String(zone.wardid || zone.WARDID)}
-                            >
-                              {zone.wardname || zone.WARDNAME}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
                   )}
+
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <div className="sm:w-36 shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label required text="Zone" />
+                      <span>:</span>
+                    </div>
+                    <Select
+                      value={values.zoneId}
+                      onValueChange={(value) => setFieldValue("zoneId", value)}
+                    >
+                      <SelectTrigger className="w-full h-9">
+                        <SelectValue placeholder="-- Select Zone --" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.isArray(zoneList) && zoneList.map((zone) => (
+                          <SelectItem 
+                            key={zone.wardid || zone.WARDID} 
+                            value={String(zone.wardid || zone.WARDID)}
+                          >
+                            {zone.wardname || zone.WARDNAME}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
                 </div>
 
 
