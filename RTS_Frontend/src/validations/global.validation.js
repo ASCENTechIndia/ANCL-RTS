@@ -329,7 +329,7 @@ export const serviceApplicationValidationSchema = (
             code: z.ZodIssueCode.custom,
             path: ["address"],
             message:
-              "Please Enter Address",
+              "Please Enter Area",
           });
         }
 

@@ -147,7 +147,6 @@ const FrmServiceApplicationMstNew = () => {
       console.error("Initial application load error:", error);
 
       await Swal.fire({
-        icon: "error",
         title: "Error",
         text:
           error?.response?.data?.message ||
@@ -258,7 +257,6 @@ const FrmServiceApplicationMstNew = () => {
       setVillages([]);
 
       await Swal.fire({
-        icon: "error",
         title: "Error",
         text:
           error?.response?.data?.message ||
@@ -354,7 +352,6 @@ const FrmServiceApplicationMstNew = () => {
 
     if (validationMessage) {
       Swal.fire({
-        icon: "warning",
         title: "Invalid Document",
         text: validationMessage,
         confirmButtonText: "OK",
@@ -454,7 +451,6 @@ const FrmServiceApplicationMstNew = () => {
       Swal.close();
 
       await Swal.fire({
-        icon: "success",
         title: "Success",
         text:
           response?.data?.message ||
@@ -484,7 +480,6 @@ const FrmServiceApplicationMstNew = () => {
       console.error("Save application error:", error);
 
       await Swal.fire({
-        icon: "error",
         title: "Error",
         text:
           error?.response?.data?.message ||
@@ -533,8 +528,6 @@ const FrmServiceApplicationMstNew = () => {
       }
 
       await Swal.fire({
-        icon: "warning",
-        title: "Validation Required",
         text: errorMessage,
         confirmButtonText: "OK",
       });
@@ -591,6 +584,7 @@ const FrmServiceApplicationMstNew = () => {
                     <div className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[180px_minmax(0,1fr)]">
                       <Label
                         text="Area :"
+                        required
                         className="whitespace-nowrap text-sm font-medium text-black sm:text-right"
                       />
 
