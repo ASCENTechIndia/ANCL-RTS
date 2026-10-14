@@ -401,11 +401,23 @@ export const commonValidationSchema = {
     .min(1, "Address is required")
     .max(500, "Address cannot exceed 500 characters"),
 
-  selectOption: z.string()
-    .min(1, "Please select an option")
-    .refine((val) => val !== "0" && val !== "-1" && val !== "", {
-      message: "Please select a valid option",
-    }),
+  // selectOption: z.string()
+  //   .min(1, "Please select an option")
+  //   .refine((val) => val !== "0" && val !== "-1" && val !== "", {
+  //     message: "Please select a valid option",
+  //   }),
+  selectOption: (label = "an option") =>
+    z.string()
+      .min(1, `Please select ${label}`)
+      .refine(
+        (val) =>
+          val !== undefined &&
+          val !== null &&
+          val !== "" &&
+          val !== "0" &&
+          val !== "-1",
+        { message: `Please select ${label}` }
+      ),
 };
 
 export const createPersonValidationSchema = (personType) => {
@@ -446,8 +458,10 @@ export const createPersonValidationSchema = (personType) => {
     disability: z.string().optional(),
     birthReligion: z.string().optional(),
     adoptedReligion: z.string().optional(),
-    englishAddress: commonValidationSchema.address,
-    marathiAddress: commonValidationSchema.address,
+    // englishAddress: commonValidationSchema.address,
+    englishAddress: z.string().min(1, `${prefix}: English Address is required`),
+    // marathiAddress: commonValidationSchema.address,
+    marathiAddress: z.string().min(1, `${prefix}: Marathi Address is required`),
     idDocument: requiresBeforeMarriageDocs
       ? z.string().min(1, `${prefix}: Please Select ID Document`)
       : z.string().optional(),
@@ -481,24 +495,39 @@ export const priestValidationSchema = z.object({
   age: z.string()
     .min(1, "Priest: Age is required")
     .regex(/^\d+$/, "Priest: Age must be a valid number"),
-  birthReligion: commonValidationSchema.selectOption,
-  englishAddress: commonValidationSchema.address,
-  marathiAddress: commonValidationSchema.address,
+  // birthReligion: commonValidationSchema.selectOption,
+  birthReligion: commonValidationSchema.selectOption("Religion"),
+  // englishAddress: commonValidationSchema.address,
+  englishAddress: z.string().min(1, `Priest: English Address is required`),
+  // marathiAddress: commonValidationSchema.address,
+  marathiAddress: z.string().min(1, `Priest: Marathi Address is required`),
 });
 
 export const applicationValidationSchema = z.object({
-  zone: commonValidationSchema.selectOption,
-  applicantFirstName: commonValidationSchema.name,
-  applicantMiddleName: commonValidationSchema.name,
-  applicantLastName: commonValidationSchema.name,
+  // zone: commonValidationSchema.selectOption,
+  zone: commonValidationSchema.selectOption("Zone"),
+  // applicantFirstName: commonValidationSchema.name,
+  applicantFirstName: z.string().min(1, `Applicant First Name is required`),
+  // applicantMiddleName: commonValidationSchema.name,
+  applicantMiddleName: z.string().min(1, `Applicant Middle Name is required`),
+  // applicantLastName: commonValidationSchema.name,
+  applicantLastName: z.string().min(1, `Applicant Lat Name is required`),
   mobileNo: commonValidationSchema.mobile,
   address: commonValidationSchema.address,
   marriageDate: z.union([z.string(), z.date(), z.null(), z.undefined()])
     .refine((val) => val !== null && val !== undefined && val !== "", {
       message: "Marriage Date is required",
     }),
-  marriagePlaceEnglish: commonValidationSchema.address,
-  marriagePlaceMarathi: commonValidationSchema.address,
+  // marriagePlaceEnglish: commonValidationSchema.address,
+  // marriagePlaceMarathi: commonValidationSchema.address,
+  marriagePlaceEnglish: z.string()
+  .min(1, "Marriage Place English is required")
+  .max(500, "Marriage Place English cannot exceed 500 characters"),
+
+  marriagePlaceMarathi: z.string()
+    .min(1, "Marriage Place Marathi is required")
+    .max(500, "Marriage Place Marathi cannot exceed 500 characters"),
+
   documents: z.array(
     z.object({
       id: z.union([z.number(), z.string()]).optional(),
@@ -757,7 +786,8 @@ export const step0ValidationSchema = z.object({
 
 export const waterApplicationValidationSchema = z
   .object({
-    zoneId: commonValidationSchema.selectOption,
+    // zoneId: commonValidationSchema.selectOption,
+    zoneId:         commonValidationSchema.selectOption("Zone"),
 
     applicantFirstName: z
       .string()
@@ -969,13 +999,17 @@ export const waterApplicationValidationSchema = z
       "Co-Owner Address in Marathi cannot exceed 500 characters",
     ),
 
-    connectionType: commonValidationSchema.selectOption,
+    // connectionType: commonValidationSchema.selectOption,
 
-    connectionSize: commonValidationSchema.selectOption,
+    // connectionSize: commonValidationSchema.selectOption,
 
-    usageType: commonValidationSchema.selectOption,
+    // usageType: commonValidationSchema.selectOption,
 
-    usageSubType: commonValidationSchema.selectOption,
+    // usageSubType: commonValidationSchema.selectOption,
+    connectionType: commonValidationSchema.selectOption("Connection Type"),
+    connectionSize: commonValidationSchema.selectOption("Connection Size"),
+    usageType:      commonValidationSchema.selectOption("Usage Type"),
+    usageSubType:   commonValidationSchema.selectOption("Usage Sub Type"),
 
     noOfPerson: z
       .union([z.string(), z.number()])
@@ -1019,9 +1053,11 @@ export const waterApplicationValidationSchema = z
         "Number of Connection cannot exceed 99999",
       ),
 
-    connectionStatus: commonValidationSchema.selectOption,
+    // connectionStatus: commonValidationSchema.selectOption,
 
-    businessCertificate: commonValidationSchema.selectOption,
+    // businessCertificate: commonValidationSchema.selectOption,
+    connectionStatus:    commonValidationSchema.selectOption("Connection Status"),
+    businessCertificate: commonValidationSchema.selectOption("Business Certificate"),
 
     billingType: z
       .string()
@@ -1263,7 +1299,8 @@ export const nocForMandapStallValidationSchema = z
        APPLICANT DETAILS
     ===================================================== */
 
-    ulbId: commonValidationSchema.selectOption,
+    // ulbId: commonValidationSchema.selectOption,
+    ulbId:        commonValidationSchema.selectOption("ULB"),
 
     serviceName: z
       .string()
@@ -1351,7 +1388,8 @@ export const nocForMandapStallValidationSchema = z
        NOC DETAILS
     ===================================================== */
 
-    businessType: commonValidationSchema.selectOption,
+    // businessType: commonValidationSchema.selectOption,
+    businessType: commonValidationSchema.selectOption("Business Type"),
 
     businessDescription: z
       .string()
