@@ -92,6 +92,7 @@ const FrmAppAuthorisationMst = () => {
   const [hoClerkRemark, setHoClerkRemark] = useState("");
 
   const tableRef = useRef(null);
+  const amountManuallyEdited = useRef(false);
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -299,7 +300,7 @@ const FrmAppAuthorisationMst = () => {
           setHoClerkRemark(mergedData.HODREMARK || "");
         }
 
-        if (mergedData.AMOUNT) {
+        if (mergedData.AMOUNT && !amountManuallyEdited.current) {
           setAmount(String(mergedData.AMOUNT));
         }
 
@@ -964,22 +965,6 @@ const FrmAppAuthorisationMst = () => {
       return;
     }
 
-    if (authAction !== "Reject" && !remark.trim()) {
-      Swal.fire({
-        text: "Please Enter Remark",
-        confirmButtonColor: "#1e3a8a",
-      });
-      return;
-    }
-
-    if (authAction === "Reject" && !rejectReason.trim()) {
-      Swal.fire({
-        text: "Please Enter Reject Reason",
-        confirmButtonColor: "#1e3a8a",
-      });
-      return;
-    }
-
     if (authMode === "CKV") {
       if ((amount === "0" || amount === "") && authAction !== "Reject") {
         Swal.fire({
@@ -999,6 +984,22 @@ const FrmAppAuthorisationMst = () => {
           return;
         }
       }
+    }
+
+    if (authAction !== "Reject" && !remark.trim()) {
+      Swal.fire({
+        text: "Please Enter Remark",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
+    if (authAction === "Reject" && !rejectReason.trim()) {
+      Swal.fire({
+        text: "Please Enter Reject Reason",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
     }
 
     if (showVerificationGrid && 
@@ -3252,7 +3253,7 @@ const FrmAppAuthorisationMst = () => {
                     const value = e.target.value
                       .replace(/\D/g, "")
                       .slice(0, 10);
-
+                    amountManuallyEdited.current = true;
                     setAmount(value);
                   }}
                   className="w-full sm:w-64 h-9"
