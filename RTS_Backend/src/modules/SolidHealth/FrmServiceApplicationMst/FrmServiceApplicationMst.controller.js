@@ -142,7 +142,7 @@ const saveServiceApplication = asyncHandler(async (req, res) => {
     email: email.trim(),
     aadharNo: aadharNo || 0,
     refNo: refNo || "",
-    zoneId: [60, 62].includes(Number(serviceId)) ? 12 : zoneId,
+    zoneId: zoneId,
     sectorId: [60, 62].includes(Number(serviceId)) ? sectorId : 0,
     villageId: [60, 62].includes(Number(serviceId)) ? villageId : 0,
     locality: locality || "",

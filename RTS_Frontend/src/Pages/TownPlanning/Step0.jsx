@@ -774,7 +774,7 @@ const Step0 = () => {
                       className="bg-blue-900 hover:bg-blue-800 text-white"
                       disabled={loading || isSubmitting}
                     >
-                      {loading || isSubmitting ? "Saving..." : "Save Details"}
+                      {loading || isSubmitting ? "Submitting..." : "Submit"}
                     </Button>
                     <Button
                       type="button"
