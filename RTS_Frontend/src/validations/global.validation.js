@@ -200,7 +200,7 @@ export const serviceApplicationValidationSchema = (
           "Mobile Number must be 10 digits",
         ),
 
-
+      email:emailValidationAlt  ,
 
       aadharNo: z
         .string()
@@ -423,7 +423,9 @@ export const commonValidationSchema = {
 export const createPersonValidationSchema = (personType) => {
   const prefix = personType === "priest" ? "Priest" : 
                   personType === "husband" ? "Husband" :
-                  personType === "wife" ? "Wife" : "Witness";
+                  personType === "wife" ? "Wife" :
+                  personType === "witness1" ? "Witness 1" :
+                  personType === "witness2" ? "Witness 2" : "Witness 3";
 
   const requiresAadharEmail = personType === "husband" || personType === "wife";
   const requiresBeforeMarriageDocs = personType === "husband" || personType === "wife";
@@ -442,7 +444,10 @@ export const createPersonValidationSchema = (personType) => {
     aadharNo: requiresAadharEmail 
       ? z.string().min(1, `${prefix}: Aadhar Card No is required`).regex(aadharRegex, `${prefix}: Aadhar Card No must be 12 digits`)
       : z.string().optional(),
-    contact: commonValidationSchema.mobile,
+    // contact: commonValidationSchema.mobile,
+    contact: z.string()
+      .min(1, `${prefix}: Mobile Number is required`)
+      .regex(mobileRegex, `${prefix}: Mobile Number must be 10 digits`),
     email: requiresAadharEmail
       ? emailValidationAlt
       : z.string().optional(),
@@ -494,7 +499,10 @@ export const priestValidationSchema = z.object({
   marathiLastName: z.string().min(1, "Priest: Marathi Last Name is required"),
   age: z.string()
     .min(1, "Priest: Age is required")
-    .regex(/^\d+$/, "Priest: Age must be a valid number"),
+    .regex(/^\d+$/, "Priest: Age must be a valid number")
+    .refine((val) => Number(val) >= 18, {
+      message: "Priest: Age must be 18 years or greater",
+    }),
   // birthReligion: commonValidationSchema.selectOption,
   birthReligion: commonValidationSchema.selectOption("Religion"),
   // englishAddress: commonValidationSchema.address,
@@ -511,7 +519,7 @@ export const applicationValidationSchema = z.object({
   // applicantMiddleName: commonValidationSchema.name,
   applicantMiddleName: z.string().min(1, `Applicant Middle Name is required`),
   // applicantLastName: commonValidationSchema.name,
-  applicantLastName: z.string().min(1, `Applicant Lat Name is required`),
+  applicantLastName: z.string().min(1, `Applicant Last Name is required`),
   mobileNo: commonValidationSchema.mobile,
   address: commonValidationSchema.address,
   marriageDate: z.union([z.string(), z.date(), z.null(), z.undefined()])
@@ -624,9 +632,9 @@ export const witnessAgeValidation = (witnessNumber) => {
     if (monthDiff < 0 || (monthDiff === 0 && marriage.getDate() < birth.getDate())) {
       age--;
     }
-    return age >= 21;
+    return age >= 18;
   }, {
-    message: `${prefix}: Age must be 21 years or greater. Please enter a valid Date of Birth`,
+    message: `${prefix}: Age must be 18 years or greater. Please enter a valid Date of Birth`,
   });
 };
 
@@ -634,9 +642,9 @@ export const marriageRegistrationSchema = z.object({
   application: applicationValidationSchema,
   husband: createPersonValidationSchema("husband"),
   wife: createPersonValidationSchema("wife"),
-  witness1: createPersonValidationSchema("witness"),
-  witness2: createPersonValidationSchema("witness"),
-  witness3: createPersonValidationSchema("witness"),
+  witness1: createPersonValidationSchema("witness1"),
+  witness2: createPersonValidationSchema("witness2"),
+  witness3: createPersonValidationSchema("witness3"),
   priest: priestValidationSchema,
 })
 .superRefine((data, ctx) => {

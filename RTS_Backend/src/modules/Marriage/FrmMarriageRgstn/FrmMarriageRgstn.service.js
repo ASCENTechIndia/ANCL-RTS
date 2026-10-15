@@ -358,9 +358,9 @@ async function submitMarriageRegistrationService(payload) {
   if (!hbirthdt) {
     throw new AppError("Please Select Birth Date", 400);
   }
-  if (!hmstatus || hmstatus === "0") {
-    throw new AppError("Please Select Previous Status", 400);
-  }
+  // if (!hmstatus || hmstatus === "0") {
+  //   throw new AppError("Please Select Previous Status", 400);
+  // }
   if (!hbirthreligion || hbirthreligion === "0") {
     throw new AppError("Please Select Religion by birth", 400);
   }
@@ -411,9 +411,9 @@ async function submitMarriageRegistrationService(payload) {
   if (!wbirthdt) {
     throw new AppError("Please Select Bride Birth Date", 400);
   }
-  if (!wmstatus || wmstatus === "0") {
-    throw new AppError("Please Select Previous Status", 400);
-  }
+  // if (!wmstatus || wmstatus === "0") {
+  //   throw new AppError("Please Select Previous Status", 400);
+  // }
   if (!wbirthreligion || wbirthreligion === "0") {
     throw new AppError("Please Select Religion by birth", 400);
   }
@@ -608,8 +608,8 @@ async function submitMarriageRegistrationService(payload) {
     throw new AppError("Error calculating age", 500);
   }
   const w1Age = w1AgeResult.rows.length > 0 ? parseInt(w1AgeResult.rows[0].AGE) : 0;
-  if (w1Age < 21) {
-    throw new AppError("Age must be 21 Yr or greater. Please enter a valid Date of Birth", 400);
+  if (w1Age < 18) {
+    throw new AppError("Age must be 18 Yr or greater. Please enter a valid Date of Birth", 400);
   }
 
   // Calculate Witness 2 Age
@@ -618,8 +618,8 @@ async function submitMarriageRegistrationService(payload) {
     throw new AppError("Error calculating age", 500);
   }
   const w2Age = w2AgeResult.rows.length > 0 ? parseInt(w2AgeResult.rows[0].AGE) : 0;
-  if (w2Age < 21) {
-    throw new AppError("Age must be 21 Yr or greater. Please enter a valid Date of Birth", 400);
+  if (w2Age < 18) {
+    throw new AppError("Age must be 18 Yr or greater. Please enter a valid Date of Birth", 400);
   }
 
   // Calculate Witness 3 Age
@@ -628,8 +628,8 @@ async function submitMarriageRegistrationService(payload) {
     throw new AppError("Error calculating age", 500);
   }
   const w3Age = w3AgeResult.rows.length > 0 ? parseInt(w3AgeResult.rows[0].AGE) : 0;
-  if (w3Age < 21) {
-    throw new AppError("Age must be 21 Yr or greater. Please enter a valid Date of Birth", 400);
+  if (w3Age < 18) {
+    throw new AppError("Age must be 18 Yr or greater. Please enter a valid Date of Birth", 400);
   }
 
   // Check Grid Documents

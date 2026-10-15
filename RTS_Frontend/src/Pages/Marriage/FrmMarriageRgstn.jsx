@@ -246,25 +246,25 @@ function FrmMarriageRgstn() {
       if (!validationResult.success) {
         const firstError = validationResult.error.issues[0];
         const fieldPath = firstError.path.join(".");
-        const tabMap = {
-          zone: "application",
-          applicantFirstName: "application",
-          applicantMiddleName: "application",
-          applicantLastName: "application",
-          mobileNo: "application",
-          address: "application",
-          marriageDate: "application",
-          marriagePlaceEnglish: "application",
-          marriagePlaceMarathi: "application",
-        };
-        let tab = "application";
-        for (const [key, value] of Object.entries(tabMap)) {
-          if (fieldPath.includes(key)) {
-            tab = value;
-            break;
-          }
-        }
-        setActiveTab(tab);
+        // const tabMap = {
+        //   zone: "application",
+        //   applicantFirstName: "application",
+        //   applicantMiddleName: "application",
+        //   applicantLastName: "application",
+        //   mobileNo: "application",
+        //   address: "application",
+        //   marriageDate: "application",
+        //   marriagePlaceEnglish: "application",
+        //   marriagePlaceMarathi: "application",
+        // };
+        // let tab = "application";
+        // for (const [key, value] of Object.entries(tabMap)) {
+        //   if (fieldPath.includes(key)) {
+        //     tab = value;
+        //     break;
+        //   }
+        // }
+        // setActiveTab(tab);
         Swal.fire({
           text: firstError.message,
           confirmButtonColor: "#1e3a8a",
@@ -274,6 +274,122 @@ function FrmMarriageRgstn() {
         setLoading(false);
         setSubmitting(false);
         return;
+      }
+
+      const personConfigs = [
+        { key: "husband",  label: "Husband",  needsPhoto: true, needsThumb: true, needsBeforeMarriageDocs: true },
+        { key: "wife",     label: "Wife",     needsPhoto: true, needsThumb: true, needsBeforeMarriageDocs: true },
+        { key: "witness1", label: "Witness 1", needsPhoto: true, needsThumb: true, needsBeforeMarriageDocs: false },
+        { key: "witness2", label: "Witness 2", needsPhoto: true, needsThumb: true, needsBeforeMarriageDocs: false },
+        { key: "witness3", label: "Witness 3", needsPhoto: true, needsThumb: true, needsBeforeMarriageDocs: false },
+      ];
+
+      for (const cfg of personConfigs) {
+        const person = values[cfg.key] || {};
+        const tabValue = cfg.key;
+
+        if (cfg.needsPhoto && !person.photo) {
+          setActiveTab(tabValue);
+          Swal.fire({
+            text: `${cfg.label}: Photo is required`,
+            confirmButtonColor: "#1e3a8a",
+            confirmButtonText: "OK",
+            allowOutsideClick: false,
+          });
+          setLoading(false);
+          setSubmitting(false);
+          return;
+        }
+
+        if (cfg.needsThumb && !person.thumb) {
+          setActiveTab(tabValue);
+          Swal.fire({
+            text: `${cfg.label}: Thumb Impression is required`,
+            confirmButtonColor: "#1e3a8a",
+            confirmButtonText: "OK",
+            allowOutsideClick: false,
+          });
+          setLoading(false);
+          setSubmitting(false);
+          return;
+        }
+
+        if (cfg.needsBeforeMarriageDocs) {
+          if (!person.idDocument) {
+            setActiveTab(tabValue);
+            Swal.fire({
+              text: `${cfg.label}: Please Select ID Document`,
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "OK",
+              allowOutsideClick: false,
+            });
+            setLoading(false);
+            setSubmitting(false);
+            return;
+          }
+          if (!person.idDocumentFile) {
+            setActiveTab(tabValue);
+            Swal.fire({
+              text: `${cfg.label}: Please upload ID Document file`,
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "OK",
+              allowOutsideClick: false,
+            });
+            setLoading(false);
+            setSubmitting(false);
+            return;
+          }
+
+          if (!person.addressDocument) {
+            setActiveTab(tabValue);
+            Swal.fire({
+              text: `${cfg.label}: Please Select Address Document`,
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "OK",
+              allowOutsideClick: false,
+            });
+            setLoading(false);
+            setSubmitting(false);
+            return;
+          }
+          if (!person.addressDocumentFile) {
+            setActiveTab(tabValue);
+            Swal.fire({
+              text: `${cfg.label}: Please upload Address Document file`,
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "OK",
+              allowOutsideClick: false,
+            });
+            setLoading(false);
+            setSubmitting(false);
+            return;
+          }
+
+          if (!person.ageDocument) {
+            setActiveTab(tabValue);
+            Swal.fire({
+              text: `${cfg.label}: Please Select Age Document`,
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "OK",
+              allowOutsideClick: false,
+            });
+            setLoading(false);
+            setSubmitting(false);
+            return;
+          }
+          if (!person.ageDocumentFile) {
+            setActiveTab(tabValue);
+            Swal.fire({
+              text: `${cfg.label}: Please upload Age Document file`,
+              confirmButtonColor: "#1e3a8a",
+              confirmButtonText: "OK",
+              allowOutsideClick: false,
+            });
+            setLoading(false);
+            setSubmitting(false);
+            return;
+          }
+        }
       }
 
       const normalizedHusbandEmail = validationResult.data.husband?.email || "";

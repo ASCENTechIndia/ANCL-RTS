@@ -413,7 +413,7 @@ const FrmAppoints = () => {
         });
 
         // navigate("/app/FrmAppoint");
-        navigate("/app/FrmTrackApplication", { state: { applicationNo: applicationNo } });
+        navigate("/app/FrmTrackApplication", { state: { applicationNo: appNo } });
       } else {
         Swal.fire({
           title: "Failed",

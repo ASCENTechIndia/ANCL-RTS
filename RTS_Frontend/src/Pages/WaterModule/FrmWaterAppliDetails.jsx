@@ -92,12 +92,12 @@ const FrmWaterAppliDetails = () => {
   const [consumerSearch, setConsumerSearch] = useState("");
   const [searching, setSearching] = useState(false);
 
-  const tableHeaders = ["Select", "Document Name", "Preview", "Upload"];
+  const tableHeaders = ["Select", "Document Name","Upload"];
 
   const tableKeyMapping = {
     Select: "checked",
     "Document Name": "DocName",
-    Preview: "imageUrl",
+    // Preview: "imageUrl",
     Upload: "upload",
   };
 
@@ -477,8 +477,6 @@ const FrmWaterAppliDetails = () => {
 
       if (!/^[6-9]\d{9}$/.test(values.mobileNo.trim())) {
         await Swal.fire({
-          icon: "error",
-          title: "Invalid Mobile Number",
           text: "Please enter a valid 10-digit mobile number.",
           confirmButtonText: "OK",
         });
@@ -516,8 +514,6 @@ const FrmWaterAppliDetails = () => {
 
       if (!/^\d{12}$/.test(values.aadharNo.trim())) {
         await Swal.fire({
-          icon: "error",
-          title: "Invalid Aadhaar Number",
           text: "Please enter a valid 12-digit Aadhaar number.",
           confirmButtonText: "OK",
         });
@@ -1081,7 +1077,7 @@ const FrmWaterAppliDetails = () => {
                         onChange={handleChange}
                         className="w-full h-9"
                         type="email"
-                        maxLength={50}
+                        maxLength={30}
                       />
                     </div>
                   </div>

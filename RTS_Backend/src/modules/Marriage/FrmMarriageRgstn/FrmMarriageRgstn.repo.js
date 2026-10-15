@@ -541,6 +541,8 @@ async function insertMarriageRegistration(params) {
   console.log("Binds - ULB ID:", binds.in_UlbId, "Zone ID:", binds.in_Zoneid);
   console.log("Binds - Mobile:", binds.in_appliMobile);
   console.log("Binds - Mode:", binds.in_Mode);
+  console.log("Binds - in_Hmstatus:", binds.in_Hmstatus);
+  console.log("Binds - in_Wmstatus:", binds.in_Wmstatus);
 
   const result = await executeProcedureTMC({ sql, binds });
   console.log("Insert Result: ", result);
