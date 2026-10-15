@@ -467,6 +467,32 @@ const FrmWaterAppliDetails = () => {
         return;
       }
 
+
+      if (!values.firstNameMr?.trim()) {
+        await Swal.fire({
+          text: "Please enter Applicant Marathi First Name.",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      if (!values.middleNameMr?.trim()) {
+        await Swal.fire({
+          text: "Please enter Applicant Marathi Middle Name.",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      if (!values.lastNameMr?.trim()) {
+        await Swal.fire({
+          text: "Please enter Applicant Marathi Last Name.",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+
       if (!values.mobileNo?.trim()) {
         await Swal.fire({
           text: "Please enter Mobile Number.",
@@ -559,6 +585,31 @@ const FrmWaterAppliDetails = () => {
         });
         return;
       }
+
+      if (!values.noFirstNameMr?.trim()) {
+        await Swal.fire({
+          text: "Please enter Marathi New Owner First Name.",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      if (!values.noMiddleNameMr?.trim()) {
+        await Swal.fire({
+          text: "Please enter Marathi New Owner Middle Name.",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      if (!values.noLastNameMr?.trim()) {
+        await Swal.fire({
+          text: "Please enter Marathi New Owner Last Name.",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
       if (!values.ncoFirstName?.trim()) {
         await Swal.fire({
           text: "Please enter New co Owner First Name.",
@@ -578,6 +629,29 @@ const FrmWaterAppliDetails = () => {
       if (!values.ncoLastName?.trim()) {
         await Swal.fire({
           text: "Please enter New co Owner Last Name.",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+      if (!values.ncoFirstNameMr?.trim()) {
+        await Swal.fire({
+          text: "Please enter Marathi New co Owner First Name.",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      if (!values.ncoMiddleNameMr?.trim()) {
+        await Swal.fire({
+          text: "Please enter Marathi New co Owner Middle Name.",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      if (!values.ncoLastNameMr?.trim()) {
+        await Swal.fire({
+          text: "Please enter Marathi New co Owner Last Name.",
           confirmButtonText: "OK",
         });
         return;
@@ -960,85 +1034,89 @@ const FrmWaterAppliDetails = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="Applicant Name"
-                          className="text-nowrap"
+                   <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-46 shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="Applicant Name"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+                    <div className="sm:w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="firstName"
+                          value={values.firstName}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="firstName"
-                        value={values.firstName}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="middleName"
-                        value={values.middleName}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="lastName"
-                        value={values.lastName}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="middleName"
+                          value={values.middleName}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="lastName"
+                          value={values.lastName}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="अर्जदाराचे नाव मराठी"
-                          className="text-nowrap"
+                  <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-46 shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="अर्जदाराचे नाव मराठी"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+                    <div className="sm:w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="firstNameMr"
+                          value={values.firstNameMr}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="firstNameMr"
-                        value={values.firstNameMr}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="middleNameMr"
-                        value={values.middleNameMr}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="lastNameMr"
-                        value={values.lastNameMr}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="middleNameMr"
+                          value={values.middleNameMr}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="lastNameMr"
+                          value={values.lastNameMr}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -1185,167 +1263,177 @@ const FrmWaterAppliDetails = () => {
                     <h5 className="font-bold mt-2">Existing Details</h5>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="Current Owner Name"
-                          className="text-nowrap"
+                  <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-[20%] shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="Current Owner Name"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+                    <div className="sm:w-[80%] grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="oFirstName"
+                          value={values.oFirstName}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="oFirstName"
-                        value={values.oFirstName}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="oMiddleName"
-                        value={values.oMiddleName}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="oLastName"
-                        value={values.oLastName}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="oMiddleName"
+                          value={values.oMiddleName}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="oLastName"
+                          value={values.oLastName}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="सध्याचे मालकाचे नाव मराठी"
-                          className="text-nowrap"
+                  <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-[20%] shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="सध्याचे मालकाचे नाव मराठी"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+
+                    <div className="sm:w-[80%] grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="oFirstNameMr"
+                          value={values.oFirstNameMr}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="oFirstNameMr"
-                        value={values.oFirstNameMr}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="oMiddleNameMr"
-                        value={values.oMiddleNameMr}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="oLastNameMr"
-                        value={values.oLastNameMr}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="oMiddleNameMr"
+                          value={values.oMiddleNameMr}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="oLastNameMr"
+                          value={values.oLastNameMr}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="Current Co-Owner Name"
-                          className="text-nowrap"
+                  <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-[20%] shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="Current Co-Owner Name"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+
+                    <div className="sm:w-[80%] grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="coFirstName"
+                          value={values.coFirstName}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="coFirstName"
-                        value={values.coFirstName}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="coMiddleName"
-                        value={values.coMiddleName}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="coLastName"
-                        value={values.coLastName}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="coMiddleName"
+                          value={values.coMiddleName}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="coLastName"
+                          value={values.coLastName}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="सध्याचे सह-मालक नाव मराठी"
-                          className="text-nowrap"
+                  <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-[20%] shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="सध्याचे सह-मालक नाव मराठी"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+                    <div className="sm:w-[80%] grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="coFirstNameMr"
+                          value={values.coFirstNameMr}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="coFirstNameMr"
-                        value={values.coFirstNameMr}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="coMiddleNameMr"
-                        value={values.coMiddleNameMr}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="coLastNameMr"
-                        value={values.coLastNameMr}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="coMiddleNameMr"
+                          value={values.coMiddleNameMr}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="coLastNameMr"
+                          value={values.coLastNameMr}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -1353,167 +1441,175 @@ const FrmWaterAppliDetails = () => {
                     <h5 className="font-bold mt-2">New Details</h5>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="New Owner Name"
-                          className="text-nowrap"
+                  <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-[20%] shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="New Owner Name"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+                    <div className="sm:w-[80%] grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="noFirstName"
+                          value={values.noFirstName}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="noFirstName"
-                        value={values.noFirstName}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="noMiddleName"
-                        value={values.noMiddleName}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="noLastName"
-                        value={values.noLastName}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="noMiddleName"
+                          value={values.noMiddleName}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="noLastName"
+                          value={values.noLastName}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="नवीन मालकाचे नाव मराठी"
-                          className="text-nowrap"
+                  <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-[20%] shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="नवीन मालकाचे नाव मराठी"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+                    <div className="sm:w-[80%] grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="noFirstNameMr"
+                          value={values.noFirstNameMr}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="noFirstNameMr"
-                        value={values.noFirstNameMr}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="noMiddleNameMr"
-                        value={values.noMiddleNameMr}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="noLastNameMr"
-                        value={values.noLastNameMr}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="noMiddleNameMr"
+                          value={values.noMiddleNameMr}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="noLastNameMr"
+                          value={values.noLastNameMr}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="New Co-Owner Name"
-                          className="text-nowrap"
+                  <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-[20%] shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="New Co-Owner Name"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+                    <div className="sm:w-[80%] grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="ncoFirstName"
+                          value={values.ncoFirstName}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="ncoFirstName"
-                        value={values.ncoFirstName}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="ncoMiddleName"
-                        value={values.ncoMiddleName}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="ncoLastName"
-                        value={values.ncoLastName}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="ncoMiddleName"
+                          value={values.ncoMiddleName}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="ncoLastName"
+                          value={values.ncoLastName}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="sm:w-48 shrink-0 flex justify-start sm:justify-between items-center">
-                        <Label
-                          required
-                          text="नवीन सह-मालकाचे नाव मराठी"
-                          className="text-nowrap"
+                  <div className="flex items-center sm:w-full gap-5">
+                    <div className="sm:w-[20%] shrink-0 flex justify-start sm:justify-between items-center">
+                      <Label
+                        required
+                        text="नवीन सह-मालकाचे नाव मराठी"
+                        className="text-nowrap"
+                      />
+                      <span>:</span>
+                    </div>
+                    <div className="sm:w-[80%] grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Input
+                          name="ncoFirstNameMr"
+                          value={values.ncoFirstNameMr}
+                          onChange={handleChange}
+                          placeholder="First Name"
+                          className="w-full h-9"
+                          maxLength={100}
                         />
-                        <span>:</span>
                       </div>
-                      <Input
-                        name="ncoFirstNameMr"
-                        value={values.ncoFirstNameMr}
-                        onChange={handleChange}
-                        placeholder="First Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="ncoMiddleNameMr"
-                        value={values.ncoMiddleNameMr}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="ncoLastNameMr"
-                        value={values.ncoLastNameMr}
-                        onChange={handleChange}
-                        placeholder="Last Name"
-                        className="w-full h-9"
-                        maxLength={100}
-                      />
+                      <div>
+                        <Input
+                          name="ncoMiddleNameMr"
+                          value={values.ncoMiddleNameMr}
+                          onChange={handleChange}
+                          placeholder="Middle Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
+                      <div>
+                        <Input
+                          name="ncoLastNameMr"
+                          value={values.ncoLastNameMr}
+                          onChange={handleChange}
+                          placeholder="Last Name"
+                          className="w-full h-9"
+                          maxLength={100}
+                        />
+                      </div>
                     </div>
                   </div>
 

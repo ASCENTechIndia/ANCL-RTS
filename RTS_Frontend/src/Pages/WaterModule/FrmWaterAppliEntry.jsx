@@ -845,6 +845,7 @@ function FrmWaterAppliEntry() {
                       <Label
                         text="Aadhar Card No"
                         className="text-black !w-full whitespace-nowrap"
+                        required
                       />
 
                       <Input
@@ -867,6 +868,7 @@ function FrmWaterAppliEntry() {
                       <Label
                         text="Property Number"
                         className="text-black !w-full whitespace-nowrap"
+                        required
                       />
 
                       <Input
@@ -1175,6 +1177,7 @@ function FrmWaterAppliEntry() {
                         placeholder="First Name"
                         value={values.coOwnerFirstName}
                         onChange={handleChange}
+                        disabled={values.includeCoOwner === "No"}
                       />
 
                       <Input
@@ -1182,6 +1185,7 @@ function FrmWaterAppliEntry() {
                         placeholder="Middle Name"
                         value={values.coOwnerMiddleName}
                         onChange={handleChange}
+                        disabled={values.includeCoOwner === "No"}
                       />
 
                       <Input
@@ -1189,6 +1193,7 @@ function FrmWaterAppliEntry() {
                         placeholder="Last Name"
                         value={values.coOwnerLastName}
                         onChange={handleChange}
+                        disabled={values.includeCoOwner === "No"}
                       />
                     </div>
                   </div>
@@ -1206,6 +1211,7 @@ function FrmWaterAppliEntry() {
                         placeholder="पहिले नाव"
                         value={values.coOwnerFirstNameMarathi}
                         onChange={handleChange}
+                        disabled={values.includeCoOwner === "No"}
                       />
 
                       <Input
@@ -1213,6 +1219,7 @@ function FrmWaterAppliEntry() {
                         placeholder="मधले नाव"
                         value={values.coOwnerMiddleNameMarathi}
                         onChange={handleChange}
+                        disabled={values.includeCoOwner === "No"}
                       />
 
                       <Input
@@ -1220,6 +1227,7 @@ function FrmWaterAppliEntry() {
                         placeholder="आडनाव"
                         value={values.coOwnerLastNameMarathi}
                         onChange={handleChange}
+                        disabled={values.includeCoOwner === "No"}
                       />
                     </div>
                   </div>
@@ -1238,6 +1246,7 @@ function FrmWaterAppliEntry() {
                         value={values.coOwnerAddress}
                         onChange={handleChange}
                         className="min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                        disabled={values.includeCoOwner === "No"}
                       />
                     </div>
 
@@ -1253,6 +1262,7 @@ function FrmWaterAppliEntry() {
                         value={values.coOwnerAddressMarathi}
                         onChange={handleChange}
                         className="min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                        disabled={values.includeCoOwner === "No"}
                       />
                     </div>
                   </div>
