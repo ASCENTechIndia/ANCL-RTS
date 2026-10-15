@@ -480,7 +480,6 @@ const FrmServiceApplicationMstNew = () => {
       console.error("Save application error:", error);
 
       await Swal.fire({
-        title: "Error",
         text:
           error?.response?.data?.message ||
           error?.response?.data?.error ||
@@ -665,6 +664,7 @@ const FrmServiceApplicationMstNew = () => {
                         value={values.email}
                         onChange={handleChange}
                         className="h-9"
+                        maxLength={30}
                       />
                     </div>
 
@@ -777,10 +777,9 @@ const FrmServiceApplicationMstNew = () => {
                       <Select
                         value={values.zoneId ? String(values.zoneId) : ""}
                         onValueChange={(value) => {
-                          if (isAutoPrabhagService) {
-                            return;
-                          }
-
+                          // if (isAutoPrabhagService) {
+                          //   return;
+                          // }
                           setFieldValue("zoneId", value);
                         }}
                       >

@@ -527,12 +527,20 @@ const FrmWaterConnectionApplication = () => {
 
   const handleSubmit = async () => {
 
-    if (isBndService && !selectedBndRecord) {
+    if (isBndService && !selectedBndRecord && isBirthService) {
       await Swal.fire({
         // icon: "warning",
-        text: "Select At least one Record in Death Details search",
+        text: "Select At least one Record in Birth Details Search",
         confirmButtonColor: "#1e3a8a",
       });
+      {isBirthService ? "Birth Details Search" : "Death Details Search"}
+      return;
+    } else if (isBndService && !selectedBndRecord){
+        await Swal.fire({
+          // icon: "warning",
+          text: "Select At least one Record in Death Details Search",
+          confirmButtonColor: "#1e3a8a",
+        });
       return;
     }
 
