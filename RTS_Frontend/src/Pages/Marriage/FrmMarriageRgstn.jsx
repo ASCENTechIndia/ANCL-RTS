@@ -1753,6 +1753,7 @@ function PersonTab({
                   placeholder="Email Id"
                   onChange={(e) => setFieldValue("email", e.target.value)}
                   className="w-full h-9"
+                  maxLength={30}
                 />
               </div>
             )}
