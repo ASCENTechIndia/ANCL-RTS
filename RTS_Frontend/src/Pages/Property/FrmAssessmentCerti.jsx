@@ -809,6 +809,7 @@ const FrmAssessmentCerti = () => {
                       className="w-full h-9"
                       type="email"
                       placeholder="Enter Email ID"
+                      maxLength={30}
                     />
                   </div>
                 </div>

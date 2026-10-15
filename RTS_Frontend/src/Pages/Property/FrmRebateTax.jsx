@@ -919,6 +919,7 @@ const FrmRebateTax = () => {
                         onChange={handleChange}
                         className="w-full h-9"
                         type="email"
+                        maxLength={30}
                       />
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
