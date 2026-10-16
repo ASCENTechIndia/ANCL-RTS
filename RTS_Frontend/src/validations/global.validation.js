@@ -1221,17 +1221,22 @@ export const toursAndTravelsValidationSchema = z
   .object({
     firstName: z.string().min(1, "First Name is required")
       .refine((v) => v?.trim() !== "", "First Name is required"),
-    middleName: z.string().optional().default(""),
+    // middleName: z.string().optional().default(""),
+    middleName: z.string().min(1, "Middle Name is required")
+      .refine((v) => v?.trim() !== "", "Middle Name is required"),
     lastName: z.string().min(1, "Last Name is required")
       .refine((v) => v?.trim() !== "", "Last Name is required"),
     mobileNo: z.string().min(1, "Mobile Number is required")
       .regex(mobileRegex, "Mobile Number must be 10 digits"),
     emailId: emailValidationAlt,
-    aadharNo: z.string().optional().default("")
-      .refine((v) => {
-        if (!v?.trim()) return true;
-        return aadharRegex.test(v);
-      }, "Aadhar Number must be 12 digits"),
+    // aadharNo: z.string().optional().default("")
+    //   .refine((v) => {
+    //     if (!v?.trim()) return true;
+    //     return aadharRegex.test(v);
+    //   }, "Aadhar Number must be 12 digits"),
+    aadharNo: z.string().min(1, "Aadhar Number is required")
+      .refine((v) => v?.trim() !== "", "Aadhar Number is required")
+      .refine((v) => aadharRegex.test(v), "Aadhar Number must be 12 digits"),
     residentialAddress: z.string().min(1, "Residential Address is required")
       .refine((v) => v?.trim() !== "", "Residential Address is required"),
     panCard: z.string().optional().default(""),

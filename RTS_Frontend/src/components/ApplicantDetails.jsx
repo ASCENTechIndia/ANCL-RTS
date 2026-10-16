@@ -179,6 +179,7 @@ const ApplicantDetails = () => {
               onBlur={handleBlur}
               placeholder="ई-मेल आयडी"
               className="w-full h-9"
+              maxLength={30}
             />
           </div>
 
