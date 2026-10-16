@@ -17,6 +17,10 @@ import { Textarea } from "@/components/ui/textarea";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+const aadharRegex = /^\d{12}$/;
+const mobileRegex = /^\d{10}$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const FrmMarketLicenseUpdt = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -741,23 +745,208 @@ const FrmMarketLicenseUpdt = () => {
 
   const handleSubmit = async (values, { resetForm }) => {
     if (!values.licno) {
-      return Swal.fire({ icon: "warning", text: "Please enter License No" });
+      return Swal.fire({ text: "Please enter License No" });
     }
     if (!values.prabhag) {
-      return Swal.fire({ icon: "warning", text: "Please select Prabhag" });
+      return Swal.fire({ text: "Please select Prabhag" });
     }
     if (!values.appliFname) {
-      return Swal.fire({ icon: "warning", text: "Please enter Applicant First Name" });
+      return Swal.fire({ text: "Please enter Applicant First Name" });
+    }
+    if (!values.appliMname) {
+      return Swal.fire({ text: "Please enter Applicant Middle Name" });
+    }
+    if (!values.appliLname) {
+      return Swal.fire({ text: "Please enter Applicant Last Name" });
     }
     if (!values.mobile || String(values.mobile).length !== 10) {
-      return Swal.fire({ icon: "warning", text: "Please enter valid 10-digit Mobile Number" });
+      return Swal.fire({ text: "Please enter valid 10-digit Mobile Number" });
     }
     if (!values.email) {
-      return Swal.fire({ icon: "warning", text: "Please enter Email" });
+      return Swal.fire({ text: "Please enter Email" });
     }
     if (!values.residentno) {
-      return Swal.fire({ icon: "warning", text: "Please enter Residential Address" });
+      return Swal.fire({ text: "Please enter Residential Address" });
     }
+
+    if (showLicensCancelPanel) {
+      if (showLicePanel) {
+        if (!values.cancelGender) {
+          return Swal.fire({ text: "Please select लिंग" });
+        }
+        if (!values.cancelRelation) {
+          return Swal.fire({ text: "Please select Relation" });
+        }
+        if (!values.cancelLicType) {
+          return Swal.fire({ text: "Please select License Type" });
+        }
+        if (!values.cancelJwalan) {
+          return Swal.fire({ text: "Please select ज्वलनशील पदार्थांचा / इंधनाचा वापर व साठवणूक करीत आहे?" });
+        }
+        if (!values.cancelAdhikrutta) {
+          return Swal.fire({ text: "Please select Authorized Property" });
+        }
+        if (!values.cancelTrade) {
+          return Swal.fire({ text: "Please select Business Type" });
+        }
+        if (!values.closeDt) {
+          return Swal.fire({ text: "Please select Establishment / Business Closure Date" });
+        }
+      }
+      if (showExpirePanel) {
+        if (!values.expRel) {
+          return Swal.fire({ text: "Please select Relation" });
+        }
+      }
+      if (!values.reason) {
+        return Swal.fire({ text: "Please enter Reason" });
+      }
+    }
+
+    if (showBuisiChangePanel) {
+      if (!values.buisiGender) {
+        return Swal.fire({ text: "Please select लिंग" });
+      }
+      if (!values.buisiJwalan) {
+        return Swal.fire({ text: "Please select ज्वलनशील पदार्थांचा / इंधनाचा वापर व साठवणूक करीत आहे?" });
+      }
+      if (!values.tradeCategory) {
+        return Swal.fire({ text: "Please select Business Category" });
+      }
+      if (!values.tradeType) {
+        return Swal.fire({ text: "Please select Business Type" });
+      }
+      if (!tradeTypeGrid.length) {
+        return Swal.fire({ text: "Please add at least one Business Type" });
+      }
+    }
+
+    if (showBusinessRemPanel) {
+      if (!tradeTypeGrid.length) {
+        return Swal.fire({ text: "No business types available" });
+      }
+      if (!values.remReason) {
+        return Swal.fire({ text: "Please enter Reason" });
+      }
+    }
+
+    if (showBusiNamePanel) {
+      if (!values.busiNameGender) {
+        return Swal.fire({ text: "Please select लिंग" });
+      }
+      if (!values.busiNameChange) {
+        return Swal.fire({ text: "Please enter New Business Name" });
+      }
+    }
+
+    if (showAddOwnerPanel) {
+      if (!values.directorAdharno) {
+        return Swal.fire({ text: "Please enter Director Aadhar Number" });
+      }
+      if (!aadharRegex.test(values.directorAdharno)) {
+        return Swal.fire({ text: "Director Aadhar Number must be 12 digits" });
+      }
+      if (!values.directorName) {
+        return Swal.fire({ text: "Please enter Director Name" });
+      }
+      if (!values.directorMob) {
+        return Swal.fire({ text: "Please enter Contact Number" });
+      }
+      if (!mobileRegex.test(values.directorMob)) {
+        return Swal.fire({ text: "Contact Number must be 10 digits" });
+      }
+      if (values.directorEmail && !emailRegex.test(values.directorEmail)) {
+        return Swal.fire({ text: "Please enter a valid Email" });
+      }
+      if (!values.directorGender) {
+        return Swal.fire({ text: "Please select लिंग" });
+      }
+      if (!values.directorAddress) {
+        return Swal.fire({ text: "Please enter Address" });
+      }
+      if (!values.applicantType) {
+        return Swal.fire({ text: "Please select Applicant Type" });
+      }
+      if (!values.directorImage) {
+        return Swal.fire({ text: "Please upload Director Photo" });
+      }
+      if (!directorGrid.length) {
+        return Swal.fire({ text: "Please add at least one Director" });
+      }
+    }
+
+    if (showPartnernamecorrPanel) {
+      if (!values.exeName) {
+        return Swal.fire({ text: "Please enter Existing License Holder / Partner Name" });
+      }
+      if (!values.newName) {
+        return Swal.fire({ text: "Please enter New License Holder / Partner Name" });
+      }
+      if (!values.cpAadhar) {
+        return Swal.fire({ text: "Please enter Aadhar Number" });
+      }
+      if (!aadharRegex.test(values.cpAadhar)) {
+        return Swal.fire({ text: "Aadhar Number must be 12 digits" });
+      }
+      if (!values.rbdCPGender) {
+        return Swal.fire({ text: "Please select लिंग" });
+      }
+      if (!values.cpAddr) {
+        return Swal.fire({ text: "Please enter Address" });
+      }
+      if (!values.cpApplicant) {
+        return Swal.fire({ text: "Please select Applicant Type" });
+      }
+      if (!partnerCorrGrid.length) {
+        return Swal.fire({ text: "Please add at least one record" });
+      }
+    }
+
+    if (showTransferPanel) {
+      if (!values.trOPartner) {
+        return Swal.fire({ text: "Please enter Existing License Holder / Partner Name" });
+      }
+      if (!values.newPartName) {
+        return Swal.fire({ text: "Please enter New License Holder / Partner Name" });
+      }
+      if (!values.trAadhar) {
+        return Swal.fire({ text: "Please enter Aadhar Number" });
+      }
+      if (!aadharRegex.test(values.trAadhar)) {
+        return Swal.fire({ text: "Aadhar Number must be 12 digits" });
+      }
+      if (!values.transRel) {
+        return Swal.fire({ text: "Please select Relation" });
+      }
+      if (!values.transStat) {
+        return Swal.fire({ text: "Please select Applicant / Business Owner Current Status" });
+      }
+      if (!values.nMob) {
+        return Swal.fire({ text: "Please enter Mobile Number" });
+      }
+      if (!mobileRegex.test(values.nMob)) {
+        return Swal.fire({ text: "Mobile Number must be 10 digits" });
+      }
+      if (!values.nEmail) {
+        return Swal.fire({ text: "Please enter Email" });
+      }
+      if (!emailRegex.test(values.nEmail)) {
+        return Swal.fire({ text: "Please enter a valid Email" });
+      }
+      if (!values.rbtnNDirectorGender) {
+        return Swal.fire({ text: "Please select लिंग" });
+      }
+      if (!values.nResAdd) {
+        return Swal.fire({ text: "Please enter Address" });
+      }
+      if (!values.nAppliCat) {
+        return Swal.fire({ text: "Please select Applicant Type" });
+      }
+      if (!transferGrid.length) {
+        return Swal.fire({ text: "Please add at least one record" });
+      }
+    }
+
     setLoading(true);
     try {
       Swal.fire({
@@ -1035,7 +1224,7 @@ const FrmMarketLicenseUpdt = () => {
   };
 
   const fileUploadHeaders = [
-    "Doc Id",
+    // "Doc Id",
     "Select",
     "Document Name",
     // "Image",
@@ -1044,7 +1233,7 @@ const FrmMarketLicenseUpdt = () => {
   ];
 
   const fileUploadKeyMapping = {
-    "Doc Id": "DocId",
+    // "Doc Id": "DocId",
     Select: "select",
     "Document Name": "DocName",
     Image: "image",
@@ -1385,6 +1574,7 @@ const FrmMarketLicenseUpdt = () => {
                       onChange={handleChange}
                       type="email"
                       className="h-9 w-full sm:h-10"
+                      maxLength={30}
                     />
                   </div>
                 </div>
