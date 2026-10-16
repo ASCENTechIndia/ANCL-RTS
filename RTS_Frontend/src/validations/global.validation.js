@@ -5,13 +5,32 @@ const aadharRegex = /^\d{12}$/;
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const pincodeRegex = /^\d{6}$/;
 
+const ALLOWED_TLDS = new Set([
+  "com", "org", "net", "edu", "gov", "mil", "int",
+  "in", "co.in", "net.in", "org.in", "gov.in", "ac.in", "edu.in", "res.in",
+  "io", "co", "us", "uk", "co.uk", "info", "biz", "me", "app", "dev",
+]);
+
+const hasValidTld = (email) => {
+  const parts = String(email || "").toLowerCase().split("@");
+  if (parts.length !== 2) return false;
+  const domain = parts[1];
+  const tldCandidates = domain.split(".");
+  for (let i = 0; i < tldCandidates.length; i++) {
+    const candidate = tldCandidates.slice(i).join(".");
+    if (ALLOWED_TLDS.has(candidate)) return true;
+  }
+  return false;
+};
+
 const emailValidationAlt = z.string()
   .transform((val) => {
     if (!val) return val;
     return val.trim().toLowerCase();
   })
   .refine((val) => val && val.length > 0, "Email ID is required")
-  .refine((val) => emailRegex.test(val), "Invalid Email Address");
+  .refine((val) => emailRegex.test(val), "Invalid Email Address")
+  .refine((val) => hasValidTld(val), "Invalid Email Address");
 
 const emailValidation = z.string()
   .min(1, "Email ID is required")

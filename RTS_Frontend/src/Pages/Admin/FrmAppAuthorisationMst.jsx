@@ -2033,7 +2033,7 @@ const FrmAppAuthorisationMst = () => {
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
-            <Label text="Area" />
+            <Label text="Address" />
             <span>:</span>
           </div>
           <span className="min-w-0 break-all flex-1">{waterAddress || ""}</span>
