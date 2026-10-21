@@ -103,14 +103,14 @@ const getCorporationDetailsRepo = async ({ corporationId }) => {
         const binds = { corporationId: Number(corporationId) };
 
         const corporationSql = `
-            select num_corporation_id,var_corporation_name from aorts_corporation_mas
+            select num_corporation_id,var_corporation_name from admins.aoma_corporation_mas
             where num_corporation_id = :corporationId
         `;
 
         const logoSql = `
-            SELECT
+             SELECT
                 blob_corporation_img
-            FROM aorts_corporation_mas
+            FROM admins.aoma_corporation_mas
             WHERE num_corporation_id = :corporationId
         `;
 
@@ -189,6 +189,7 @@ const getemployeeDepartmentMenuRepo = async ({ userId }) => {
     return result.rows;
 };
 
+
 const getDepartmentMenuRepo = async ({ ulbid }) => {
     console.log("Repo: Fetch Department Menu", { ulbid });
     const binds = { ulbid: Number(ulbid) };
@@ -209,7 +210,7 @@ const getDepartmentMenuRepo = async ({ ulbid }) => {
             var_entry_status,
             var_entry_path
         FROM vw_accordbk
-        INNER JOIN aorts_tmcservice_def
+        INNER JOIN aorts_service_def
             ON num_service_deptid = deptid
         INNER JOIN aorts_service_config
             ON num_serv_deptid = deptid
@@ -287,11 +288,12 @@ const getServicesByDeptIdRepo = async ({ ulbid, deptId }) => {
             var_service_eng_name, 
             num_service_serviceid,
             var_dept_engname,num_dept_id 
-        FROM aorts.aorts_tmcservice_def
+        FROM aorts.aorts_service_def
         inner join admins.aoms_dept_mas on num_dept_id = num_service_deptid
+        inner join aorts_servmenu_mas on num_servmenu_servid=num_service_serviceid
         WHERE 
-            num_service_deptid = :deptId 
-            and var_service_url is not null 
+            num_service_deptid =:deptId 
+            and var_servmenu_pageurl is not null 
             AND var_service_active = 'Y' 
         ORDER BY num_service_serviceid
 
@@ -320,7 +322,7 @@ const getDocumentsForServiceRepo = async ({ serviceId, ulbid }) => {
             var_service_eng_name, 
             num_service_serviceid
         FROM aorts.aorts_serv_doc_config
-        INNER JOIN aorts.aorts_tmcservice_def on num_service_serviceid = num_serdoc_servid
+        INNER JOIN aorts.aorts_service_def on num_service_serviceid = num_serdoc_servid
         INNER JOIN aorts.aorts_doc_def ON num_doc_id = num_serdoc_docid and num_doc_serviceid = num_service_serviceid
         WHERE num_serdoc_servid = :serviceId
          AND var_service_active = 'Y' 
@@ -366,9 +368,9 @@ const getInsructionsForServiceRepo = async ({ serviceId }) => {
 
     const sql = `
         select
-            var_inst_mardocdesc
-        from aorts_serviceInstr_def
-        where num_inst_serviceid = :serviceId
+            var_doc_mardocdesc
+        from aorts.aorts_doc_def
+        where num_doc_serviceid = :serviceId
             and var_inst_active = 'Y'
     `;
 
@@ -382,14 +384,14 @@ const getDownloadDocsRepo = async ({ serviceName, ulbid }) => {
     const binds = { serviceName: String(serviceName) };
 
     const sql = `
-        select 
+         select 
             num_serdoc_id DocId, 
             var_doc_engname DocName,
-            var_serdoc_downpath downpath 
+            '' downpath 
         from aorts_serv_doc_config
         INNER JOIN aorts.aorts_doc_def ON num_doc_id = num_serdoc_docid and num_doc_serviceid = num_serdoc_servid
         where num_serdoc_servid=:serviceName
-            and var_serdoc_downflag='Y'
+            and var_doc_active='Y'
     `;
 
     const result = await executeQueryTMC(sql, binds);
@@ -428,13 +430,15 @@ async function getServiceDetails({ serviceId }) {
     console.log("Resolved Service ID:", numericServiceId);
 
     const sql = `
-        SELECT
+         SELECT
             num_service_serviceid AS service_id,
-            var_service_url AS service_url,
-            num_service_rate AS service_rate,
+            var_servmenu_pageurl AS service_url,
+             var_service_payflag AS service_rate,
             var_service_eng_name AS service_name
-        FROM aorts_tmcservice_def
-        WHERE num_service_serviceid = :serviceId
+        FROM aorts_service_def
+       inner join  aorts_servmenu_mas on num_servmenu_servid=num_service_serviceid
+      
+        WHERE num_service_serviceid =  :serviceId
     `;
 
     const result = await executeQueryTMC(sql, {

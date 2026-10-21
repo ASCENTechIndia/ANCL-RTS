@@ -22,6 +22,7 @@ async function submitNewTaxAssessmentService(payload) {
     vikasName,
     taxesReceipt,
     appSource,
+    ulbid,
   } = payload;
 
   if (!userId) throw new AppError("User ID is required", 400);
@@ -50,6 +51,7 @@ async function submitNewTaxAssessmentService(payload) {
     vikasName,
     taxesReceipt,
     appSource,
+    ulbid,
   });
 
   if (Number(appResult.out_errcode) !== 9999) {
