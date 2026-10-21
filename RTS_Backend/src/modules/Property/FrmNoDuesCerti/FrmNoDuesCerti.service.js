@@ -18,6 +18,7 @@ async function submitNoDuesCertificateApplicationService(payload) {
     taxAmount,
     aadharNo,
     appSource,
+    ulbid
   } = payload;
 
   // Validation
@@ -53,6 +54,7 @@ async function submitNoDuesCertificateApplicationService(payload) {
     taxAmount: taxAmount || 0,
     aadharNo: aadharNo || 0,
     appSource: appSource || "WEB",
+    ulbid,
   });
 
   if (Number(appResult.out_errcode) !== 9999) {

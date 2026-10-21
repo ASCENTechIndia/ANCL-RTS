@@ -32,19 +32,52 @@ import Swal from "sweetalert2";
 const DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const DEFAULT_FILE_ACCEPT = ".jpg,.jpeg,.png,.pdf";
 
-function Input({ className, type = "text", accept = type === "file" ? DEFAULT_FILE_ACCEPT : undefined, maxFileSize = type === "file" ? DEFAULT_MAX_FILE_SIZE : undefined, onChange, onInvalidFile = () => { Swal.fire({ text: "Document size must not exceed 5 MB.", confirmButtonColor: "#1e3a8a" }) }, ...props }) {
+function Input({
+  className,
+  type = "text",
+  accept = type === "file" ? DEFAULT_FILE_ACCEPT : undefined,
+  maxFileSize = type === "file" ? DEFAULT_MAX_FILE_SIZE : undefined,
+  onChange,
+  onInvalidFile = () => {
+    Swal.fire({ text: "Document size must not exceed 5 MB.", confirmButtonColor: "#1e3a8a" });
+  },
+  onInvalidFileType = () => {
+    Swal.fire({ text: "Only PDF, JPG, and PNG file formats are allowed.", confirmButtonColor: "#1e3a8a" });
+  },
+  ...props
+}) {
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
 
-    if (type === "file" && file && maxFileSize) {
-      if (file.size > maxFileSize) {
+    if (type === "file" && file) {
+      if (maxFileSize && file.size > maxFileSize) {
         // Clear browser's selected file name
         e.target.value = "";
-
         onInvalidFile?.(file);
-
         return;
+      }
+
+      if (accept) {
+        const allowedList = accept.split(",").map((s) => s.trim().toLowerCase());
+        const fileName = (file.name || "").toLowerCase();
+        const fileType = (file.type || "").toLowerCase();
+
+        const isAllowed = allowedList.some((allowed) => {
+          if (allowed.startsWith(".")) {
+            return fileName.endsWith(allowed);
+          }
+          if (allowed.endsWith("/*")) {
+            return fileType.startsWith(allowed.replace("/*", ""));
+          }
+          return fileType === allowed;
+        });
+
+        if (!isAllowed) {
+          e.target.value = "";
+          onInvalidFileType?.(file);
+          return;
+        }
       }
     }
 
@@ -74,6 +107,7 @@ function Input({ className, type = "text", accept = type === "file" ? DEFAULT_FI
     <input
       type={type}
       data-slot="input"
+      accept={type === "file" ? accept : undefined}
       //     min="0"
       // step="1"
       onChange={type === "file" ? handleFileChange : onChange}

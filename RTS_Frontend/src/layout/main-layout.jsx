@@ -34,6 +34,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const Layout = () => {
     const { user, requestInitialized } = useAuth();
+    console.log({user})
     const ulbId = user?.ulbId;
     const [departments, setDepartments] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
@@ -87,7 +88,6 @@ const Layout = () => {
                 setDepartments([]);
 
                 await Swal.fire({
-                    icon: "error",
                     text: error?.response?.data?.message || error?.response?.data?.error || "Unable to fetch departments.",
                 });
             } finally {

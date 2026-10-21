@@ -193,6 +193,10 @@ const ExtractOfPropertyReportHelper = async ({ rows, corporationName, ulbLogo, q
       case "4":
         templateFile = "CrtChngPropertyOwnership.html";
         break;
+        
+      case "5":
+        templateFile = "CrtChngPropertyOwnership.html";
+        break;
 
       case "46":
         templateFile = "CrtRebateOnTaxVacantpro.html";

@@ -148,7 +148,7 @@ export const propertyRebateValidationSchema = z.object({
     .refine((val) => {
       if (!val || val.trim() === "") return true;
       return aadharRegex.test(val);
-    }, "Invalid Aadhar No"),
+    }, "Please enter valid Aadhar No"),
   pincode: z.string()
     .min(1, "Pincode cannot be blank")
     .regex(/^\d{6}$/, "Invalid Pincode"),
@@ -200,7 +200,7 @@ export const serviceApplicationValidationSchema = (
           "Mobile Number must be 10 digits",
         ),
 
-
+      email:emailValidationAlt  ,
 
       aadharNo: z
         .string()
@@ -329,7 +329,7 @@ export const serviceApplicationValidationSchema = (
             code: z.ZodIssueCode.custom,
             path: ["address"],
             message:
-              "Please Enter Address",
+              "Please Enter Area",
           });
         }
 
@@ -401,17 +401,31 @@ export const commonValidationSchema = {
     .min(1, "Address is required")
     .max(500, "Address cannot exceed 500 characters"),
 
-  selectOption: z.string()
-    .min(1, "Please select an option")
-    .refine((val) => val !== "0" && val !== "-1" && val !== "", {
-      message: "Please select a valid option",
-    }),
+  // selectOption: z.string()
+  //   .min(1, "Please select an option")
+  //   .refine((val) => val !== "0" && val !== "-1" && val !== "", {
+  //     message: "Please select a valid option",
+  //   }),
+  selectOption: (label = "an option") =>
+    z.string()
+      .min(1, `Please select ${label}`)
+      .refine(
+        (val) =>
+          val !== undefined &&
+          val !== null &&
+          val !== "" &&
+          val !== "0" &&
+          val !== "-1",
+        { message: `Please select ${label}` }
+      ),
 };
 
 export const createPersonValidationSchema = (personType) => {
   const prefix = personType === "priest" ? "Priest" : 
                   personType === "husband" ? "Husband" :
-                  personType === "wife" ? "Wife" : "Witness";
+                  personType === "wife" ? "Wife" :
+                  personType === "witness1" ? "Witness 1" :
+                  personType === "witness2" ? "Witness 2" : "Witness 3";
 
   const requiresAadharEmail = personType === "husband" || personType === "wife";
   const requiresBeforeMarriageDocs = personType === "husband" || personType === "wife";
@@ -430,7 +444,10 @@ export const createPersonValidationSchema = (personType) => {
     aadharNo: requiresAadharEmail 
       ? z.string().min(1, `${prefix}: Aadhar Card No is required`).regex(aadharRegex, `${prefix}: Aadhar Card No must be 12 digits`)
       : z.string().optional(),
-    contact: commonValidationSchema.mobile,
+    // contact: commonValidationSchema.mobile,
+    contact: z.string()
+      .min(1, `${prefix}: Mobile Number is required`)
+      .regex(mobileRegex, `${prefix}: Mobile Number must be 10 digits`),
     email: requiresAadharEmail
       ? emailValidationAlt
       : z.string().optional(),
@@ -446,8 +463,10 @@ export const createPersonValidationSchema = (personType) => {
     disability: z.string().optional(),
     birthReligion: z.string().optional(),
     adoptedReligion: z.string().optional(),
-    englishAddress: commonValidationSchema.address,
-    marathiAddress: commonValidationSchema.address,
+    // englishAddress: commonValidationSchema.address,
+    englishAddress: z.string().min(1, `${prefix}: English Address is required`),
+    // marathiAddress: commonValidationSchema.address,
+    marathiAddress: z.string().min(1, `${prefix}: Marathi Address is required`),
     idDocument: requiresBeforeMarriageDocs
       ? z.string().min(1, `${prefix}: Please Select ID Document`)
       : z.string().optional(),
@@ -480,25 +499,43 @@ export const priestValidationSchema = z.object({
   marathiLastName: z.string().min(1, "Priest: Marathi Last Name is required"),
   age: z.string()
     .min(1, "Priest: Age is required")
-    .regex(/^\d+$/, "Priest: Age must be a valid number"),
-  birthReligion: commonValidationSchema.selectOption,
-  englishAddress: commonValidationSchema.address,
-  marathiAddress: commonValidationSchema.address,
+    .regex(/^\d+$/, "Priest: Age must be a valid number")
+    .refine((val) => Number(val) >= 18, {
+      message: "Priest: Age must be 18 years or greater",
+    }),
+  // birthReligion: commonValidationSchema.selectOption,
+  birthReligion: commonValidationSchema.selectOption("Religion"),
+  // englishAddress: commonValidationSchema.address,
+  englishAddress: z.string().min(1, `Priest: English Address is required`),
+  // marathiAddress: commonValidationSchema.address,
+  marathiAddress: z.string().min(1, `Priest: Marathi Address is required`),
 });
 
 export const applicationValidationSchema = z.object({
-  zone: commonValidationSchema.selectOption,
-  applicantFirstName: commonValidationSchema.name,
-  applicantMiddleName: commonValidationSchema.name,
-  applicantLastName: commonValidationSchema.name,
+  // zone: commonValidationSchema.selectOption,
+  zone: commonValidationSchema.selectOption("Zone"),
+  // applicantFirstName: commonValidationSchema.name,
+  applicantFirstName: z.string().min(1, `Applicant First Name is required`),
+  // applicantMiddleName: commonValidationSchema.name,
+  applicantMiddleName: z.string().min(1, `Applicant Middle Name is required`),
+  // applicantLastName: commonValidationSchema.name,
+  applicantLastName: z.string().min(1, `Applicant Last Name is required`),
   mobileNo: commonValidationSchema.mobile,
   address: commonValidationSchema.address,
   marriageDate: z.union([z.string(), z.date(), z.null(), z.undefined()])
     .refine((val) => val !== null && val !== undefined && val !== "", {
       message: "Marriage Date is required",
     }),
-  marriagePlaceEnglish: commonValidationSchema.address,
-  marriagePlaceMarathi: commonValidationSchema.address,
+  // marriagePlaceEnglish: commonValidationSchema.address,
+  // marriagePlaceMarathi: commonValidationSchema.address,
+  marriagePlaceEnglish: z.string()
+  .min(1, "Marriage Place English is required")
+  .max(500, "Marriage Place English cannot exceed 500 characters"),
+
+  marriagePlaceMarathi: z.string()
+    .min(1, "Marriage Place Marathi is required")
+    .max(500, "Marriage Place Marathi cannot exceed 500 characters"),
+
   documents: z.array(
     z.object({
       id: z.union([z.number(), z.string()]).optional(),
@@ -595,9 +632,9 @@ export const witnessAgeValidation = (witnessNumber) => {
     if (monthDiff < 0 || (monthDiff === 0 && marriage.getDate() < birth.getDate())) {
       age--;
     }
-    return age >= 21;
+    return age >= 18;
   }, {
-    message: `${prefix}: Age must be 21 years or greater. Please enter a valid Date of Birth`,
+    message: `${prefix}: Age must be 18 years or greater. Please enter a valid Date of Birth`,
   });
 };
 
@@ -605,9 +642,9 @@ export const marriageRegistrationSchema = z.object({
   application: applicationValidationSchema,
   husband: createPersonValidationSchema("husband"),
   wife: createPersonValidationSchema("wife"),
-  witness1: createPersonValidationSchema("witness"),
-  witness2: createPersonValidationSchema("witness"),
-  witness3: createPersonValidationSchema("witness"),
+  witness1: createPersonValidationSchema("witness1"),
+  witness2: createPersonValidationSchema("witness2"),
+  witness3: createPersonValidationSchema("witness3"),
   priest: priestValidationSchema,
 })
 .superRefine((data, ctx) => {
@@ -757,7 +794,8 @@ export const step0ValidationSchema = z.object({
 
 export const waterApplicationValidationSchema = z
   .object({
-    zoneId: commonValidationSchema.selectOption,
+    // zoneId: commonValidationSchema.selectOption,
+    zoneId:         commonValidationSchema.selectOption("Zone"),
 
     applicantFirstName: z
       .string()
@@ -969,13 +1007,17 @@ export const waterApplicationValidationSchema = z
       "Co-Owner Address in Marathi cannot exceed 500 characters",
     ),
 
-    connectionType: commonValidationSchema.selectOption,
+    // connectionType: commonValidationSchema.selectOption,
 
-    connectionSize: commonValidationSchema.selectOption,
+    // connectionSize: commonValidationSchema.selectOption,
 
-    usageType: commonValidationSchema.selectOption,
+    // usageType: commonValidationSchema.selectOption,
 
-    usageSubType: commonValidationSchema.selectOption,
+    // usageSubType: commonValidationSchema.selectOption,
+    connectionType: commonValidationSchema.selectOption("Connection Type"),
+    connectionSize: commonValidationSchema.selectOption("Connection Size"),
+    usageType:      commonValidationSchema.selectOption("Usage Type"),
+    usageSubType:   commonValidationSchema.selectOption("Usage Sub Type"),
 
     noOfPerson: z
       .union([z.string(), z.number()])
@@ -1019,9 +1061,11 @@ export const waterApplicationValidationSchema = z
         "Number of Connection cannot exceed 99999",
       ),
 
-    connectionStatus: commonValidationSchema.selectOption,
+    // connectionStatus: commonValidationSchema.selectOption,
 
-    businessCertificate: commonValidationSchema.selectOption,
+    // businessCertificate: commonValidationSchema.selectOption,
+    connectionStatus:    commonValidationSchema.selectOption("Connection Status"),
+    businessCertificate: commonValidationSchema.selectOption("Business Certificate"),
 
     billingType: z
       .string()
@@ -1177,17 +1221,22 @@ export const toursAndTravelsValidationSchema = z
   .object({
     firstName: z.string().min(1, "First Name is required")
       .refine((v) => v?.trim() !== "", "First Name is required"),
-    middleName: z.string().optional().default(""),
+    // middleName: z.string().optional().default(""),
+    middleName: z.string().min(1, "Middle Name is required")
+      .refine((v) => v?.trim() !== "", "Middle Name is required"),
     lastName: z.string().min(1, "Last Name is required")
       .refine((v) => v?.trim() !== "", "Last Name is required"),
     mobileNo: z.string().min(1, "Mobile Number is required")
       .regex(mobileRegex, "Mobile Number must be 10 digits"),
     emailId: emailValidationAlt,
-    aadharNo: z.string().optional().default("")
-      .refine((v) => {
-        if (!v?.trim()) return true;
-        return aadharRegex.test(v);
-      }, "Aadhar Number must be 12 digits"),
+    // aadharNo: z.string().optional().default("")
+    //   .refine((v) => {
+    //     if (!v?.trim()) return true;
+    //     return aadharRegex.test(v);
+    //   }, "Aadhar Number must be 12 digits"),
+    aadharNo: z.string().min(1, "Aadhar Number is required")
+      .refine((v) => v?.trim() !== "", "Aadhar Number is required")
+      .refine((v) => aadharRegex.test(v), "Aadhar Number must be 12 digits"),
     residentialAddress: z.string().min(1, "Residential Address is required")
       .refine((v) => v?.trim() !== "", "Residential Address is required"),
     panCard: z.string().optional().default(""),
@@ -1263,7 +1312,8 @@ export const nocForMandapStallValidationSchema = z
        APPLICANT DETAILS
     ===================================================== */
 
-    ulbId: commonValidationSchema.selectOption,
+    // ulbId: commonValidationSchema.selectOption,
+    ulbId:        commonValidationSchema.selectOption("ULB"),
 
     serviceName: z
       .string()
@@ -1351,7 +1401,8 @@ export const nocForMandapStallValidationSchema = z
        NOC DETAILS
     ===================================================== */
 
-    businessType: commonValidationSchema.selectOption,
+    // businessType: commonValidationSchema.selectOption,
+    businessType: commonValidationSchema.selectOption("Business Type"),
 
     businessDescription: z
       .string()

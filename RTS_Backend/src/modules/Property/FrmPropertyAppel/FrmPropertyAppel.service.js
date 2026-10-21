@@ -1,5 +1,5 @@
 const repo = require("./FrmPropertyAppel.repo");
-const AppError = require("../../../libs/errors");
+const { AppError } = require("../../../libs/errors");
 
 async function submitPropAppealService(payload) {
     const {

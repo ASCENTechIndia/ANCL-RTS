@@ -309,7 +309,7 @@ const FrmRoadCutting = () => {
 
     if (values.aadharNo.length !== 12 || !/^\d+$/.test(values.aadharNo)) {
       Swal.fire({
-        text: "Invalid Aadhar No - must be 12 digits",
+        text: "Please enter valid Aadhar No.",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -325,7 +325,7 @@ const FrmRoadCutting = () => {
 
     if (!values.roadType || values.roadType === "0" || values.roadType === "") {
       Swal.fire({
-        text: "Please Select Road Type",
+        text: "Please Select रस्त्याचे प्रकार",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -333,7 +333,7 @@ const FrmRoadCutting = () => {
 
     if (values.roadLength === "" || values.roadLength === null || values.roadLength === undefined) {
       Swal.fire({
-        text: "Please Enter Road Length (Meters)",
+        text: "Please Enter रस्त्याची लांबी (मीटर)",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -342,7 +342,7 @@ const FrmRoadCutting = () => {
     const roadLengthNum = Number(values.roadLength);
     if (isNaN(roadLengthNum) || roadLengthNum <= 0) {
       Swal.fire({
-        text: "Please Enter a Valid Road Length",
+        text: "Please Enter a Valid रस्त्याची लांबी ",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -350,7 +350,7 @@ const FrmRoadCutting = () => {
 
     if (values.roadWidth === "" || values.roadWidth === null || values.roadWidth === undefined) {
       Swal.fire({
-        text: "Please Enter Road Width (Meters)",
+        text: "Please Enter रस्त्याची रुंदी (मीटर)",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -359,7 +359,7 @@ const FrmRoadCutting = () => {
     const roadWidthNum = Number(values.roadWidth);
     if (isNaN(roadWidthNum) || roadWidthNum <= 0) {
       Swal.fire({
-        text: "Please Enter a Valid Road Width",
+        text: "Please Enter a Valid रस्त्याची रुंदी",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -367,7 +367,7 @@ const FrmRoadCutting = () => {
 
     if (values.roadArea === "" || values.roadArea === null || values.roadArea === undefined) {
       Swal.fire({
-        text: "Please Enter Road Area (Sq. Meters)",
+        text: "Please Enter रस्त्याची लांबीरुंदी (चो.मीटर)",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -376,7 +376,7 @@ const FrmRoadCutting = () => {
     const roadAreaNum = Number(values.roadArea);
     if (isNaN(roadAreaNum) || roadAreaNum <= 0) {
       Swal.fire({
-        text: "Please Enter a Valid Road Area",
+        text: "Please Enter a Valid रस्त्याची लांबीरुंदी",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -384,7 +384,7 @@ const FrmRoadCutting = () => {
 
     if (values.excavationSize === "" || values.excavationSize === null || values.excavationSize === undefined) {
       Swal.fire({
-        text: "Please Enter Excavation Size (Meters)",
+        text: "Please Enter खोदण्याचे आकार (मीटर)",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -393,23 +393,41 @@ const FrmRoadCutting = () => {
     const excavationSizeNum = Number(values.excavationSize);
     if (isNaN(excavationSizeNum) || excavationSizeNum <= 0) {
       Swal.fire({
-        text: "Please Enter a Valid Excavation Size",
+        text: "Please Enter a Valid खोदण्याचे आकार",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
     }
 
-    if (!values.startPoint?.trim()) {
+    if (values.startPoint === "" || values.startPoint === null || values.startPoint === undefined) {
       Swal.fire({
-        text: "Please Enter Excavation Start Point",
+        text: "Please Enter खोदाईचा प्रारंभिक बिंदू",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
     }
 
-    if (!values.endPoint?.trim()) {
+    const excavationStartPoint = Number(values.startPoint);
+    if (isNaN(excavationStartPoint)) {
       Swal.fire({
-        text: "Please Enter Excavation End Point",
+        text: "Please Enter a Valid खोदाईचा प्रारंभिक बिंदू",
+        confirmButtonColor: '#1e3a8a',
+      });
+      return false;
+    }
+
+    if (values.endPoint === "" || values.endPoint === null || values.endPoint === undefined) {
+      Swal.fire({
+        text: "Please Enter खोदाईचा अंतिम बिंदू",
+        confirmButtonColor: '#1e3a8a',
+      });
+      return false;
+    }
+
+    const excavationEndPoint = Number(values.endPoint);
+    if (isNaN(excavationEndPoint)) {
+      Swal.fire({
+        text: "Please Enter a Valid खोदाईचा अंतिम बिंदू",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -417,7 +435,7 @@ const FrmRoadCutting = () => {
 
     if (values.latitude === "" || values.latitude === null || values.latitude === undefined) {
       Swal.fire({
-        text: "Please Enter Latitude",
+        text: "Please Enter अक्षांश",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -426,7 +444,7 @@ const FrmRoadCutting = () => {
     const latitudeNum = Number(values.latitude);
     if (isNaN(latitudeNum)) {
       Swal.fire({
-        text: "Please Enter a Valid Latitude",
+        text: "Please Enter a Valid अक्षांश",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -434,7 +452,7 @@ const FrmRoadCutting = () => {
 
     if (values.longitude === "" || values.longitude === null || values.longitude === undefined) {
       Swal.fire({
-        text: "Please Enter Longitude",
+        text: "Please Enter रेखांश",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -443,7 +461,7 @@ const FrmRoadCutting = () => {
     const longitudeNum = Number(values.longitude);
     if (isNaN(longitudeNum)) {
       Swal.fire({
-        text: "Please Enter a Valid Longitude",
+        text: "Please Enter a Valid रेखांश",
         confirmButtonColor: '#1e3a8a',
       });
       return false;
@@ -504,8 +522,8 @@ const FrmRoadCutting = () => {
       roadWidth: Number(values.roadWidth),
       roadLengthWidth: Number(values.roadArea) || (Number(values.roadLength) * Number(values.roadWidth)),
       excavationSize: Number(values.excavationSize),
-      excavationStart: values.vcStartPoint?.trim() || values.startPoint?.trim() || "0",
-      excavationEnd: values.vcEndPoint?.trim() || values.endPoint?.trim() || "0",
+      excavationStart: Number(values.vcStartPoint) || Number(values.startPoint) || "0",
+      excavationEnd: Number(values.vcEndPoint) || Number(values.endPoint) || "0",
       latitude: Number(values.latitude),
       longitude: Number(values.longitude),
       zoneId: Number(values.zoneId),
@@ -609,8 +627,9 @@ const FrmRoadCutting = () => {
     const length = parseFloat(values.roadLength);
     const width = parseFloat(values.roadWidth);
     if (!isNaN(length) && !isNaN(width) && length > 0 && width > 0) {
-      const area = length * width;
-      setFieldValue("roadArea", area.toString());
+      let area = length * width;
+      if (area > 99999999) area = 99999999;
+      setFieldValue("roadArea", String(Math.floor(area)));
     }
   };
 
@@ -754,6 +773,7 @@ const FrmRoadCutting = () => {
                       onChange={handleChange}
                       className="w-full h-9"
                       type="email"
+                      maxLength={30}
                     />
                   </div>
                 </div>
@@ -841,6 +861,11 @@ const FrmRoadCutting = () => {
                     <Input
                       name="roadLength"
                       value={values.roadLength}
+                      onInput={(e) => {
+                        if (e.target.value.length > 8) {
+                          e.target.value = e.target.value.slice(0, 8);
+                        }
+                      }}
                       onChange={(e) => {
                         handleChange(e);
                         setTimeout(() => handleRoadLengthWidth(values, setFieldValue), 100);
@@ -859,6 +884,11 @@ const FrmRoadCutting = () => {
                     <Input
                       name="roadWidth"
                       value={values.roadWidth}
+                      onInput={(e) => {
+                        if (e.target.value.length > 8) {
+                          e.target.value = e.target.value.slice(0, 8);
+                        }
+                      }}
                       onChange={(e) => {
                         handleChange(e);
                         setTimeout(() => handleRoadLengthWidth(values, setFieldValue), 100);
@@ -879,11 +909,17 @@ const FrmRoadCutting = () => {
                     <Input
                       name="roadArea"
                       value={values.roadArea}
+                      onInput={(e) => {
+                        if (e.target.value.length > 8) {
+                          e.target.value = e.target.value.slice(0, 8);
+                        }
+                      }}
                       onChange={handleChange}
                       className="w-full h-9"
                       type="number"
                       step="0.01"
                       min="0"
+                      maxLength={10}
                     />
                   </div>
 
@@ -894,6 +930,11 @@ const FrmRoadCutting = () => {
                     <Input
                       name="excavationSize"
                       value={values.excavationSize}
+                      onInput={(e) => {
+                        if (e.target.value.length > 8) {
+                          e.target.value = e.target.value.slice(0, 8);
+                        }
+                      }}
                       onChange={handleChange}
                       className="w-full h-9"
                       type="number"
@@ -912,9 +953,14 @@ const FrmRoadCutting = () => {
                       <Input
                         name="startPoint"
                         value={values.startPoint}
+                        onInput={(e) => {
+                          if (e.target.value.length > 8) {
+                            e.target.value = e.target.value.slice(0, 8);
+                          }
+                        }}
                         onChange={handleChange}
                         className="w-full h-9"
-                        type="text"
+                        type="number"
                       />
                     </div>
 
@@ -925,9 +971,14 @@ const FrmRoadCutting = () => {
                       <Input
                         name="endPoint"
                         value={values.endPoint}
+                        onInput={(e) => {
+                          if (e.target.value.length > 8) {
+                            e.target.value = e.target.value.slice(0, 8);
+                          }
+                        }}
                         onChange={handleChange}
                         className="w-full h-9"
-                        type="text"
+                        type="number"
                       />
                     </div>
                   </div>
@@ -942,9 +993,14 @@ const FrmRoadCutting = () => {
                       <Input
                         name="vcStartPoint"
                         value={values.vcStartPoint}
+                        onInput={(e) => {
+                          if (e.target.value.length > 8) {
+                            e.target.value = e.target.value.slice(0, 8);
+                          }
+                        }}
                         onChange={handleChange}
                         className="w-full h-9"
-                        type="text"
+                        type="number"
                       />
                     </div>
 
@@ -955,9 +1011,14 @@ const FrmRoadCutting = () => {
                       <Input
                         name="vcEndPoint"
                         value={values.vcEndPoint}
+                        onInput={(e) => {
+                          if (e.target.value.length > 8) {
+                            e.target.value = e.target.value.slice(0, 8);
+                          }
+                        }}
                         onChange={handleChange}
                         className="w-full h-9"
-                        type="text"
+                        type="number"
                       />
                     </div>
                   </div>
@@ -971,6 +1032,11 @@ const FrmRoadCutting = () => {
                     <Input
                       name="latitude"
                       value={values.latitude}
+                      onInput={(e) => {
+                        if (e.target.value.length > 8) {
+                          e.target.value = e.target.value.slice(0, 8);
+                        }
+                      }}
                       onChange={handleChange}
                       className="w-full h-9"
                       type="number"
@@ -985,6 +1051,11 @@ const FrmRoadCutting = () => {
                     <Input
                       name="longitude"
                       value={values.longitude}
+                      onInput={(e) => {
+                        if (e.target.value.length > 8) {
+                          e.target.value = e.target.value.slice(0, 8);
+                        }
+                      }}
                       onChange={handleChange}
                       className="w-full h-9"
                       type="number"

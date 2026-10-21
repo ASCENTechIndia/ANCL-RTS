@@ -92,6 +92,7 @@ const FrmAppAuthorisationMst = () => {
   const [hoClerkRemark, setHoClerkRemark] = useState("");
 
   const tableRef = useRef(null);
+  const amountManuallyEdited = useRef(false);
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -299,7 +300,7 @@ const FrmAppAuthorisationMst = () => {
           setHoClerkRemark(mergedData.HODREMARK || "");
         }
 
-        if (mergedData.AMOUNT) {
+        if (mergedData.AMOUNT && !amountManuallyEdited.current) {
           setAmount(String(mergedData.AMOUNT));
         }
 
@@ -910,14 +911,18 @@ const FrmAppAuthorisationMst = () => {
 
   useEffect(() => {
     if (authMode === "CK" && verificationDocs.length === 0) {
-      setVerificationDocs([
-        {
-          docName: "CertificateORG",
-          file: null,
-          fileName: "No file chosen",
-          fileData: null,
-        },
-      ]);
+      if (Number(departId) === 7) {
+        setVerificationDocs([]);
+      } else {
+        setVerificationDocs([
+          {
+            docName: "CertificateORG",
+            file: null,
+            fileName: "No file chosen",
+            fileData: null,
+          },
+        ]);
+      }
     }
   }, [authMode]);
 
@@ -960,24 +965,8 @@ const FrmAppAuthorisationMst = () => {
       return;
     }
 
-    if (authAction !== "Reject" && !remark.trim()) {
-      Swal.fire({
-        text: "Please Enter Remark",
-        confirmButtonColor: "#1e3a8a",
-      });
-      return;
-    }
-
-    if (authAction === "Reject" && !rejectReason.trim()) {
-      Swal.fire({
-        text: "Please Enter Reject Reason",
-        confirmButtonColor: "#1e3a8a",
-      });
-      return;
-    }
-
     if (authMode === "CKV") {
-      if (amount === "0" || amount === "") {
+      if ((amount === "0" || amount === "") && authAction !== "Reject") {
         Swal.fire({
           text: "Please Enter Amount",
           confirmButtonColor: "#1e3a8a",
@@ -997,7 +986,25 @@ const FrmAppAuthorisationMst = () => {
       }
     }
 
-    if (showVerificationGrid && Number(departId) !== 7 && Number(departId) !== 290) {
+    if (authAction !== "Reject" && !remark.trim()) {
+      Swal.fire({
+        text: "Please Enter Remark",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
+    if (authAction === "Reject" && !rejectReason.trim()) {
+      Swal.fire({
+        text: "Please Enter Reject Reason",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
+    if (showVerificationGrid && 
+        authAction !== "Reject" &&
+        Number(departId) !== 7 && Number(departId) !== 290) {
       // if (showVerificationGrid) {
       const hasAnyDocs = verificationDocs.length > 0;
       if (!hasAnyDocs) {
@@ -1051,6 +1058,7 @@ const FrmAppAuthorisationMst = () => {
         status: authAction,
         reasonForReject: authAction === "Reject" ? rejectReason : remark,
         amount: parseInt(amount) || 0,
+        // mode: authAction === "Reject" ? "HODV" : authMode,
         mode: authMode,
         clerkId: authMode === "HODV" && authAction === "Accept" ? selectedClerk : null,
         // tinyUrl: authMode === "CKV" ? generateTinyUrl(selectedData.applino) : "",
@@ -1178,7 +1186,7 @@ const FrmAppAuthorisationMst = () => {
 }
 
       // if (authMode === "CK" && !(Number(departId) === 7 || Number(departId) === 290)) {
-      if (authMode === "CK" && !(Number(departId) === 290)) {
+      if (authMode === "CK") {
         const filesToUpload = Object.keys(uploadedFiles)
           .filter((key) => uploadedFiles[key]?.file)
           .map((key) => ({
@@ -1958,13 +1966,13 @@ const FrmAppAuthorisationMst = () => {
     const showConnectionInMain = isFaultyService || isWaterService || isWaterBillService;
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
             <Label text="Service" />
             <span>:</span>
           </div>
-          <span>{SERVICNAME || ""}</span>
+          <span className="min-w-0 break-all flex-1">{SERVICNAME || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -1972,7 +1980,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Zone" />
             <span>:</span>
           </div>
-          <span>{zoneName || ""}</span>
+          <span className="min-w-0 break-all flex-1">{zoneName || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -1980,7 +1988,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Application No" />
             <span>:</span>
           </div>
-          <span>{APLINO || ""}</span>
+          <span className="min-w-0 break-all flex-1">{APLINO || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -1988,7 +1996,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Application Date" />
             <span>:</span>
           </div>
-          <span>{formattedDate}</span>
+          <span className="min-w-0 break-all flex-1">{formattedDate}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -1996,7 +2004,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Applicant Name" />
             <span>:</span>
           </div>
-          <span>{applicantName || ""}</span>
+          <span className="min-w-0 break-all flex-1">{applicantName || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -2004,7 +2012,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Mobile No" />
             <span>:</span>
           </div>
-          <span>{waterMobileNo || ""}</span>
+          <span className="min-w-0 break-all flex-1">{waterMobileNo || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -2012,7 +2020,7 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Email" />
             <span>:</span>
           </div>
-          <span>{waterEmail || ""}</span>
+          <span className="min-w-0 break-all flex-1">{waterEmail || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -2020,15 +2028,15 @@ const FrmAppAuthorisationMst = () => {
             <Label text="Aadhar No" />
             <span>:</span>
           </div>
-          <span>{waterAadharNo || ""}</span>
+          <span className="min-w-0 break-all flex-1">{waterAadharNo || ""}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
-            <Label text="Address" />
+            <Label text="Area" />
             <span>:</span>
           </div>
-          <span>{waterAddress || ""}</span>
+          <span className="min-w-0 break-all flex-1">{waterAddress || ""}</span>
         </div>
 
         {showConnectionInMain && connectionNo && (
@@ -2037,7 +2045,7 @@ const FrmAppAuthorisationMst = () => {
               <Label text="Connection No" />
               <span>:</span>
             </div>
-            <span>{connectionNo}</span>
+            <span className="min-w-0 break-all flex-1">{connectionNo}</span>
           </div>
         )}
 
@@ -2047,7 +2055,7 @@ const FrmAppAuthorisationMst = () => {
               <Label text="Purpose" />
               <span>:</span>
             </div>
-            <span>{PURPOSE}</span>
+            <span className="min-w-0 break-all flex-1">{PURPOSE}</span>
           </div>
         )}
 
@@ -2058,14 +2066,14 @@ const FrmAppAuthorisationMst = () => {
                 <Label text="Consumer Type" />
                 <span>:</span>
               </div>
-              <span>{CONS_NAME}</span>
+              <span className="min-w-0 break-all flex-1">{CONS_NAME}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="Meter Type" />
                 <span>:</span>
               </div>
-              <span>{METER_NAME}</span>
+              <span className="min-w-0 break-all flex-1">{METER_NAME}</span>
             </div>
           </>
         )}
@@ -2077,14 +2085,14 @@ const FrmAppAuthorisationMst = () => {
                 <Label text="Sector" />
                 <span>:</span>
               </div>
-              <span>{SECTOR_NAME}</span>
+              <span className="min-w-0 break-all flex-1">{SECTOR_NAME}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="Village" />
                 <span>:</span>
               </div>
-              <span>{VILLAGE_NAME}</span>
+              <span className="min-w-0 break-all flex-1">{VILLAGE_NAME}</span>
             </div>
           </>
         )}
@@ -2096,28 +2104,28 @@ const FrmAppAuthorisationMst = () => {
                 <Label text="Locality" />
                 <span>:</span>
               </div>
-              <span>{LOCALITY || ""}</span>
+              <span className="min-w-0 break-all flex-1">{LOCALITY || ""}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="LandMark" />
                 <span>:</span>
               </div>
-              <span>{LANDMARK || ""}</span>
+              <span className="min-w-0 break-all flex-1">{LANDMARK || ""}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="Pincode" />
                 <span>:</span>
               </div>
-              <span>{PINCODE || ""}</span>
+              <span className="min-w-0 break-all flex-1">{PINCODE || ""}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                 <Label text="तक्रारीचे स्वरूप" />
                 <span>:</span>
               </div>
-              <span>{REFNO || ""}</span>
+              <span className="min-w-0 break-all flex-1">{REFNO || ""}</span>
             </div>
           </>
         )}
@@ -2217,7 +2225,7 @@ const FrmAppAuthorisationMst = () => {
         {showPlumberDetails && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Plumber License Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="Pan No" />
@@ -2267,7 +2275,7 @@ const FrmAppAuthorisationMst = () => {
         {showWaterAppDetail && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Water Application Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="Conn No" />
@@ -2317,7 +2325,7 @@ const FrmAppAuthorisationMst = () => {
         {showWaterAppEntry && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Water Application Entry</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="Applicant Name" />
@@ -2367,7 +2375,7 @@ const FrmAppAuthorisationMst = () => {
         {showWaterRegDetail && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Water Registration Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="Connection No" />
@@ -2447,7 +2455,7 @@ const FrmAppAuthorisationMst = () => {
         {showMarketNew && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Market / Trade License Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="परवाना क्रमांक" />
@@ -2588,7 +2596,7 @@ const FrmAppAuthorisationMst = () => {
         {showMarketCategory && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Market Category Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="License No" />
@@ -2708,7 +2716,7 @@ const FrmAppAuthorisationMst = () => {
         {showCPTradeName && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">CP Trade Name</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="लिंग" />
@@ -2730,7 +2738,7 @@ const FrmAppAuthorisationMst = () => {
         {showAddOwn && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Add Owner/Director</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="लिंग" />
@@ -2745,7 +2753,7 @@ const FrmAppAuthorisationMst = () => {
         {showTransfer && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Transfer Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="नाते" />
@@ -2767,7 +2775,7 @@ const FrmAppAuthorisationMst = () => {
         {showNameTrade && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Name Trade</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="लिंग" />
@@ -2789,7 +2797,7 @@ const FrmAppAuthorisationMst = () => {
         {showMarketExpire && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">License Expire Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="नाते" />
@@ -2811,7 +2819,7 @@ const FrmAppAuthorisationMst = () => {
         {showLicenseCancel && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">License Cancel Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="लिंग" />
@@ -2868,7 +2876,7 @@ const FrmAppAuthorisationMst = () => {
         {showFaultyMeter && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Faulty Meter Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="नळ जोडणी धारकाचे नाव" />
@@ -2911,7 +2919,7 @@ const FrmAppAuthorisationMst = () => {
         {showUnauthorisedConn && (
           <div className="border rounded-lg p-4 mt-4">
             <div className="font-semibold text-md mb-4">Unauthorised Connection Details</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label text="विषय" />
@@ -3099,7 +3107,7 @@ const FrmAppAuthorisationMst = () => {
             </div>
           )}
 
-          {showCertificateInfo && (
+          {/* {showCertificateInfo && (
             <div className="border rounded-lg p-4">
               <div className="flex justify-start">
                 <Button
@@ -3111,9 +3119,9 @@ const FrmAppAuthorisationMst = () => {
                 </Button>
               </div>
             </div>
-          )}
+          )} */}
 
-          {showTradeCertificateInfo && (
+          {/* {showTradeCertificateInfo && (
             <div className="border rounded-lg p-4">
               <div className="flex justify-start">
                 <Button
@@ -3125,9 +3133,9 @@ const FrmAppAuthorisationMst = () => {
                 </Button>
               </div>
             </div>
-          )}
+          )} */}
 
-          {showCertificatePopup && (
+          {/* {showCertificatePopup && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
@@ -3153,9 +3161,9 @@ const FrmAppAuthorisationMst = () => {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
-          {showTradePopup && (
+          {/* {showTradePopup && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
@@ -3181,7 +3189,7 @@ const FrmAppAuthorisationMst = () => {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           <div className="border rounded-lg p-4">
             <div className="font-semibold text-md mb-4">Authorization</div>
@@ -3199,7 +3207,7 @@ const FrmAppAuthorisationMst = () => {
             {hoRejectRemark && (
               <div className="flex flex-col sm:flex-row sm:items-start gap-2 mb-4">
                 <div className="sm:w-40 shrink-0 flex justify-start sm:justify-between items-center">
-                  <Label className="font-medium" text="HO Returned Remark" />
+                  <Label className="font-medium" text="HOD Returned Remark" />
                   <span>:</span>
                 </div>
                 <span className="font-medium">{hoRejectRemark}</span>
@@ -3231,18 +3239,26 @@ const FrmAppAuthorisationMst = () => {
               </div>
             )}
 
-            {showAmount && (
+            {showAmount && (authAction != "Reject") && (
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
                 <div className="sm:w-40 shrink-0 flex justify-start sm:justify-between items-center">
                   <Label required className="font-medium" text="Enter Amount" />
                   <span>:</span>
                 </div>
                 <Input
-                  type="number"
+                  // type="number"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  // onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10);
+                    amountManuallyEdited.current = true;
+                    setAmount(value);
+                  }}
                   className="w-full sm:w-64 h-9"
                   min="0"
+                  maxLength={10}
                 />
               </div>
             )}

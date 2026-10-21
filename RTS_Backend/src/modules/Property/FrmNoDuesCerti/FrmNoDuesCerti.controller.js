@@ -112,6 +112,7 @@ exports.submitApplication = asyncHandler(async (req, res) => {
     taxAmount,
     aadharNo,
     appSource,
+    ulbid
   } = req.body;
 
   // Validation
@@ -172,6 +173,7 @@ exports.submitApplication = asyncHandler(async (req, res) => {
     taxAmount,
     aadharNo,
     appSource,
+    ulbid,
   });
 
   if (!result.success) {

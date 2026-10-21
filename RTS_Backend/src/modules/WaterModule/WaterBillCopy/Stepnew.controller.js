@@ -1,6 +1,7 @@
 const asyncHandler = require("../../../libs/asyncHandler");
 const { fail, ok } = require("../../../libs/response");
 const service = require("./Stepnew.service");
+const path = require("path");
 
 
 exports.getServiceNameController = asyncHandler(
@@ -449,6 +450,26 @@ exports.uploadAppDocument = asyncHandler(
       return fail(
         res,
         "Document file is required"
+      );
+    }
+
+    const allowedExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
+    const allowedMimeTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/jpg",
+      "image/pjpeg",
+      "image/png",
+      "image/x-png",
+    ];
+
+    const fileExt = path.extname(file.originalname || "").toLowerCase();
+    const mimeType = (file.mimetype || "").toLowerCase();
+
+    if (!allowedExtensions.includes(fileExt) || (mimeType && !allowedMimeTypes.includes(mimeType))) {
+      return fail(
+        res,
+        "Only PDF, JPG, and PNG file formats are allowed."
       );
     }
 

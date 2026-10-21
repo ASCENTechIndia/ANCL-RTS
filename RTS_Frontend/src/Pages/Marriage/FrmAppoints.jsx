@@ -412,7 +412,8 @@ const FrmAppoints = () => {
           confirmButtonColor: "#1e3a8a",
         });
 
-        navigate("/app/FrmAppoint");
+        // navigate("/app/FrmAppoint");
+        navigate("/app/FrmTrackApplication", { state: { applicationNo: appNo } });
       } else {
         Swal.fire({
           title: "Failed",

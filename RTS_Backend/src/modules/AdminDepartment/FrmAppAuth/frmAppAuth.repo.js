@@ -216,16 +216,16 @@ const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptL
       // SECTOR FILTER
       // ======================================================
 
-      if (String(authMode) !== "HODV") {
-        if (sectorList) {
-          query += `
-            AND (
-              DEPTID != 23
-              OR sectorid IN (${sectorList})
-            )
-          `;
-        }
-      }
+      // if (String(authMode) !== "HODV") {
+      //   if (sectorList) {
+      //     query += `
+      //       AND (
+      //         DEPTID != 23
+      //         OR sectorid IN (${sectorList})
+      //       )
+      //     `;
+      //   }
+      // }
     }
 
     console.log("================================================");
@@ -878,7 +878,7 @@ const applicationAuthRepo = async ({ userId, applicationNo, status, reasonForRej
     const result = await withTxTMC(async (connection) => {
       const query = `
         BEGIN
-          aorts_appliauth_ins(
+          aorts_appliauththane_ins(
             :in_userid,
             :in_applicationno,
             :in_status,

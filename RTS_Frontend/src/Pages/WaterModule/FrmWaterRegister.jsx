@@ -56,7 +56,7 @@ const FrmWaterRegister = () => {
         ownerNameSrch: "",
         curConSizeSrch: "",
         usageTypeNewSrch: "",
-        erlDate: new Date().toISOString().split("T")[0]
+        erlDate: new Date()
     };
 
     const getData = (result) => {
@@ -213,7 +213,7 @@ const FrmWaterRegister = () => {
 
             setFieldValue("consumerNo", details.connno || value);
             setConsumerSearch(details.connno || value);
-            setFieldValue("zoneId", zoneMatch ? String(zoneMatch.WARDID) : "");
+            // setFieldValue("zoneId", zoneMatch ? String(zoneMatch.WARDID) : "");
             setFieldValue("ownerName", owner);
             setFieldValue("ownerNameSrch", owner);
             setFieldValue("usageType", usage);
@@ -359,7 +359,7 @@ const FrmWaterRegister = () => {
             return;
         }
 
-        if (!values.disConId) {
+        if (Number(serviceId) !== 22 && !values.disConId) {
             Swal.fire({
                 // icon: "warning",
                 text: "Please select Disconnection Type."
@@ -413,7 +413,7 @@ const FrmWaterRegister = () => {
             wtregId: 0,
             servId: Number(values.serviceId),
             consNo: values.consumerNo.trim(),
-            disConId: Number(values.disConId),
+            disConId: Number(serviceId) == 22 ? null : Number(values.disConId),
             reason: values.reason.trim(),
             usageTypeId: Number(values.usageTypeId),
             tarifRate: Number(values.tarifRate || 0),
@@ -586,6 +586,7 @@ const FrmWaterRegister = () => {
                                         value={values.detEmail}
                                         onChange={(e) => setFieldValue("detEmail", e.target.value)}
                                         className="w-full"
+                                        maxLength={30}
                                     />
                                 </div>
 
@@ -648,30 +649,32 @@ const FrmWaterRegister = () => {
                                     </Select>
                                 </div>
 
-                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                                    <div className="flex shrink-0 items-center sm:w-40 sm:justify-between">
-                                        <Label text="Disconnection Type" required className="min-w-fit" />
-                                        <span>:</span>
+                                {Number(serviceId) !== 22 && (
+                                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                                        <div className="flex shrink-0 items-center sm:w-40 sm:justify-between">
+                                            <Label text="Disconnection Type" required className="min-w-fit" />
+                                            <span>:</span>
+                                        </div>
+                                        <Select
+                                            value={values.disConId}
+                                            onValueChange={(value) => setFieldValue("disConId", value)}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="-- Select Option --" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {disconnectionTypes.map((item) => (
+                                                    <SelectItem
+                                                        key={item.NUM_DISCONN_ID}
+                                                        value={String(item.NUM_DISCONN_ID)}
+                                                    >
+                                                        {item.VAR_DISCONN_NAME}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
-                                    <Select
-                                        value={values.disConId}
-                                        onValueChange={(value) => setFieldValue("disConId", value)}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="-- Select Option --" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {disconnectionTypes.map((item) => (
-                                                <SelectItem
-                                                    key={item.NUM_DISCONN_ID}
-                                                    value={String(item.NUM_DISCONN_ID)}
-                                                >
-                                                    {item.VAR_DISCONN_NAME}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                                )}
 
                                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 ">
                                     <div className="flex shrink-0 items-center sm:w-40 sm:justify-between">
@@ -791,7 +794,7 @@ const FrmWaterRegister = () => {
                                                 String(item.NUM_USAGETYPE_ID) === String(value)
                                             );
                                             setFieldValue("usageTypeId", value);
-                                            setFieldValue("usageType", selected?.VAR_USAGETYPE_NAME || "");
+                                            // setFieldValue("usageType", selected?.VAR_USAGETYPE_NAME || "");
                                             setFieldValue("usageTypeNewSrch", selected?.VAR_USAGETYPE_NAME || "");
                                         }}
                                     >

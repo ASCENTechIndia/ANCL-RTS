@@ -323,7 +323,7 @@ async function submitWaterApplicationService(payload) {
   if (!emailRegex.test(email)) throw new AppError("Invalid Email Address", 400);
 
   if (aadharNo && String(aadharNo).length !== 12) {
-    throw new AppError("Invalid Aadhar No.", 400);
+    throw new AppError("Please enter valid Aadhar No.", 400);
   }
 
   if (!propNo) throw new AppError("Property Number can not be blank", 400);

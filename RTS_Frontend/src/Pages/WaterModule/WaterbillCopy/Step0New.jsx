@@ -91,7 +91,49 @@ const FrmWaterConnectionApplication = () => {
     setFormData((prev) => ({ ...prev, [field]: value, }));
   };
 
+  const ALLOWED_DOC_EXTENSIONS = ["pdf", "jpg", "jpeg", "png"];
+  const ALLOWED_DOC_MIME_TYPES = [
+    "application/pdf",
+    "image/jpeg",
+    "image/jpg",
+    "image/pjpeg",
+    "image/png",
+    "image/x-png",
+  ];
+
+  const isValidDocFile = (file) => {
+    if (!file || !file.name) return false;
+    const parts = file.name.trim().split(".");
+    if (parts.length < 2) return false;
+    const ext = parts.pop().toLowerCase();
+    const isExtValid = ALLOWED_DOC_EXTENSIONS.includes(ext);
+    const isMimeValid = !file.type || ALLOWED_DOC_MIME_TYPES.includes(file.type.toLowerCase());
+    return isExtValid && isMimeValid;
+  };
+
   const handleDocumentFileChange = (docId, file) => {
+    if (!file) {
+      setDocumentFiles((prev) => {
+        const updated = { ...prev };
+        delete updated[docId];
+        return updated;
+      });
+      return;
+    }
+
+    if (!isValidDocFile(file)) {
+      Swal.fire({
+        text: "Only PDF, JPG, and PNG file formats are allowed.",
+        confirmButtonColor: "#1e3a8a",
+      });
+      setDocumentFiles((prev) => {
+        const updated = { ...prev };
+        delete updated[docId];
+        return updated;
+      });
+      return;
+    }
+
     setDocumentFiles((prev) => ({ ...prev, [docId]: file, }));
   };
 
@@ -468,14 +510,37 @@ const FrmWaterConnectionApplication = () => {
 
   }, [serviceId]);
 
+  const isValidEmail = (email) => {
+    if (!email || typeof email !== "string") return false;
+    const trimmed = email.trim().toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmed)) return false;
+
+    const isInvalidTestDomain =
+      /\.(test|example|invalid|localhost)$/i.test(trimmed) ||
+      /^test@test\./i.test(trimmed) ||
+      trimmed === "test@test.test";
+
+    if (isInvalidTestDomain) return false;
+    return true;
+  };
+
   const handleSubmit = async () => {
 
-    if (isBndService && !selectedBndRecord) {
+    if (isBndService && !selectedBndRecord && isBirthService) {
       await Swal.fire({
-        icon: "warning",
-        text: "Select Atleast one Record",
+        // icon: "warning",
+        text: "Select At least one Record in Birth Details Search",
         confirmButtonColor: "#1e3a8a",
       });
+      {isBirthService ? "Birth Details Search" : "Death Details Search"}
+      return;
+    } else if (isBndService && !selectedBndRecord){
+        await Swal.fire({
+          // icon: "warning",
+          text: "Select At least one Record in Death Details Search",
+          confirmButtonColor: "#1e3a8a",
+        });
       return;
     }
 
@@ -487,7 +552,6 @@ const FrmWaterConnectionApplication = () => {
       });
       return;
     }
-
     if (!formData.firstName.trim()) {
       Swal.fire({
 
@@ -496,10 +560,10 @@ const FrmWaterConnectionApplication = () => {
       });
       return;
     }
-    if (!formData.middleNameMarathi.trim()) {
+    if (!formData.middleName.trim()) {
       Swal.fire({
 
-        text: "Please enter मधले नाव.",
+        text: "Please enter Middle Name.",
         confirmButtonColor: "#1e3a8a",
       });
       return;
@@ -514,10 +578,28 @@ const FrmWaterConnectionApplication = () => {
       return;
     }
 
-    if (!formData.firstNameMarathi.trim()) {
+     if (!formData.firstNameMarathi.trim()) {
       Swal.fire({
 
         text: "Please enter First Name in Marathi.",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
+    if (!formData.middleNameMarathi.trim()) {
+      Swal.fire({
+
+        text: "Please enter Middle Name in Marathi.",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
+    if (!formData.lastName.trim()) {
+      Swal.fire({
+
+        text: "Please enter Last Name.",
         confirmButtonColor: "#1e3a8a",
       });
       return;
@@ -571,6 +653,15 @@ const FrmWaterConnectionApplication = () => {
     if (!formData.email.trim()) {
       Swal.fire({
         text: "Please enter Email.",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      Swal.fire({
+
+        text: "Please enter a valid Email ID.",
         confirmButtonColor: "#1e3a8a",
       });
       return;
@@ -637,6 +728,23 @@ const FrmWaterConnectionApplication = () => {
       });
       return;
     }
+
+    if (!isFireBrigadeService && !isBndService && !formData.connectionNo.trim()) {
+      Swal.fire({
+        text: "Please enter Connection No.",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
+    if (isSewerageService && !formData.sewrageType) {
+      Swal.fire({
+        text: "Please select Sewerage Type.",
+        confirmButtonColor: "#1e3a8a",
+      });
+      return;
+    }
+
     if (isFireBrigadeService && !formData.nocPurpose) {
       await Swal.fire({
         text: "Please select NOC Purpose.",
@@ -692,25 +800,35 @@ const FrmWaterConnectionApplication = () => {
         await Swal.fire({
           title: "Documents Required",
           html: `
-        <div style="text-align:left">
-          <p>
-            <strong>All documents are compulsory for submission.</strong>
-          </p>
-
-          <p style="margin-top:10px">
-            Please upload the following document(s):
-          </p>
-
-          <div style="margin-top:10px">
-            ${missingDocumentNames}
+          <div style="text-align:left">
+            <p><strong>All documents are compulsory for submission.</strong></p>
+            <p style="margin-top:10px">Please upload the following document(s):</p>
+            <div style="margin-top:10px">${missingDocumentNames}</div>
           </div>
-        </div>
       `,
           confirmButtonColor: "#1e3a8a",
         });
 
         return;
       }
+    }
+
+    const invalidFiles = selectedDocuments.filter((doc) => !isValidDocFile(doc.file));
+    if (invalidFiles.length > 0) {
+      const invalidDocumentNames = invalidFiles.map((doc, index) => `${index + 1}. ${doc.documentName || "Document"}`).join("<br/>");
+      await Swal.fire({
+        title: "Invalid File Format",
+        html: `
+            <div style="text-align:left">
+              <p><strong>Only PDF, JPG, and PNG file formats are allowed.</strong></p>
+              <p style="margin-top:10px">Please re-upload valid files for:</p>
+              <div style="margin-top:10px">${invalidDocumentNames}</div>
+            </div>
+          `,
+        confirmButtonColor: "#1e3a8a",
+      });
+
+      return;
     }
 
     const confirmResult =
@@ -772,16 +890,16 @@ const FrmWaterConnectionApplication = () => {
         in_SellerName: "",
         in_TransferToWhom: "",
         in_AgreementDate: new Date().toISOString().split("T")[0],
-        in_AppNo: "",
-        in_wtsewrgtypeid: isSewerageService ? Number(formData.sewrageType) : "",
+        in_AppNo: locationState.appNo || "",
+        in_wtsewrgtypeid: isSewerageService && formData.sewrageType ? Number(formData.sewrageType) : "",
         // in_wtsewrgtypeid: 1,
-        in_nocpurposeid: isFireBrigadeService ? Number(formData.nocPurpose) : "",
-        in_RegiNo: isBndService ? selectedBndRecord?.regno : "",
-        in_UniqueNo: isBndService ? selectedBndRecord?.uniqueNo : "",
+        in_nocpurposeid: isFireBrigadeService && formData.nocPurpose ? Number(formData.nocPurpose) : "",
+        in_RegiNo: isBndService ? (selectedBndRecord?.regno || "") : "",
+        in_UniqueNo: isBndService ? (selectedBndRecord?.uniqueNo || "") : "",
         in_appsource: config?.source,
         in_deliveryflag: null,
-        in_consumertypeid: Number(formData.consumeType),
-        in_metertypeid: Number(formData.meterType),
+        in_consumertypeid: formData.consumeType ? Number(formData.consumeType) : "",
+        in_metertypeid: formData.meterType ? Number(formData.meterType) : "",
       };
 
       console.log(
@@ -913,24 +1031,16 @@ const FrmWaterConnectionApplication = () => {
 
           if (extension === "pdf") {
             docType = "PDF";
-          } else if (
-            extension === "jpg" ||
-            extension === "jpeg"
-          ) {
+          } else if (extension === "jpg" || extension === "jpeg") {
             docType = "JPG";
           } else if (extension === "png") {
             docType = "PNG";
+          } else {
+            throw new Error(`File format .${extension} is not supported. Only PDF, JPG, and PNG are allowed.`);
           }
 
-
-          const uploadFormData =
-            new FormData();
-
-          uploadFormData.append(
-            "documents",
-            document.file,
-            document.file.name
-          );
+          const uploadFormData = new FormData();
+          uploadFormData.append("documents", document.file, document.file.name);
 
           const uploadResponse = await axios.post(`${BASE_URL}/api/watermodule/upload-app-doc`,
             uploadFormData,
@@ -1287,6 +1397,7 @@ const FrmWaterConnectionApplication = () => {
 
                   <Label
                     text="Middle Name"
+                    required
                   />
 
                   <span>:</span>
@@ -1362,6 +1473,8 @@ const FrmWaterConnectionApplication = () => {
                       e.target.value.replace(/[^a-zA-Z]/g, "")
                     )
                   }
+                  onKeyDown={(e) => e.stopPropagation()}
+                  style={{ fontFamily: "'Noto Sans Devanagari', 'Nirmala UI', 'Mangal', 'Poppins', sans-serif" }}
                   placeholder="प्रथम नाव"
                 />
 
@@ -1392,6 +1505,8 @@ const FrmWaterConnectionApplication = () => {
                       e.target.value.replace(/[^a-zA-Z]/g, "")
                     )
                   }
+                  onKeyDown={(e) => e.stopPropagation()}
+                  style={{ fontFamily: "'Noto Sans Devanagari', 'Nirmala UI', 'Mangal', 'Poppins', sans-serif" }}
                   placeholder="मधले नाव"
                 />
 
@@ -1420,6 +1535,8 @@ const FrmWaterConnectionApplication = () => {
                       e.target.value.replace(/[^a-zA-Z]/g, "")
                     )
                   }
+                  onKeyDown={(e) => e.stopPropagation()}
+                  style={{ fontFamily: "'Noto Sans Devanagari', 'Nirmala UI', 'Mangal', 'Poppins', sans-serif" }}
                   placeholder="आडनाव"
                 />
 
@@ -1502,7 +1619,7 @@ const FrmWaterConnectionApplication = () => {
 
                 <Input
                   type="email"
-                  maxLength={25}
+                  maxLength={30}
                   value={
                     formData.email
                   }
@@ -1571,6 +1688,8 @@ const FrmWaterConnectionApplication = () => {
                       e.target.value
                     )
                   }
+                  onKeyDown={(e) => e.stopPropagation()}
+                  style={{ fontFamily: "'Noto Sans Devanagari', 'Nirmala UI', 'Mangal', 'Poppins', sans-serif" }}
                   placeholder="पत्ता"
                 />
 
@@ -1630,6 +1749,8 @@ const FrmWaterConnectionApplication = () => {
                       e.target.value
                     )
                   }
+                  onKeyDown={(e) => e.stopPropagation()}
+                  style={{ fontFamily: "'Noto Sans Devanagari', 'Nirmala UI', 'Mangal', 'Poppins', sans-serif" }}
                   placeholder="उद्देश"
                 />
 
@@ -2003,8 +2124,6 @@ const FrmWaterConnectionApplication = () => {
                             maxFileSize={5 * 1024 * 1024}
                             onInvalidFile={() => {
                               Swal.fire({
-                                // icon: "warning",
-                                // title: "File Too Large",
                                 text: "Document size must not exceed 5 MB.",
                                 confirmButtonColor: "#1e3a8a",
                               });
@@ -2015,12 +2134,38 @@ const FrmWaterConnectionApplication = () => {
                                 return updatedFiles;
                               });
                             }}
-                            onChange={(e) =>
+                            onInvalidFileType={() => {
+                              Swal.fire({
+                                text: "Only PDF, JPG, and PNG file formats are allowed.",
+                                confirmButtonColor: "#1e3a8a",
+                              });
+
+                              setDocumentFiles((prev) => {
+                                const updatedFiles = { ...prev };
+                                delete updatedFiles[document.DOCID];
+                                return updatedFiles;
+                              });
+                            }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              if (file && !isValidDocFile(file)) {
+                                e.target.value = "";
+                                Swal.fire({
+                                  text: "Only PDF, JPG, and PNG file formats are allowed.",
+                                  confirmButtonColor: "#1e3a8a",
+                                });
+                                setDocumentFiles((prev) => {
+                                  const updatedFiles = { ...prev };
+                                  delete updatedFiles[document.DOCID];
+                                  return updatedFiles;
+                                });
+                                return;
+                              }
                               handleDocumentFileChange(
                                 document.DOCID,
-                                e.target.files?.[0] || null
-                              )
-                            }
+                                file
+                              );
+                            }}
                             className="cursor-pointer"
                           />
                           {documentFiles[document.DOCID] && (<p className="mt-1 text-xs text-green-600">Selected:{" "}{documentFiles[document.DOCID].name}</p>)}

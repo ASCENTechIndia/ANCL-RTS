@@ -23,6 +23,7 @@ async function insertNewTaxAssessment(params) {
     vikasName,
     taxesReceipt,
     appSource,
+    ulbid,
   } = params;
 
   console.log("Insert New Tax Assessment:", {
@@ -55,6 +56,7 @@ async function insertNewTaxAssessment(params) {
         :IN_vikasname,
         :IN_taxesreceipt,
         :in_source,
+        :in_ulbid,
         :out_errcode,
         :out_ErrMsg,
         :out_applino
@@ -88,6 +90,7 @@ async function insertNewTaxAssessment(params) {
     IN_vikasname: vikasName || null,
     IN_taxesreceipt: taxesReceipt || null,
     in_source: appSource,
+    in_ulbid: ulbid,
 
     out_errcode: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
     out_ErrMsg: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 1000 },

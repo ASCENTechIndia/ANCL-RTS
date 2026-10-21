@@ -94,14 +94,14 @@ const FrmTrackApplication = () => {
 
   const docHeaders = [
     "Document Name",
-    "File Type",
+    // "File Type",
     "Uploaded Date",
     "Download",
   ];
 
   const docKeyMapping = {
     "Document Name": "documentName",
-    "File Type": "fileType",
+    // "File Type": "fileType",
     "Uploaded Date": "uploadedDate",
     "Download": "download",
   };
@@ -259,8 +259,8 @@ const FrmTrackApplication = () => {
           srNo: index + 1,
           docId: doc.DOCID,
           documentName: doc.DOCNAME,
-          fileType: doc.FILETYPE || "PDF",
-          uploadedDate: doc.UPLOADEDDATE || "-",
+          fileType: doc.FILETYPE || "-",
+          uploadedDate: formatDateToIndian(doc.DOCDATE) || "-",
           fileBytes: doc.filebytes,
         }));
         setDocuments(docs);
@@ -418,6 +418,81 @@ const FrmTrackApplication = () => {
     }
   };
 
+  const downloadReceipt = async (applino, serviceId, ulbId) => {
+    try {
+      Swal.fire({
+        title: "Generating Receipt...",
+        text: "Please wait while your payment receipt is being prepared.",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const response = await axios.post(
+        `${BASE_URL}/api/FrmAfterTransactionTMC/paymentacknowledgement`,
+        {
+          serviceId: String(serviceId),
+          appNo: String(applino),
+          ulbId: String(ulbId),
+        },
+        {
+          headers: { Authorization: `Bearer ${token || localStorage.getItem("token")}` },
+        }
+      );
+
+      Swal.close();
+
+      const result = response?.data;
+
+      if (result?.success && result?.pdfUrl) {
+        window.open(result.pdfUrl, "_blank", "noopener,noreferrer");
+
+        Swal.fire({
+          text: "Payment receipt generated successfully!",
+          confirmButtonColor: "#1e3a8a",
+          timer: 2000,
+        });
+
+        return true;
+      } else {
+        Swal.fire({
+          text: result?.message || "Unable to generate payment receipt.",
+          confirmButtonColor: "#1e3a8a",
+        });
+        return false;
+      }
+    } catch (error) {
+      console.error("Error downloading receipt:", error);
+      Swal.close();
+
+      let errorMessage = "Unable to generate payment receipt.";
+
+      if (error?.response?.data instanceof Blob) {
+        try {
+          const errorText = await error.response.data.text();
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData?.message || errorData?.data?.message || errorMessage;
+        } catch {
+          errorMessage = "Unable to generate payment receipt.";
+        }
+      } else {
+        errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message ||
+          errorMessage;
+      }
+
+      Swal.fire({
+        text: errorMessage,
+        confirmButtonColor: "#1e3a8a",
+      });
+      return false;
+    }
+  };
+
   const fetchExistingCertificate = async (applino) => {
     try {
       const response = await axios.post(
@@ -432,16 +507,38 @@ const FrmTrackApplication = () => {
         const certData = response.data.data[0];
 
         if (certData.fileBytes) {
-          const byteCharacters = atob(certData.fileBytes);
-          const byteNumbers = new Array(byteCharacters.length);
+          let base64Data = certData.fileBytes;
+          if (base64Data.includes("base64,")) {
+            base64Data = base64Data.split("base64,")[1];
+          }
+
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Uint8Array(byteCharacters.length);
           for (let i = 0; i < byteCharacters.length; i++) {
             byteNumbers[i] = byteCharacters.charCodeAt(i);
           }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+          let mimeType = "application/octet-stream";
+          const b = byteNumbers;
+
+          if (b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46) {
+            mimeType = "application/pdf";
+          } else if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) {
+            mimeType = "image/png";
+          } else if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) {
+            mimeType = "image/jpeg";
+          } else if (b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46) {
+            mimeType = "image/gif";
+          } else if (b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46) {
+            mimeType = "image/webp";
+          }
+
+          const blob = new Blob([byteNumbers], { type: mimeType });
           const url = window.URL.createObjectURL(blob);
 
           window.open(url, '_blank');
+
+          setTimeout(() => window.URL.revokeObjectURL(url), 5000);
 
           return true;
         }
@@ -626,6 +723,28 @@ const FrmTrackApplication = () => {
         Swal.fire({
           text: "Application verification pending. Please wait for approval.",
           confirmButtonColor: '#1e3a8a',
+        });
+      }
+      return;
+    }
+
+    if (stepName === "Payment Entry" && status === "Done") {
+      Swal.fire({
+        text: "Generating payment receipt...",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      const success = await downloadReceipt(appNo, serviceId, ulbId);
+
+      Swal.close();
+
+      if (success) {
+        Swal.fire({
+          text: "Receipt downloaded successfully!",
+          confirmButtonColor: "#1e3a8a",
+          timer: 2000,
         });
       }
       return;
@@ -836,7 +955,7 @@ const FrmTrackApplication = () => {
             <Button
               key="first"
               type="button"
-              className="bg-blue-900 hover:bg-blue-800 text-white text-xs px-2 py-0.5 h-7"
+              className="bg-blue-900 hover:bg-blue-800 text-white text-xs px-2 py-0.5 h-7 w-35"
               onClick={() => handleStepAction(step, "First Appeal")}
             >
               First Appeal
@@ -848,7 +967,7 @@ const FrmTrackApplication = () => {
             <Button
               key="second"
               type="button"
-              className="bg-green-700 hover:bg-green-800 text-white text-xs px-2 py-0.5 h-7"
+              className="bg-green-700 hover:bg-green-800 text-white text-xs px-2 py-0.5 h-7 w-35"
               onClick={() => handleStepAction(step, "Second Appeal")}
             >
               Second Appeal
@@ -870,8 +989,8 @@ const FrmTrackApplication = () => {
             disabled={isAuthRejected}
             className={
               isAuthRejected
-                ? "bg-gray-300 text-gray-900 text-xs px-3 py-1 cursor-not-allowed"
-                : "bg-blue-900 hover:bg-blue-800 text-white text-xs px-3 py-1"
+                ? "bg-gray-300 text-gray-900 text-xs px-3 py-1 cursor-not-allowed w-35"
+                : "bg-blue-900 hover:bg-blue-800 text-white text-xs px-3 py-1 w-35"
             }
             onClick={() => !isAuthRejected && handleStepAction(step, "Make Payment")}
           >
@@ -879,11 +998,22 @@ const FrmTrackApplication = () => {
           </Button>
         );
       }
+      else if (step.step === "Payment Entry" && step.status === "Done") {
+        actionElement = (
+          <Button
+            type="button"
+            className="bg-blue-700 hover:bg-blue-800 text-white text-xs px-3 py-1 w-35"
+            onClick={() => handleStepAction(step, "Download Receipt")}
+          >
+            Download Receipt
+          </Button>
+        );
+      }
       else if (step.step === "Application Authorization" && step.status === "Rejected") {
         actionElement = (
           <Button
             type="button"
-            className="bg-gray-600 hover:bg-gray-700 text-white text-xs px-3 py-1"
+            className="bg-gray-600 hover:bg-gray-700 text-white text-xs px-3 py-1 w-35"
             onClick={() => handleStepAction(step, "View")}
           >
             View
@@ -895,7 +1025,7 @@ const FrmTrackApplication = () => {
           actionElement = (
             <Button
               type="button"
-              className="bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1"
+              className="bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 w-35"
               onClick={() => handleStepAction(step, "Certificate Download")}
             >
               Download Certificate
@@ -905,7 +1035,7 @@ const FrmTrackApplication = () => {
           actionElement = (
             <Button
               type="button"
-              className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1"
+              className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 w-35"
               onClick={() => handleStepAction(step, "Certificate Download")}
             >
               Check Status
@@ -924,7 +1054,7 @@ const FrmTrackApplication = () => {
         ...step,
         action: actionElement,
         status: (
-          <span className={`px-2 py-1 rounded text-xs font-medium ${statusBadgeClass}`}>
+          <span className={`inline-block w-24 px-2 py-1 rounded text-xs font-medium ${statusBadgeClass}`}>
             {formatStatusLabel(step.status)}
           </span>
         ),
