@@ -269,8 +269,8 @@ exports.saveApplicantInfoController = asyncHandler(
             in_UniqueNo,
             in_appsource,
             in_deliveryflag,
-            in_consumertypeid,
-            in_metertypeid,
+            // in_consumertypeid,
+            // in_metertypeid,
         } = req.body;
 
 
@@ -354,8 +354,8 @@ exports.saveApplicantInfoController = asyncHandler(
             in_appsource,
             in_deliveryflag,
 
-            in_consumertypeid,
-            in_metertypeid,
+            // in_consumertypeid,
+            // in_metertypeid,
         };
 
 

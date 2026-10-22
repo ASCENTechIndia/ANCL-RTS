@@ -898,8 +898,8 @@ const FrmWaterConnectionApplication = () => {
         in_UniqueNo: isBndService ? (selectedBndRecord?.uniqueNo || "") : "",
         in_appsource: config?.source,
         in_deliveryflag: null,
-        in_consumertypeid: formData.consumeType ? Number(formData.consumeType) : "",
-        in_metertypeid: formData.meterType ? Number(formData.meterType) : "",
+        // in_consumertypeid: formData.consumeType ? Number(formData.consumeType) : "",
+        // in_metertypeid: formData.meterType ? Number(formData.meterType) : "",
       };
 
       console.log(

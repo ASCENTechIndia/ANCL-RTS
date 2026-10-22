@@ -239,7 +239,7 @@ const saveApplicantInfoRepo = async (payload) => {
             const result = await connection.execute(
                 `
                 BEGIN
-                    AORTS.AORTS_APPLICANT_INFO_NEW_INS(
+                    AORTS.aorts_applicant_info_ins(
                         :in_ulbid,
                         :in_corpid,
                         :in_serviceid,
@@ -272,14 +272,14 @@ const saveApplicantInfoRepo = async (payload) => {
                         :in_UniqueNo,
                         :in_appsource,
                         :in_deliveryflag,
-                        :in_consumertypeid,
-                        :in_metertypeid,
                         :out_AppNo,
                         :out_errcode,
                         :out_ErrMsg
                     );
                 END;
                 `,
+                // :in_consumertypeid,
+                //          :in_metertypeid,
                 {
                     // --------------------------------
                     // IN PARAMETERS
@@ -333,8 +333,8 @@ const saveApplicantInfoRepo = async (payload) => {
                     in_appsource: payload.in_appsource,
                     in_deliveryflag: payload.in_deliveryflag,
 
-                    in_consumertypeid: payload.in_consumertypeid,
-                    in_metertypeid: payload.in_metertypeid,
+                    // in_consumertypeid: payload.in_consumertypeid || NULL,
+                    // in_metertypeid: payload.in_metertypeid,
 
                     // --------------------------------
                     // OUT PARAMETERS

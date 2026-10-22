@@ -34,10 +34,10 @@ const getServiceDropdownRepo = async ({ rptMode }) => {
     if (Number(rptMode) !== 4) {orderBy = "ORDER BY num_service_serviceid"}
 
     const sql = `
-        SELECT
+         SELECT
             var_service_eng_name,
             num_service_serviceid
-        FROM aorts_tmcservice_def
+        FROM aorts_service_def
         WHERE ${conditions.join(" AND ")}
         ${orderBy}
     `;
@@ -86,8 +86,8 @@ const getUsageTypeDropdownRepo = async () => {
 const getConnectionSizeDropdownRepo = async () => {
     console.log("Repo: Fetch Connection Size Dropdown");
     const sql = `
-        SELECT DISTINCT
-            num_connsize_size,
+          SELECT DISTINCT
+            var_connsize_name,
             num_connsize_id
         FROM water.aowt_connsize_mas
     `;

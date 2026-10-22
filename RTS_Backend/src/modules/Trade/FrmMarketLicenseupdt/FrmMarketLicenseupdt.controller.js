@@ -254,7 +254,7 @@ exports.updateTradeDirectorImage = asyncHandler(async (req, res) => {
 });
 
 exports.getTradeTypesByCategory = asyncHandler(async (req, res) => {
-  const { categoryId, categoryType, jwalanshilstat } = req.body;
+  const { categoryId, categoryType } = req.body;
 
   if (!categoryId) {
     return fail(res, "Category ID is required");
@@ -264,7 +264,7 @@ exports.getTradeTypesByCategory = asyncHandler(async (req, res) => {
     return fail(res, "categoryType is required");
   }
 
-  const result = await service.getTradeTypesByCategoryService({ categoryId, categoryType, jwalanshilstat });
+  const result = await service.getTradeTypesByCategoryService({ categoryId, categoryType });
   return ok(res, result, "Trade types fetched successfully");
 });
 
@@ -346,27 +346,27 @@ exports.submitTradeApplication = asyncHandler(async (req, res) => {
     rate,
     wardid,
     zoneid,
-    Servid,
+    // Servid,
     Source,
-    amount,
+    // amount,
 
-    Gender,
-    Jwalan,
-    Relation,
-    Adhikrutta,
-    LicencType,
-    TradeType,
+    // Gender,
+    // Jwalan,
+    // Relation,
+    // Adhikrutta,
+    // LicencType,
+    // TradeType,
 
-    CloseDt,
-    LicOwner,
-    LicType,
-    LicFrmDt,
-    LicToDt,
+    // CloseDt,
+    // LicOwner,
+    // LicType,
+    // LicFrmDt,
+    // LicToDt,
 
-    BusiName,
-    BusiSwarup,
-    BusiAddr,
-    type,
+    // BusiName,
+    // BusiSwarup,
+    // BusiAddr,
+    // type,
   } = req.body;
 
   const finalUserId = req.user?.userId || userid || userId;
@@ -425,27 +425,27 @@ exports.submitTradeApplication = asyncHandler(async (req, res) => {
     rate,
     wardid,
     zoneid,
-    Servid,
+    // Servid,
     Source,
-    amount,
+    // amount,
 
-    Gender,
-    Jwalan,
-    Relation,
-    Adhikrutta,
-    LicencType,
-    TradeType,
+    // Gender,
+    // Jwalan,
+    // Relation,
+    // Adhikrutta,
+    // LicencType,
+    // TradeType,
 
-    CloseDt,
-    LicOwner,
-    LicType,
-    LicFrmDt,
-    LicToDt,
+    // CloseDt,
+    // LicOwner,
+    // LicType,
+    // LicFrmDt,
+    // LicToDt,
 
-    BusiName,
-    BusiSwarup,
-    BusiAddr,
-    type,
+    // BusiName,
+    // BusiSwarup,
+    // BusiAddr,
+    // type,
   });
 
   if (!result.success) {

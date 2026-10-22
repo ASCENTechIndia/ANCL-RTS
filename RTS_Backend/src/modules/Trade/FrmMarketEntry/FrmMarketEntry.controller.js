@@ -127,7 +127,7 @@ const getLicenseType = async (req, res, next) => {
 // ============================================================
 const getTradeCategory = async (req, res, next) => {
   try {
-    const { licenseType, jalanShil } = req.body;
+    const { licenseType } = req.body;
 
     if (!licenseType) {
       return res.status(400).json({
@@ -136,14 +136,7 @@ const getTradeCategory = async (req, res, next) => {
       });
     }
 
-    if (!jalanShil) {
-      return res.status(400).json({
-        ok: false,
-        message: "Jalan Shil is required",
-      });
-    }
-
-    const data = await service.getTradeCategoryService(licenseType, jalanShil);
+    const data = await service.getTradeCategoryService(licenseType);
 
     return res.status(200).json({
       ok: true,
@@ -744,18 +737,15 @@ const documentInsert = asyncHandler(async (req, res) => {
 // ============================================================
 const getTradeCategoryByJwalan = asyncHandler(async (req, res) => {
   const {
-    jwalanshilStatus,
     type,
   } = req.body;
 
   console.log("📥 Get Trade Category By Jwalan", {
-    jwalanshilStatus,
     type,
   });
 
   const data =
     await service.getTradeCategoryByJwalanService(
-      jwalanshilStatus,
       type
     );
 
