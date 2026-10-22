@@ -8,7 +8,7 @@ async function getApplicationTypes({ ulbId }) {
     SELECT
       var_applitype_name AS APPLITYPE_NAME,
       num_applitype_id AS APPLITYPE_ID
-    FROM aorts_applitype_mas
+    FROM market.aomk_applitype_mas
     WHERE num_applitype_ulbid = :ulbId
       AND var_applitype_flag = 'Y'
     ORDER BY num_applitype_id
@@ -49,7 +49,7 @@ async function getGenders() {
     SELECT
       var_gender_name AS GENDER_NAME,
       num_gender_id AS GENDER_ID
-    FROM aorts_gender_mas
+    FROM  aorts_gender_mas
     ORDER BY num_gender_id
   `;
 
@@ -123,7 +123,7 @@ async function getLicenseTypes() {
     SELECT
       var_licensetype_name AS LICENSETYPE_NAME,
       num_licensetype_id AS LICENSETYPE_ID
-    FROM aorts_licensetype_mas
+    FROM  market.aomk_licensetype_mas 
     ORDER BY num_licensetype_id
   `;
 
@@ -181,19 +181,19 @@ async function getMarketLicenseDetails({ licenseNo, ulbId }) {
       var_appli_placeownername AS PLACE_OWNER_NAME,
       var_appli_placeowneraddress AS PLACE_OWNER_ADDRESS,
       var_appli_shopname AS SHOP_NAME
-    FROM aomk_mktlice_mas
-    INNER JOIN aomk_appli_mas
+    FROM market.aomk_mktlice_mas
+    INNER JOIN market.aomk_appli_mas
       ON num_appli_id = num_mktlice_appliid
       AND num_appli_ulbid = num_mktlice_ulbid
-    INNER JOIN aomk_applitradetyp_det
+    INNER JOIN market.aomk_applitradetyp_det
       ON num_applitradetype_appliid = num_mktlice_appliid
       AND num_applitradetyp_ulbid = num_mktlice_ulbid
-    INNER JOIN aomk_rate_mas
+    INNER JOIN market.aomk_rate_mas
       ON num_applitradetype_trdtypid = num_rate_id
-    INNER JOIN aomk_applitrade_det
+    INNER JOIN market.aomk_applitrade_det
       ON num_applitrade_appliid = num_mktlice_appliid
       AND num_applitrade_ulbid = num_mktlice_ulbid
-    INNER JOIN aomk_TradeCategory_mas
+    INNER JOIN market.aomk_TradeCategory_mas
       ON num_tradecategory_id = num_applitrade_tradeid
     WHERE var_mktlice_licenceno = :licenseNo
       AND num_mktlice_ulbid = :ulbId
@@ -213,10 +213,10 @@ async function getMarketLicenseDetails({ licenseNo, ulbId }) {
 
 async function getDirectorName({ appliType, ulbId }) {
   const query = `
-    SELECT
+     SELECT
       var_applidirector_name AS DIRCTORNAME
-    FROM aomk_applidirector_det
-    INNER JOIN aomk_applitype_mas
+    FROM market.aomk_applidirector_det
+    INNER JOIN market.aomk_applitype_mas
       ON num_applitype_id = num_applidirector_applitype
       AND num_applidirector_ulbid = num_applitype_ulbid
     WHERE num_applidirector_applitype = :appliType
@@ -239,7 +239,7 @@ async function getMarketApplicationTypes({ ulbId }) {
     SELECT
       var_applitype_name AS APPLITYPE_NAME,
       num_applitype_id AS APPLITYPE_ID
-    FROM aomk_applitype_mas
+    FROM market.aomk_applitype_mas
     WHERE num_applitype_ulbid = :ulbId
       AND var_applitype_flag = 'Y'
     ORDER BY num_applitype_id
@@ -269,8 +269,8 @@ async function getDirectorDetails({ appliId, ulbId }) {
       var_applitype_name AS APPLITYPENAME,
       blo_applitype_photo AS IMGDIRECTORIMAGE,
       Var_AppliDirector_VoterId AS VOTERID
-    FROM aorts_applidirector_det
-    INNER JOIN aorts_applitype_mas
+    FROM market.aomk_applidirector_det 
+    INNER JOIN market.aomk_applitype_mas 
       ON num_applitype_id = num_applidirector_applitype
     WHERE num_applidirector_appliid = :appliId
       AND num_applidirector_ulbid = :ulbId
@@ -289,11 +289,11 @@ async function getDirectorDetails({ appliId, ulbId }) {
 
 async function getMarketApplicationAddress({ licenseNo, ulbId }) {
   const query = `
-    SELECT
+     SELECT
       num_appli_id AS APPLI_ID,
       var_appli_address AS APPLI_ADDRESS
-    FROM aomk_mktlice_mas
-    INNER JOIN aomk_appli_mas
+    FROM market.aomk_mktlice_mas
+    INNER JOIN market.aomk_appli_mas
       ON num_appli_id = num_mktlice_appliid
       AND num_appli_ulbid = num_mktlice_ulbid
     WHERE var_mktlice_licenceno = :licenseNo
@@ -323,8 +323,8 @@ async function getTradeTypeDetails({ appliId, ulbId }) {
       num_rate_id AS TRADETYPEID,
       '' AS TRADECATEGORY_ID,
       '' AS TRADECATEGORY
-    FROM aomk_applitradetyp_det
-    INNER JOIN aomk_rate_mas
+    FROM market.aomk_applitradetyp_det
+    INNER JOIN market.aomk_rate_mas
       ON num_rate_id = num_applitradetype_trdtypid
       AND num_rate_ulbid = num_applitradetyp_ulbid
     WHERE num_applitradetype_appliid = :appliId
@@ -348,7 +348,7 @@ async function getTradeDetails({ appliId }) {
       num_applitrade_id AS APPLITRADE_ID,
       num_applitrade_appliid AS APPLITRADE_APPLI_ID,
       num_applitrade_tradeid AS APPLITRADE_TRADE_ID
-    FROM aomk_applitrade_det
+    FROM market.aomk_applitrade_det
     WHERE num_applitrade_appliid = :appliId
   `;
 
@@ -364,9 +364,9 @@ async function getTradeDetails({ appliId }) {
 
 async function getTradeDirectorId({ applicationId }) {
   const query = `
-    SELECT
+     SELECT
       num_tradedirector_id AS DIRECTOR_ID
-    FROM aorts_tradedirector_det
+    FROM market.aomk_tradedirector_det   
     WHERE num_tradedirector_appliid = :applicationId
   `;
 
@@ -393,7 +393,7 @@ async function updateTradeDirectorImage({
     const buffer = Buffer.from(fileBuffer);
 
     const query = `
-      UPDATE aorts_tradedirector_det
+      UPDATE market.aomk_tradedirector_det
       SET blo_applitype_photo = :blobDirectorImg
       WHERE num_tradedirector_id = :directorId
         AND num_tradedirector_appliid = :applicationId
@@ -456,7 +456,7 @@ async function updateTradeDirectorImage({
   }
 }
 
-async function getTradeTypesByCategory({ categoryId, categoryType, jwalanshilstat}) {
+async function getTradeTypesByCategory({ categoryId, categoryType}) {
   const conditions = [
     `var_tradetype_flag = 'Y'`,
     `num_categorytype_catgryid = :categoryId`,
@@ -465,21 +465,21 @@ async function getTradeTypesByCategory({ categoryId, categoryType, jwalanshilsta
 
   const bindParams = {categoryId: Number(categoryId), categoryType};
 
-  if ( jwalanshilstat !== undefined && jwalanshilstat !== null && String(jwalanshilstat).trim() !== "") {
-    conditions.push(`var_categorytype_jwalanshilstat = :jwalanshilstat`);
-    bindParams.jwalanshilstat = String(jwalanshilstat).trim();
-  }
+  // if ( jwalanshilstat !== undefined && jwalanshilstat !== null && String(jwalanshilstat).trim() !== "") {
+  //   conditions.push(`var_categorytype_jwalanshilstat = :jwalanshilstat`);
+  //   bindParams.jwalanshilstat = String(jwalanshilstat).trim();
+  // }
 
   const query = `     
     SELECT
       var_tradetype_name AS TRADETYPE_NAME,
-      num_categorytype_catgtypid AS CATEGORYTYPE_CATGTYPID
-    FROM aorts_categorytype_confg
-    INNER JOIN aorts_tradecategory_mas
-      ON num_tradecategory_id = num_categorytype_catgryid
-    INNER JOIN aorts_tradetypes_mas
-      ON num_tradetype_id = num_categorytype_catgtypid
-      AND aomk_tradetype_tradecategoryid = num_categorytype_catgryid
+      num_tradetype_id AS CATEGORYTYPE_CATGTYPID
+    FROM market.aomk_tradecatconfig_mas 
+    INNER JOIN market.aomk_tradecategory_mas
+      ON num_tradecategory_id = num_tradecatconf_tradecatid
+    INNER JOIN market.aomk_tradetype_mas
+      ON num_tradecategory_id = aomk_tradetype_tradecategoryid
+      AND aomk_tradetype_tradecategoryid = num_tradecatconf_tradecatid
     WHERE ${conditions.join("\n AND ")}
   `;
 
@@ -506,21 +506,19 @@ async function getServiceInstructions({ serviceId }) {
   return await executeQueryTMC(query, bindParams);
 }
 
-async function getTradeCategories({ jwalanshilstat, categoryType }) {
+async function getTradeCategories({ categoryType }) {
   const query = `
     SELECT
       var_tradecategory_name AS TRADECATEGORY_NAME,
-      num_category_catgryid AS CATEGORY_CATGRYID
-    FROM aorts_category_confg
-    INNER JOIN aorts_tradecategory_mas
-      ON num_tradecategory_id = num_category_catgryid
+      num_tradecategory_id AS CATEGORY_CATGRYID
+    FROM market.aomk_tradecatconfig_mas
+    INNER JOIN market.aomk_tradecategory_mas
+      ON num_tradecategory_id = num_tradecatconf_tradecatid
     WHERE var_tradecategory_flag = 'Y'
-      AND var_category_type = :categoryType
-      AND var_category_jwalanshilstat = :jwalanshilstat
+      AND num_tradecategory_id = :categoryType
   `;
 
   const bindParams = {
-    jwalanshilstat: jwalanshilstat,
     categoryType: categoryType
   };
 
@@ -589,33 +587,33 @@ async function insertTradeApplication(params) {
     rate,
     wardid,
     zoneid,
-    Servid,
+    // Servid,
     Source,
-    amount,
+    // amount,
 
-    Gender,
-    Jwalan,
-    Relation,
-    Adhikrutta,
-    LicencType,
-    TradeType,
+    // Gender,
+    // Jwalan,
+    // Relation,
+    // Adhikrutta,
+    // LicencType,
+    // TradeType,
 
-    CloseDt,
-    LicOwner,
-    LicType,
-    LicFrmDt,
-    LicToDt,
+    // CloseDt,
+    // LicOwner,
+    // LicType,
+    // LicFrmDt,
+    // LicToDt,
 
-    BusiName,
-    BusiSwarup,
-    BusiAddr,
-    type,
+    // BusiName,
+    // BusiSwarup,
+    // BusiAddr,
+    // type,
   } = params;
 
   const sql = `
     BEGIN
 
-      aorts_applitrade_ins(
+      market.aomk_applitrade_ins(
         :in_userid,
         :in_licenseno,
         :in_appfname,
@@ -646,24 +644,24 @@ async function insertTradeApplication(params) {
         :in_rate,
         :in_wardid,
         :in_zoneid,
-        :in_Servid,
+        // :in_Servid,
         :In_Source,
-        :in_amount,
-        :In_Gender,
-        :in_Jwalan,
-        :in_Relation,
-        :in_Adhikrutta,
-        :in_LicencType,
-        :in_TradeType,
-        :in_CloseDt,
-        :In_LicOwner,
-        :In_LicType,
-        :In_LicFrmDt,
-        :In_LicToDt,
-        :In_BusiName,
-        :In_BusiSwarup,
-        :In_BusiAddr,
-        :In_type,
+        // :in_amount,
+        // :In_Gender,
+        // :in_Jwalan,
+        // :in_Relation,
+        // :in_Adhikrutta,
+        // :in_LicencType,
+        // :in_TradeType,
+        // :in_CloseDt,
+        // :In_LicOwner,
+        // :In_LicType,
+        // :In_LicFrmDt,
+        // :In_LicToDt,
+        // :In_BusiName,
+        // :In_BusiSwarup,
+        // :In_BusiAddr,
+        // :In_type,
         :out_ErrCode,
         :out_ErrMsg,
         :out_AppliID,
@@ -748,63 +746,63 @@ async function insertTradeApplication(params) {
       ? Number(zoneid)
       : null,
 
-    in_Servid: Servid
-      ? Number(Servid)
-      : null,
+    // in_Servid: Servid
+    //   ? Number(Servid)
+    //   : null,
 
     In_Source: Source || null,
 
-    in_amount: amount
-      ? Number(amount)
-      : null,
+    // in_amount: amount
+    //   ? Number(amount)
+    //   : null,
 
-    In_Gender: Gender || null,
+    // In_Gender: Gender || null,
 
-    in_Jwalan: Jwalan || null,
+    // in_Jwalan: Jwalan || null,
 
-    in_Relation: Relation
-      ? Number(Relation)
-      : null,
+    // in_Relation: Relation
+    //   ? Number(Relation)
+    //   : null,
 
-    in_Adhikrutta: Adhikrutta
-      ? Number(Adhikrutta)
-      : null,
+    // in_Adhikrutta: Adhikrutta
+    //   ? Number(Adhikrutta)
+    //   : null,
 
-    in_LicencType: LicencType
-      ? Number(LicencType)
-      : null,
+    // in_LicencType: LicencType
+    //   ? Number(LicencType)
+    //   : null,
 
-    in_TradeType: TradeType
-      ? Number(TradeType)
-      : null,
+    // in_TradeType: TradeType
+    //   ? Number(TradeType)
+    //   : null,
 
-    in_CloseDt: CloseDt
-      ? new Date(CloseDt)
-      : null,
+    // in_CloseDt: CloseDt
+    //   ? new Date(CloseDt)
+    //   : null,
 
-    In_LicOwner: LicOwner || null,
+    // In_LicOwner: LicOwner || null,
 
-    In_LicType: LicType || null,
-
-
-    In_LicFrmDt: LicFrmDt
-      ? new Date(LicFrmDt)
-      : null,
-
-    In_LicToDt: LicToDt
-      ? new Date(LicToDt)
-      : null,
+    // In_LicType: LicType || null,
 
 
-    In_BusiName: BusiName || null,
+    // In_LicFrmDt: LicFrmDt
+    //   ? new Date(LicFrmDt)
+    //   : null,
+
+    // In_LicToDt: LicToDt
+    //   ? new Date(LicToDt)
+    //   : null,
 
 
-    In_BusiSwarup: BusiSwarup || null,
+    // In_BusiName: BusiName || null,
 
 
-    In_BusiAddr: BusiAddr || null,
+    // In_BusiSwarup: BusiSwarup || null,
 
-    In_type: type || null,
+
+    // In_BusiAddr: BusiAddr || null,
+
+    // In_type: type || null,
 
     out_ErrCode: {
       dir: oracledb.BIND_OUT,
@@ -832,35 +830,6 @@ async function insertTradeApplication(params) {
   console.log(
     "Calling Procedure: aorts_applitrade_ins"
   );
-
-  console.log("Procedure Bind Params:", {
-    userid,
-    licenseno,
-    appfname,
-    appmname,
-    applname,
-    mobile,
-    email,
-    propno,
-    ulbid,
-    servicename,
-    appid,
-    Servid,
-    wardid,
-    zoneid,
-    Source,
-    amount,
-    Gender,
-    Relation,
-    LicencType,
-    TradeType,
-    LicOwner,
-    LicType,
-    BusiName,
-    BusiSwarup,
-    BusiAddr,
-    type,
-  });
 
   const result = await executeProcedureTMC({
     sql,
@@ -904,7 +873,7 @@ async function insertTradeTypeLog(params) {
   const sql = `
     BEGIN
 
-      aorts_tradetypelog_ins(
+      market.aomk_tradetypelog_ins(
         :In_OrgId,
         :In_Id,
         :In_Appid,
