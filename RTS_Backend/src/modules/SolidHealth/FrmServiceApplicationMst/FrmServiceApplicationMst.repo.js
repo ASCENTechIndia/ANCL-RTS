@@ -81,7 +81,7 @@ const getDocumentListRepo = async (serviceId, ulbId) => {
 
       FROM aorts.aorts_serv_doc_config
 
-      INNER JOIN aorts.aorts_tmcservice_def
+      INNER JOIN aorts.aorts_service_def
         ON num_service_serviceid = num_serdoc_servid
 
       INNER JOIN aorts.aorts_doc_def

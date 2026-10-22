@@ -444,22 +444,22 @@ const getApplicationDetailsRepo = async ({ serviceId, appNo }) => {
           var_wtreg_consno,
           num_wtreg_ulbid,
           var_wtreg_rtsno,
-          var_wtregister_appliname applilname,
-          var_wtregister_applimobile mobno,
-          var_wtregister_appliemail email,
-          var_wtregister_appliaddhar appliaddhar,
+          var_wtreg_aplifirstname applilname,
+          '' mobno,
+          '' email,
+          var_wtreg_consaddress appliaddhar,
           var_usagetype_name usagetype,
-          num_connsize_size connsize,
-          var_wtregister_conaddresssrch conaddress,
-          var_wtregister_curconsizesrch curconsizesrch,
+          var_connsize_name connsize,
+          var_wtreg_consaddress conaddress,
+          var_connsize_name curconsizesrch,
           wardname zonename,
-          var_wtregister_UsageTypenewsrch UsageTypenewsrch
+          var_usagetype_name UsageTypenewsrch
         FROM aorts.aorts_wtregister_infodet
         LEFT JOIN water.aowt_usagetype_mas
           ON num_wtreg_usageid = num_usagetype_id
         LEFT JOIN water.aowt_connsize_mas
           ON num_connsize_id = num_wtreg_connsizeid
-        INNER JOIN aorts.aorts_tmcservice_def
+        INNER JOIN aorts.aorts_service_def
           ON num_service_serviceid = num_wtreg_servid
         INNER JOIN aorts.aorts_application_det
           ON var_application_appno = var_wtreg_rtsno
