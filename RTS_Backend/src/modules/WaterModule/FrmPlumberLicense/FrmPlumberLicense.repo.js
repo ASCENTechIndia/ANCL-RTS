@@ -92,8 +92,38 @@ const savePlumberLicenseRepo = async ({userId, licenseId, appliFName, appliMName
     return result.outBinds;
 };
 
-const renewPlumberLicenseRepo = async ({userId, licenseId, tradeLicenceNo, ulbid, servid, source, renewdt, fromdt, todt, appliFName, appliMName, appliLName, detMobile, detAadhaar, detEmail, detAddress}) => {
-    console.log("Repo: Renew Plumber License", { userId, licenseId, tradeLicenceNo, ulbid, servid });
+
+const renewPlumberLicenseRepo = async ({
+    userId,
+    licenseId,
+    tradeLicenceNo,
+    ulbid,
+    servid,
+    source,
+    renewdt,
+    fromdt,
+    todt,
+    appliFName,
+    appliMName,
+    appliLName,
+    detMobile,
+    detEmail,
+    detAddress,
+    zoneid,
+    appliDOB,
+    appliScndMobNo,
+    appliEducation,
+    appliLcnDate,
+    appliFNameMar,
+    appliMNameMar,
+    appliLNameMar,
+    detAddressMar,
+}) => {
+    // Prevent NULL or empty strings for optional text parameters.
+    const textOrDot = (value) =>
+        value == null || String(value).trim() === "."
+            ? "."
+            : String(value).trim() || ".";
 
     const sql = `
         BEGIN
@@ -111,9 +141,17 @@ const renewPlumberLicenseRepo = async ({userId, licenseId, tradeLicenceNo, ulbid
                 :in_AppliMName,
                 :in_AppliLName,
                 :in_detMobile,
-                :in_detAadhaar,
                 :in_detEmail,
                 :in_detAddress,
+                :in_zoneid,
+                :in_AppliDOB,
+                :in_Appliscndmobno,
+                :in_Applieducation,
+                :in_applilcndate,
+                :in_AppliFNamemar,
+                :in_AppliMNamemar,
+                :in_AppliLNamemar,
+                :in_detAddressmar,
                 :out_Errcode,
                 :out_ErrMsg,
                 :out_appno
@@ -128,29 +166,100 @@ const renewPlumberLicenseRepo = async ({userId, licenseId, tradeLicenceNo, ulbid
         in_ulbid: ulbid,
         in_servid: servid,
         in_source: source,
+
         in_renewdt: renewdt,
         in_fromdt: fromdt,
         in_todt: todt,
-        in_AppliFName: appliFName,
-        in_AppliMName: appliMName,
-        in_AppliLName: appliLName,
+
+        in_AppliFName: textOrDot(appliFName),
+        in_AppliMName: textOrDot(appliMName),
+        in_AppliLName: textOrDot(appliLName),
+
         in_detMobile: detMobile,
-        in_detAadhaar: detAadhaar,
-        in_detEmail: detEmail,
-        in_detAddress: detAddress,
-        out_Errcode: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
-        out_ErrMsg: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 4000 },
-        out_appno: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 200 },
+        in_detEmail: textOrDot(detEmail),
+        in_detAddress: textOrDot(detAddress),
+
+        in_zoneid: zoneid,
+
+        // DATE parameters must contain valid dates or NULL.
+        // Do not pass "." or 0 as a date.
+        in_AppliDOB: appliDOB || null,
+        in_Appliscndmobno: appliScndMobNo ?? 0,
+        in_Applieducation: textOrDot(appliEducation),
+        in_applilcndate: appliLcnDate || null,
+
+        // Critical fix: never pass NULL for Marathi name fields.
+        in_AppliFNamemar: textOrDot(appliFNameMar),
+        in_AppliMNamemar: textOrDot(appliMNameMar),
+        in_AppliLNamemar: textOrDot(appliLNameMar),
+        in_detAddressmar: textOrDot(detAddressMar),
+
+        out_Errcode: {
+            dir: oracledb.BIND_OUT,
+            type: oracledb.NUMBER,
+        },
+
+        out_ErrMsg: {
+            dir: oracledb.BIND_OUT,
+            type: oracledb.STRING,
+            maxSize: 4000,
+        },
+
+        out_appno: {
+            dir: oracledb.BIND_OUT,
+            type: oracledb.STRING,
+            maxSize: 200,
+        },
     };
 
-    const result = await executeProcedureTMC({ sql, binds });
+    try {
+        console.log("Renew Plumber License Bind Values:", {
+            in_UserID: binds.in_UserID,
+            in_LicenseId: binds.in_LicenseId,
+            in_TradeLicenceNo: binds.in_TradeLicenceNo,
+            in_ulbid: binds.in_ulbid,
+            in_servid: binds.in_servid,
+            in_AppliFNamemar: binds.in_AppliFNamemar,
+            in_AppliMNamemar: binds.in_AppliMNamemar,
+            in_AppliLNamemar: binds.in_AppliLNamemar,
+            in_detAddressmar: binds.in_detAddressmar,
+        });
 
-    if (!result.success) {
-        throw new Error(result.error);
+        const result = await executeProcedureTMC({ sql, binds });
+
+        console.log("Renew Plumber License Oracle Result:", {
+            success: result?.success,
+            error: result?.error,
+            outBinds: result?.outBinds,
+        });
+
+        if (!result?.success) {
+            throw new Error(
+                result?.error || "Oracle procedure execution failed"
+            );
+        }
+
+        const outBinds = result.outBinds || {};
+
+        if (Number(outBinds.out_Errcode) !== 9999) {
+            throw new Error(
+                outBinds.out_ErrMsg ||
+                    `Plumber license renewal failed. Error code: ${outBinds.out_Errcode}`
+            );
+        }
+
+        return outBinds;
+    } catch (error) {
+        console.error("Renew Plumber License Repository Error:", {
+            message: error.message,
+            code: error.code,
+        });
+
+        throw error;
     }
-
-    return result.outBinds;
 };
+
+
 
 module.exports = {
     getEducationDropdownRepo,

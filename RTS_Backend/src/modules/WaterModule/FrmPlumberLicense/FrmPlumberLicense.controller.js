@@ -121,81 +121,149 @@ exports.renewPlumberLicenseController = asyncHandler(
     async (req, res) => {
         console.log("Renew Plumber License Request:", req.body);
 
-        const {userId, licenseId, tradeLicenceNo, ulbid, servid, source, renewdt, fromdt, todt, appliFName, appliMName, appliLName, detMobile, detAadhaar, detEmail, detAddress} = req.body;
+        const {
+            userId,
+            licenseId,
+            tradeLicenceNo,
+            ulbid,
+            servid,
+            source,
+            renewdt,
+            fromdt,
+            todt,
+            appliFName,
+            appliMName,
+            appliLName,
+            detMobile,
+            detEmail,
+            detAddress,
+            zoneid,
+            appliDOB,
+            appliScndMobNo,
+            appliEducation,
+            appliLcnDate,
+            appliFNameMar,
+            appliMNameMar,
+            appliLNameMar,
+            detAddressMar,
+        } = req.body;
 
+        const textOrDot = (value) =>
+            value == null || String(value).trim() === ""
+                ? "."
+                : String(value).trim();
 
         if (!userId) {
             return fail(res, "User ID is required");
         }
-        if (!tradeLicenceNo) {
+
+        if (!tradeLicenceNo?.trim()) {
             return fail(res, "Plumber License No is required");
         }
+
         if (!ulbid) {
             return fail(res, "ulbid is required");
         }
+
         if (!servid) {
             return fail(res, "servid is required");
         }
+
         if (!source) {
             return fail(res, "source is required");
         }
-        if (!renewdt) {
-            return fail(res, "Renewal date is required");
+
+        if (!renewdt || !fromdt || !todt) {
+            return fail(res, "Renewal date, From date and To date are required");
         }
-        if (!fromdt) {
-            return fail(res, "From date is required");
+
+        if (new Date(fromdt) > new Date(todt)) {
+            return fail(res, "From Date cannot be greater than To Date");
         }
-        if (!todt) {
-            return fail(res, "To date is required");
-        }
-        if (!appliFName) {
+
+        if (!appliFName?.trim()) {
             return fail(res, "First name is required");
         }
-        if (!appliMName) {
+
+        if (!appliMName?.trim()) {
             return fail(res, "Middle name is required");
         }
-        if (!appliLName) {
+
+        if (!appliLName?.trim()) {
             return fail(res, "Last name is required");
         }
-        if (!detMobile) {
-            return fail(res, "Applicant detail mobile is required");
+
+        if (!/^\d{10}$/.test(String(detMobile ?? ""))) {
+            return fail(res, "Please enter valid Mobile No.");
         }
-        if (!detAadhaar) {
-            return fail(res, "Applicant detail Aadhaar is required");
-        }
-        if (!detEmail) {
+
+        if (!detEmail?.trim()) {
             return fail(res, "Applicant detail email is required");
         }
-        if (!detAddress) {
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(detEmail.trim())) {
+            return fail(res, "Please enter valid Email Address");
+        }
+
+        if (!detAddress?.trim()) {
             return fail(res, "Applicant detail address is required");
         }
 
+        const payload = {
+            userId: String(userId),
+            licenseId: licenseId ?? 0,
+            tradeLicenceNo: tradeLicenceNo.trim(),
+            ulbid: Number(ulbid),
+            servid: Number(servid),
+            source,
 
-        const data =
-            await service.renewPlumberLicenseService({
-                userId,
-                licenseId: licenseId ?? 0,
-                tradeLicenceNo,
-                ulbid,
-                servid,
-                source,
-                renewdt,
-                fromdt,
-                todt,
-                appliFName,
-                appliMName,
-                appliLName,
-                detMobile,
-                detAadhaar,
-                detEmail,
-                detAddress,
-            });
+            renewdt,
+            fromdt,
+            todt,
 
+            appliFName: appliFName.trim(),
+            appliMName: appliMName.trim(),
+            appliLName: appliLName.trim(),
 
-        if (!data.success) {
-            return fail(res, data.message);
+            detMobile: String(detMobile).trim(),
+            detEmail: detEmail.trim(),
+            detAddress: detAddress.trim(),
+
+            zoneid: Number(zoneid) || 0,
+
+            // Additional parameters
+            appliDOB: appliDOB || null,
+            appliScndMobNo: appliScndMobNo ?? 0,
+            appliEducation: textOrDot(appliEducation),
+            appliLcnDate: appliLcnDate || null,
+
+            // Critical fix: ensure Marathi names are never empty.
+            appliFNameMar: textOrDot(appliFNameMar),
+            appliMNameMar: textOrDot(appliMNameMar),
+            appliLNameMar: textOrDot(appliLNameMar),
+            detAddressMar: textOrDot(detAddressMar),
+        };
+
+        const data = await service.renewPlumberLicenseService(payload);
+
+        if (!data?.success) {
+            return fail(
+                res,
+                data?.message || "Plumber license renewal failed"
+            );
         }
 
-        return ok(res, data, data.message || "Plumber license renewed successfully");
+        if (Number(data?.errorCode) !== 9999) {
+            return fail(
+                res,
+                data?.message || "Plumber license renewal failed"
+            );
+        }
+
+        return ok(
+            res,
+            data,
+            data.message || "Plumber license renewed successfully"
+        );
     }
 );

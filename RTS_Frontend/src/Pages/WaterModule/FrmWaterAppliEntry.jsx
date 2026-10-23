@@ -1361,7 +1361,7 @@ function FrmWaterAppliEntry() {
                             key={item.NUM_CONNSIZE_ID}
                             value={String(item.NUM_CONNSIZE_ID)}
                           >
-                            {item.NUM_CONNSIZE_SIZE}
+                            {item.VAR_CONNSIZE_NAME}
                           </SelectItem>
                         ))}
                       </SelectContent>
