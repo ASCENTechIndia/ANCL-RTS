@@ -47,7 +47,7 @@ async function getUsageSubTypes(usageTypeId) {
   const query = `
     SELECT var_usagesubtype_name, num_usagesubtype_id 
     FROM water.aowt_usagesubtype_mas 
-    WHERE num_usagesubtype_usgtypid = :usageTypeId
+    WHERE num_usagesubtype_usagetypeid = :usageTypeId
   `;
   return await executeQueryTMC(query, { usageTypeId: String(usageTypeId) });
 }
@@ -284,20 +284,21 @@ async function insertWaterApplication(params) {
     docString,
   } = params;
 
-  // ====== FIX: Safe number conversion helper ======
+  // Safely convert numeric inputs.
   const toNumber = (value) => {
-    if (value === null || value === undefined || value === '') {
+    if (value === null || value === undefined || value === "") {
       return null;
     }
+
     const num = Number(value);
-    return isNaN(num) ? null : num;
+    return Number.isFinite(num) ? num : null;
   };
 
-  // ====== FIX: Convert userId to number safely ======
-  const numericUserId = toNumber(userId) || 0;
-
-  console.log("Original userId:", userId);
-  console.log("Converted numericUserId:", numericUserId);
+  // Oracle procedure declares IN_USERID as VARCHAR2.
+  const numericUserId =
+    userId === null || userId === undefined || userId === ""
+      ? null
+      : String(userId);
 
   const sql = `
     BEGIN
@@ -342,14 +343,19 @@ async function insertWaterApplication(params) {
         :in_Docstring,
         :IN_ZoneId,
         :in_source,
+        :in_address,
         :in_ServId,
-        :in_ownername,
-        :in_usagetype,
-        :in_detAppliName,
-        :in_detMobile,
-        :in_detAadhaar,
-        :in_detEmail,
-        :in_detAddress,
+        :in_mraplifnm,
+        :in_mraplimdlnm,
+        :in_mraplilstnm,
+        :in_mraddress,
+        :in_mrconsfnm,
+        :in_mrconsmdnm,
+        :in_mrconslstnm,
+        :in_coownadress,
+        :in_mrcoownadress,
+        :in_nwremark,
+        :in_reson,
         :out_errcode,
         :out_ErrMsg,
         :Out_DocStr,
@@ -358,29 +364,32 @@ async function insertWaterApplication(params) {
     END;
   `;
 
-  const fullName = `${afName || ''} ${amName || ''} ${alName || ''}`.trim();
-
   const binds = {
-    // ====== FIXED: Use numericUserId instead of Number(userId) ======
-    IN_USERID: numericUserId,  // <-- FIXED
+    // Required procedure inputs
+    IN_USERID: numericUserId,
     IN_AppID: 0,
     in_ulbID: toNumber(ulbId),
+
     IN_AppliFName: afName || null,
     IN_AppliMName: amName || null,
     IN_AppliLName: alName || null,
+
     IN_MobNO: mobileNo || null,
     IN_EMAIL: email || null,
     IN_AADHARNO: aadharNo || null,
     IN_PROPNO: propNo || null,
     IN_RESNO: resNo || null,
+
     IN_CONFName: conFName || null,
     IN_CONMName: conMName || null,
     IN_CONLName: conLName || null,
+
     IN_CONMobNO: conMobNo || null,
     IN_CONEMAIL: conEmail || null,
     IN_CONAADHARNO: conAadharNo || null,
     IN_CONPROPNO: conPropNo || null,
     IN_CONRESNO: conResNo || null,
+
     IN_COOFLAG: cooFlag || null,
     IN_COOFName1: cooFName1 || null,
     IN_COOMName1: cooMName1 || null,
@@ -388,6 +397,7 @@ async function insertWaterApplication(params) {
     IN_COOFName2: cooFName2 || null,
     IN_COOMName2: cooMName2 || null,
     IN_COOLName2: cooLName2 || null,
+
     IN_CONTYPEID: toNumber(connType),
     IN_CONSIZEID: toNumber(connSize),
     IN_USAGETYPEID: toNumber(usageType),
@@ -397,35 +407,52 @@ async function insertWaterApplication(params) {
     IN_NOOFCON: toNumber(noOfConn),
     IN_CONSTATUSID: toNumber(connStatus),
     IN_BUSICERTID: toNumber(busiCert),
+
     IN_BILLINGTYPE: billingType || null,
     IN_GOVPROPFLAG: govPropFlag || null,
     in_Docstring: docString || null,
     IN_ZoneId: toNumber(zoneId),
     in_source: appSource || "WEB",
-    in_ServId: toNumber(serviceId),
-    in_ownername: fullName || null,
-    in_usagetype: null,
-    in_detAppliName: fullName || null,
-    in_detMobile: mobileNo || null,
-    in_detAadhaar: aadharNo || null,
-    in_detEmail: email || null,
-    in_detAddress: address || null,
 
-    // ====== OUTPUT PARAMETERS ======
+    // Existing frontend field
+    in_address: address || null,
+    in_ServId: toNumber(serviceId),
+
+    // Newly added procedure parameters:
+    // Use supplied values when available; otherwise bind NULL.
+    in_mraplifnm: afNameMr || null,
+    in_mraplimdlnm: amNameMr || null,
+    in_mraplilstnm: alNameMr || null,
+    in_mraddress: addressMr || null,
+
+    in_mrconsfnm: conFNameMr || null,
+    in_mrconsmdnm: conMNameMr || null,
+    in_mrconslstnm: conLNameMr || null,
+
+    in_coownadress: cooAddress || null,
+    in_mrcoownadress: cooAddressMr || null,
+
+    in_nwremark: remark || null,
+    in_reson: reason || null,
+
+    // Output parameters
     out_errcode: {
       dir: oracledb.BIND_OUT,
       type: oracledb.NUMBER,
     },
+
     out_ErrMsg: {
       dir: oracledb.BIND_OUT,
       type: oracledb.STRING,
       maxSize: 500,
     },
+
     Out_DocStr: {
       dir: oracledb.BIND_OUT,
       type: oracledb.STRING,
-      maxSize: 500,
+      maxSize: 1500,
     },
+
     out_AppliNo: {
       dir: oracledb.BIND_OUT,
       type: oracledb.STRING,
@@ -433,15 +460,17 @@ async function insertWaterApplication(params) {
     },
   };
 
-  console.log("=== DEBUG: Procedure Call ===");
-  console.log("IN_USERID (Number):", numericUserId);
-  console.log("in_ulbID:", toNumber(ulbId));
-  console.log("in_ServId:", toNumber(serviceId));
-  console.log("Full Name:", fullName);
-  console.log("=============================");
+  console.log("=== Water Application Procedure Call ===");
+  console.log("User ID:", numericUserId);
+  console.log("ULB ID:", binds.in_ulbID);
+  console.log("Service ID:", binds.in_ServId);
+  console.log("Zone ID:", binds.IN_ZoneId);
+  console.log("========================================");
 
   const result = await executeProcedureTMC({ sql, binds });
-  console.log("Result: ", result);
+
+  console.log("Water Application Procedure Result:", result);
+
   return result;
 }
 

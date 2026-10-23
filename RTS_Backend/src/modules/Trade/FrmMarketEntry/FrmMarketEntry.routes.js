@@ -26,7 +26,7 @@ router.post("/getzonebyward", auth(), controller.getZoneByWard);
 router.post("/getlicensetype", auth(), controller.getLicenseType);
 
 // GET TRADE CATEGORY
-router.post("/gettradecategory", auth(), controller.getTradeCategory);
+router.post("/gettradecategory",  controller.getTradeCategory);
 
 // GET TRADE DETAILS
 router.post("/gettradedetails", auth(), controller.getTradeDetails);
