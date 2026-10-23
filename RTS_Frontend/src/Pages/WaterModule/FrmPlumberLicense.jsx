@@ -445,6 +445,8 @@ const FrmPlumberLicense = () => {
                     }
                 );
             } else {
+                const textOrDot = (value) => value == null || String(value).trim() === "" ? "." : String(value).trim();
+
                 const renewalPayload = {
                     userId: String(userId),
                     licenseId: 0,
@@ -452,16 +454,24 @@ const FrmPlumberLicense = () => {
                     ulbid: Number(ulbId),
                     servid: Number(serviceId),
                     source,
+                    zoneid: Number(values.zoneId),
                     renewdt: formatOracleDate(values.renewalDate),
                     fromdt: formatOracleDate(values.fromDate),
                     todt: formatOracleDate(values.toDate),
                     appliFName: values.renewalFirstName.trim(),
                     appliMName: values.renewalMiddleName.trim(),
                     appliLName: values.renewalLastName.trim(),
-                    detMobile: values.renewalMobile.trim(),
-                    detAadhaar: values.renewalAadhaar.trim(),
+                    detMobile: String(values.renewalMobile).trim(),
                     detEmail: values.renewalEmail.trim(),
                     detAddress: values.renewalAddress.trim(),
+                    appliDOB: values.renewalDOB ? formatOracleDate(values.renewalDOB) : null,
+                    appliScndMobNo: values.renewalSecondMobile ? Number(values.renewalSecondMobile) : 0,
+                    appliEducation: textOrDot(values.renewalEducation),
+                    appliLcnDate: values.renewalOldLicenseDate ? formatOracleDate(values.renewalOldLicenseDate) : null,
+                    appliFNameMar: textOrDot(values.renewalFirstNameMar),
+                    appliMNameMar: textOrDot(values.renewalMiddleNameMar),
+                    appliLNameMar: textOrDot(values.renewalLastNameMar),
+                    detAddressMar: textOrDot(values.renewalAddressMar),
                 };
 
                 Swal.fire({
@@ -645,18 +655,18 @@ const FrmPlumberLicense = () => {
                                         <Select
                                             value={values.zoneId}
                                             onValueChange={(value) => {
-                                            setFieldValue("zoneId", value);
+                                                setFieldValue("zoneId", value);
                                             }}
                                         >
                                             <SelectTrigger className="w-full h-9">
-                                            <SelectValue placeholder="-- Select Zone --" />
+                                                <SelectValue placeholder="-- Select Zone --" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                            {zones.map((zone) => (
-                                                <SelectItem key={zone.WARDID} value={String(zone.WARDID)}>
-                                                {zone.WARDNAME}
-                                                </SelectItem>
-                                            ))}
+                                                {zones.map((zone) => (
+                                                    <SelectItem key={zone.WARDID} value={String(zone.WARDID)}>
+                                                        {zone.WARDNAME}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
