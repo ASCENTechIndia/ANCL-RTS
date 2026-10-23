@@ -271,12 +271,12 @@ const getApplicationDetailsRepo = async ({ deptId, servId, wardId, fromDate, toD
         (
           SELECT
             t.STEP || '-' || t.STATUS
-          FROM admins.vw_track t
+          FROM admins.vw_track_new t
           WHERE t.APPLINO = det.APPLINO
             AND t.ULBID = det.ULBID
             AND t.STAGEID = (
               SELECT MAX(t2.STAGEID)
-              FROM admins.vw_track t2
+              FROM admins.vw_track_new t2
               WHERE t2.APPLINO = det.APPLINO
                 AND t2.ULBID = det.ULBID
             )

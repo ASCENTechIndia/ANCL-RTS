@@ -53,16 +53,12 @@ const getLicenseTypeService = async () => {
 // ============================================================
 // GET TRADE CATEGORY
 // ============================================================
-const getTradeCategoryService = async (licenseType, jalanShil) => {
+const getTradeCategoryService = async (licenseType) => {
   if (!licenseType) {
     throw new Error("License Type is required.");
   }
 
-  if (!jalanShil) {
-    throw new Error("Jalan Shil is required.");
-  }
-
-  return await repo.getTradeCategoryRepo(licenseType, jalanShil);
+  return await repo.getTradeCategoryRepo(licenseType);
 };
 
 // ============================================================
@@ -374,16 +370,13 @@ const documentInsertService = async (data) => {
 // ============================================================
 // GET TRADE CATEGORY BY JWALAN STATUS
 // ============================================================
-const getTradeCategoryByJwalanService = async (jwalanshilStatus, type) => {
-  if (!jwalanshilStatus) {
-    throw new Error("Jwalan status is required.");
-  }
+const getTradeCategoryByJwalanService = async (type) => {
 
   if (!type) {
     throw new Error("Type is required.");
   }
 
-  return await repo.getTradeCategoryByJwalanRepo(jwalanshilStatus, type);
+  return await repo.getTradeCategoryByJwalanRepo(type);
 };
 
 const getZoneByWardService = async (wardId, ulbId) => {

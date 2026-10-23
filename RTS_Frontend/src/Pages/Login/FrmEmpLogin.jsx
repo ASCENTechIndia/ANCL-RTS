@@ -1,3 +1,4 @@
+
 // import { useState } from "react";
 // import { Formik, Form } from "formik";
 // import { motion } from "framer-motion";
@@ -9,7 +10,8 @@
 // import { Label } from "@/components/ui/label";
 // import { UserIcon } from "@/components/icons/user";
 // import { LockIcon } from "@/components/icons/lock";
-// import { Eye, EyeOff, ArrowRight, Building2 } from "lucide-react";
+// import { ShieldCheckIcon } from "@/components/icons/shield-check";
+// import { Eye, EyeOff, ArrowRight, Building2, RefreshCw } from "lucide-react";
 // import { useAuth } from "@/context/AuthContext";
 
 // const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -18,6 +20,26 @@
 //     const navigate = useNavigate();
 //     const { login } = useAuth();
 //     const [showPassword, setShowPassword] = useState(false);
+//     const [captchaValue, setCaptchaValue] = useState(generateCaptcha());
+
+//     function generateCaptcha() {
+//         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//         let captcha = "";
+
+//         for (let i = 0; i < 5; i++) {
+//             captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+//         }
+
+//         return captcha;
+//     }
+
+//     const refreshCaptcha = () => {
+//         setCaptchaValue(generateCaptcha());
+//     };
+
+//     const blockClipboard = (e) => {
+//         e.preventDefault();
+//     };
 
 //     const showError = (message) => {
 //         Swal.fire({
@@ -31,6 +53,7 @@
 //     const handleLogin = async (values) => {
 //         const userId = values.userId.trim();
 //         const password = values.password.trim();
+//         const captcha = values.captcha.trim();
 
 //         if (!userId) {
 //             showError("Please enter User ID");
@@ -39,6 +62,17 @@
 
 //         if (!password) {
 //             showError("Please enter Password");
+//             return;
+//         }
+
+//         if (!captcha) {
+//             showError("Please enter CAPTCHA");
+//             return;
+//         }
+
+//         if (captcha !== captchaValue) {
+//             showError("Invalid CAPTCHA");
+//             refreshCaptcha();
 //             return;
 //         }
 
@@ -54,7 +88,13 @@
 //                 },
 //             });
 
-//             const response = await axios.post(`${BASE_URL}/api/auth/employee-login`,{ userId, password });
+//             const response = await axios.post(
+//                 `${BASE_URL}/api/auth/employee-login`,
+//                 {
+//                     userId,
+//                     password,
+//                 }
+//             );
 
 //             const result = response.data;
 //             const loginData = result?.data;
@@ -62,25 +102,25 @@
 //             if (!result?.ok) {
 //                 throw new Error(result?.message || "Login failed");
 //             }
+
 //             if (!loginData?.success || Number(loginData?.errCode) !== 9999) {
 //                 throw new Error(loginData?.message || "Invalid User ID or Password");
 //             }
+
 //             if (!loginData?.token || !loginData?.user || !loginData?.refreshToken) {
 //                 throw new Error("Login token or user information was not returned");
 //             }
 
 //             Swal.close();
 
-//             login(loginData.user, loginData.token, loginData?.refreshToken);
-
-//             // if (String(loginData.user?.otpValidate).toUpperCase() === "Y") {
-//             //     navigate("/FrmVerifyOTP");
-//             //     return;
-//             // }
+//             login(
+//                 loginData.user,
+//                 loginData.token,
+//                 loginData?.refreshToken
+//             );
 
 //             await Swal.fire({
 //                 icon: "success",
-//                 // title: "Welcome Back!",
 //                 text: `Hello ${loginData.user?.username || ""}`,
 //                 timer: 1200,
 //                 showConfirmButton: false,
@@ -90,11 +130,15 @@
 //             navigate("/home");
 //         } catch (error) {
 //             Swal.close();
+//             refreshCaptcha();
 
-//             const errorMessage = error?.response?.data?.message || error?.response?.data?.error || "Unable to login. Please try again.";
+//             const errorMessage =
+//                 error?.response?.data?.message ||
+//                 error?.response?.data?.error ||
+//                 error?.message ||
+//                 "Unable to login. Please try again.";
 
 //             Swal.fire({
-//                 // icon: "error",
 //                 title: "Login Failed",
 //                 text: errorMessage,
 //                 confirmButtonColor: "#184aa6",
@@ -103,7 +147,7 @@
 //     };
 
 //     return (
-//         <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-linear-to-br from-blue-50 via-white to-sky-100 ">
+//         <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-linear-to-br from-blue-50 via-white to-sky-100">
 //             <motion.div
 //                 initial={{ opacity: 0, y: 30, scale: 0.97 }}
 //                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -123,12 +167,27 @@
 //                     </motion.div>
 
 //                     <div className="mt-5 text-center">
-//                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#184aa6]">RTS Portal</p>
-//                         <h1 className="mt-2 text-2xl font-bold text-slate-800 sm:text-3xl">Employee Login</h1>
-//                         <p className="mt-2 text-sm text-slate-500">Sign in to access your workspace</p>
+//                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#184aa6]">
+//                             RTS Portal
+//                         </p>
+
+//                         <h1 className="mt-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+//                             Employee Login
+//                         </h1>
+
+//                         <p className="mt-2 text-sm text-slate-500">
+//                             Sign in to access your workspace
+//                         </p>
 //                     </div>
 
-//                     <Formik initialValues={{ userId: "", password: "" }} onSubmit={handleLogin}>
+//                     <Formik
+//                         initialValues={{
+//                             userId: "",
+//                             password: "",
+//                             captcha: "",
+//                         }}
+//                         onSubmit={handleLogin}
+//                     >
 //                         {({ values, handleChange }) => (
 //                             <Form className="mt-7 space-y-5">
 //                                 <motion.div
@@ -138,23 +197,27 @@
 //                                 >
 //                                     <div className="grid gap-2">
 //                                         <div className="flex items-center gap-1">
-//                                             <UserIcon size={19} className="shrink-0 text-[#184aa6]"/>
+//                                             <UserIcon
+//                                                 size={19}
+//                                                 className="shrink-0 text-[#184aa6]"
+//                                             />
+
 //                                             <Label text="User ID" required />
 //                                         </div>
 
-//                                         <div className="relative">
-//                                             <Input
-//                                                 id="userId"
-//                                                 name="userId"
-//                                                 type="text"
-//                                                 value={values.userId}
-//                                                 onChange={handleChange}
-//                                                 placeholder="Enter your User ID"
-//                                                 autoComplete="username"
-//                                                 autoFocus
-//                                                 className="h-11 rounded-xl border-gray-300 bg-white/80 text-slate-800 placeholder:text-slate-400 transition-all hover:border-blue-300 focus-visible:border-[#184aa6] focus-visible:ring-[#184aa6]"
-//                                             />
-//                                         </div>
+//                                         <Input
+//                                             id="userId"
+//                                             name="userId"
+//                                             type="text"
+//                                             value={values.userId}
+//                                             onChange={handleChange}
+//                                             placeholder="Enter your User ID"
+//                                             autoComplete="username"
+//                                             autoFocus
+//                                             onCopy={blockClipboard}
+//                                             onPaste={blockClipboard}
+//                                             className="h-11 rounded-xl border-gray-300 bg-white/80 text-slate-800 placeholder:text-slate-400 transition-all hover:border-blue-300 focus-visible:border-[#184aa6] focus-visible:ring-[#184aa6]"
+//                                         />
 //                                     </div>
 //                                 </motion.div>
 
@@ -165,7 +228,11 @@
 //                                 >
 //                                     <div className="grid gap-2">
 //                                         <div className="flex items-center gap-1">
-//                                             <LockIcon size={19} className="shrink-0 text-[#184aa6]" />
+//                                             <LockIcon
+//                                                 size={19}
+//                                                 className="shrink-0 text-[#184aa6]"
+//                                             />
+
 //                                             <Label text="Password" required />
 //                                         </div>
 
@@ -178,6 +245,8 @@
 //                                                 onChange={handleChange}
 //                                                 placeholder="Enter your password"
 //                                                 autoComplete="current-password"
+//                                                 onCopy={blockClipboard}
+//                                                 onPaste={blockClipboard}
 //                                                 className="h-11 rounded-xl border-gray-300 bg-white/80 pr-12 text-slate-800 placeholder:text-slate-400 transition-all hover:border-blue-300 focus-visible:border-[#184aa6] focus-visible:ring-[#184aa6]"
 //                                             />
 
@@ -187,18 +256,76 @@
 //                                                     setShowPassword((prev) => !prev)
 //                                                 }
 //                                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-[#184aa6]"
-//                                                 aria-label={showPassword ? "Hide password" : "Show password"}
+//                                                 aria-label={
+//                                                     showPassword
+//                                                         ? "Hide password"
+//                                                         : "Show password"
+//                                                 }
 //                                             >
-//                                                 {showPassword ? (<EyeOff size={19} />) : (<Eye size={19} />)}
+//                                                 {showPassword ? (
+//                                                     <EyeOff size={19} />
+//                                                 ) : (
+//                                                     <Eye size={19} />
+//                                                 )}
 //                                             </button>
 //                                         </div>
 //                                     </div>
 //                                 </motion.div>
 
 //                                 <motion.div
+//                                     initial={{ opacity: 0, x: 15 }}
+//                                     animate={{ opacity: 1, x: 0 }}
+//                                     transition={{ delay: 0.25 }}
+//                                 >
+//                                     <div className="grid gap-2">
+//                                         <div className="flex items-center gap-1">
+//                                             <ShieldCheckIcon
+//                                                 size={19}
+//                                                 className="shrink-0 text-[#184aa6]"
+//                                             />
+
+//                                             <Label text="CAPTCHA" required />
+//                                         </div>
+
+//                                         <div className="flex gap-2">
+//                                             <Input
+//                                                 value={captchaValue}
+//                                                 readOnly
+//                                                 tabIndex={-1}
+//                                                 className="h-11 flex-1 cursor-default select-none border-0 bg-[#d7e2f8] text-center font-mono text-lg font-bold tracking-[5px] text-[#184aa6]"
+//                                             />
+
+//                                             <Button
+//                                                 type="button"
+//                                                 variant="outline"
+//                                                 onClick={refreshCaptcha}
+//                                                 title="Refresh CAPTCHA"
+//                                                 className="h-11 w-11 shrink-0 border-gray-300"
+//                                             >
+//                                                 <RefreshCw size={17} />
+//                                             </Button>
+//                                         </div>
+
+//                                         <Input
+//                                             id="captcha"
+//                                             name="captcha"
+//                                             type="text"
+//                                             value={values.captcha}
+//                                             onChange={handleChange}
+//                                             placeholder="Enter CAPTCHA"
+//                                             autoComplete="off"
+//                                             onCopy={blockClipboard}
+//                                             onPaste={blockClipboard}
+//                                             maxLength={5}
+//                                             className="h-11 rounded-xl border-gray-300 bg-white/80 text-slate-800 placeholder:text-slate-400 transition-all hover:border-blue-300 focus-visible:border-[#184aa6] focus-visible:ring-[#184aa6]"
+//                                         />
+//                                     </div>
+//                                 </motion.div>
+
+//                                 <motion.div
 //                                     initial={{ opacity: 0, y: 10 }}
 //                                     animate={{ opacity: 1, y: 0 }}
-//                                     transition={{ delay: 0.25 }}
+//                                     transition={{ delay: 0.3 }}
 //                                     whileHover={{ scale: 1.01 }}
 //                                     whileTap={{ scale: 0.98 }}
 //                                 >
@@ -207,6 +334,7 @@
 //                                         className="group h-11 w-full rounded-xl bg-linear-to-r from-[#184aa6] to-blue-500 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-blue-500 hover:shadow-blue-500/40"
 //                                     >
 //                                         Login
+
 //                                         <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
 //                                     </Button>
 //                                 </motion.div>
@@ -374,6 +502,7 @@ const FrmEmpLogin = () => {
                                         spellCheck="false"
                                         className={`h-11 rounded-xl border-gray-300 bg-white/80 text-slate-800 placeholder:text-slate-400 transition-all hover:border-blue-300 focus-visible:border-[#184aa6] focus-visible:ring-[#184aa6] ${touched.loginId && errors.loginId ? "border-red-400" : ""}`}
                                     />
+
                                 </div>
 
                                 <div className="grid gap-2">
@@ -408,6 +537,7 @@ const FrmEmpLogin = () => {
                                             {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
                                         </button>
                                     </div>
+
                                 </div>
 
                                 <div className="grid gap-2">

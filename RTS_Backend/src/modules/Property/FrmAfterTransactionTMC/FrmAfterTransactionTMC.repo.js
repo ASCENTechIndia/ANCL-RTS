@@ -6,7 +6,7 @@ const { executeQueryTMC } = require("../../../db/queryExecutor");
 const getPaymentAcknowledgementRepo = async (data) => {
   try {
     const query = `
-      SELECT
+       SELECT
         var_application_appno appno,
         num_application_noofcopy noofcopy,
         num_application_amount amount,
@@ -30,7 +30,7 @@ const getPaymentAcknowledgementRepo = async (data) => {
 
       FROM aorts_application_det
 
-      INNER JOIN aorts_tmcservice_def
+      INNER JOIN aorts_service_def
         ON num_service_serviceid = num_application_serviceid
 
       INNER JOIN aorts_applicant_infodet

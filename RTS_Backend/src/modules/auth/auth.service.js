@@ -380,10 +380,10 @@ async function employeeLoginService({ corpId = 10001, userId, password }) {
 
   const strInfo = String(result?.strInfo || "");
   const values = strInfo.split("$");
-
-  if (values.length < 9) {
-    throw new AppError("Invalid employee information received from login procedure.", 500);
-  }
+  console.log({values})
+  // if (values.length < 9) {
+  //   throw new AppError("Invalid employee information received from login procedure.", 500);
+  // }
 
   const [procedureCorpId, username, lastLogin, lastLogout, empType, zoneId, ulbId, otpValidate, mobileNo] = values.map((value) => String(value ?? "").trim());
 

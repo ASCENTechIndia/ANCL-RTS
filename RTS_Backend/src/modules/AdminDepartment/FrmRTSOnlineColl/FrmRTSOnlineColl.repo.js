@@ -24,12 +24,13 @@ async function fetchApplicationsSummary({ fromDate, toDate, deptId }) {
       SUM(num_application_amount) AS amount,
       COUNT(num_application_amount) AS appcount
     FROM aorts_application_det
-    INNER JOIN aorts_tmcservice_def 
+    INNER JOIN aorts_service_def 
       ON num_service_serviceid = num_application_serviceid
     WHERE 1=1
       AND TRUNC(dat_application_recieptdate) >= TO_DATE(:fromDate, 'dd/MM/yyyy')
       AND TRUNC(dat_application_recieptdate) <= TO_DATE(:toDate, 'dd/MM/yyyy')
       AND var_application_recieptrefno IS NOT NULL
+    group by num_application_serviceid,var_service_eng_name
   `;
 
   if (deptId !== 0) {

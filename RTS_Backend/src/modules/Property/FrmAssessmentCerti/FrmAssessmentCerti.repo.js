@@ -39,8 +39,8 @@ async function getDocumentDefinitions(params) {
 
 async function getServicePaymentFlag(serviceId) {
   const query = `
-    SELECT var_service_payflag 
-    FROM aorts_tmcservice_def 
+     SELECT var_service_payflag 
+    FROM aorts_service_def 
     WHERE num_service_serviceid = :serviceId
   `;
 

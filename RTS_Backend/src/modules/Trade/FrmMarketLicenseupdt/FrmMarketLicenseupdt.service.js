@@ -416,12 +416,12 @@ async function updateTradeDirectorImageService({
 }
 
 
-async function getTradeTypesByCategoryService({ categoryId, categoryType, jwalanshilstat }) {
+async function getTradeTypesByCategoryService({ categoryId, categoryType }) {
   if (!categoryId) {
     throw new AppError("Category ID is required", 400);
   }
 
-  const result = await repo.getTradeTypesByCategory({categoryId, categoryType, jwalanshilstat});
+  const result = await repo.getTradeTypesByCategory({categoryId, categoryType});
 
   if (!result.success) {
     throw new AppError(result.error, 500);
@@ -532,27 +532,27 @@ async function submitTradeApplicationService(payload) {
     rate,
     wardid,
     zoneid,
-    Servid,
+    // Servid,
     Source,
-    amount,
+    // amount,
 
-    Gender,
-    Jwalan,
-    Relation,
-    Adhikrutta,
-    LicencType,
-    TradeType,
+    // Gender,
+    // Jwalan,
+    // Relation,
+    // Adhikrutta,
+    // LicencType,
+    // TradeType,
 
-    CloseDt,
-    LicOwner,
-    LicType,
-    LicFrmDt,
-    LicToDt,
+    // CloseDt,
+    // LicOwner,
+    // LicType,
+    // LicFrmDt,
+    // LicToDt,
 
-    BusiName,
-    BusiSwarup,
-    BusiAddr,
-    type,
+    // BusiName,
+    // BusiSwarup,
+    // BusiAddr,
+    // type,
   } = payload;
 
 
@@ -626,27 +626,27 @@ async function submitTradeApplicationService(payload) {
     rate,
     wardid,
     zoneid,
-    Servid,
+    // Servid,
     Source,
-    amount,
+    // amount,
 
-    Gender,
-    Jwalan,
-    Relation,
-    Adhikrutta,
-    LicencType,
-    TradeType,
+    // Gender,
+    // Jwalan,
+    // Relation,
+    // Adhikrutta,
+    // LicencType,
+    // TradeType,
 
-    CloseDt,
-    LicOwner,
-    LicType,
-    LicFrmDt,
-    LicToDt,
+    // CloseDt,
+    // LicOwner,
+    // LicType,
+    // LicFrmDt,
+    // LicToDt,
 
-    BusiName,
-    BusiSwarup,
-    BusiAddr,
-    type,
+    // BusiName,
+    // BusiSwarup,
+    // BusiAddr,
+    // type,
   });
 
 

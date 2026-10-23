@@ -18,6 +18,7 @@ async function insertNoDuesCertificateApplication(params) {
     taxAmount,
     aadharNo,
     appSource,
+    ulbid,
   } = params;
 
   console.log("Insert No Dues Application:", {
@@ -36,6 +37,7 @@ async function insertNoDuesCertificateApplication(params) {
     taxAmount,
     aadharNo,
     appSource,
+    ulbid,
   });
 
   const sql = `
@@ -56,6 +58,7 @@ async function insertNoDuesCertificateApplication(params) {
         :in_Taxamount,
         :in_AadharNo,
         :in_source,
+        :in_ulbid,
         :out_errcode,
         :out_ErrMsg,
         :out_applino
@@ -77,9 +80,9 @@ async function insertNoDuesCertificateApplication(params) {
     in_Mobile: mobile,
     in_Emailid: email || null,
     in_Taxamount: taxAmount || 0,
-    in_AadharNo: aadharNo || 0,
+    in_AadharNo: aadharNo || 0,  
     in_source: appSource || "",
-
+    in_ulbid: ulbid,
     out_errcode: {
       dir: oracledb.BIND_OUT,
       type: oracledb.NUMBER,

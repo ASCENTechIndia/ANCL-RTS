@@ -11,29 +11,30 @@ import { Building2, Baby, Landmark, Map, Store, Heart, Flame, FileCheck, Stethos
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-const ULB3_DEPARTMENTS = [
-    { id: 1, key: "BirthDeath", name: "Birth & Death", icon: Baby },
-    { id: 7, key: "Property", name: "Property", icon: Landmark },
-    { id: 23, key: "Town Planning", name: "Town Planning", icon: Map },
-    // { id: 18, key: "Market", name: "Market", icon: Store },
-    { id: 25, key: "Marraige", name: "Marriage", icon: Heart },
-    { id: 10, key: "FireBrigade", name: "Fire Brigade", icon: Flame },
-    { id: 290, key: "NOC", name: "NOC", icon: FileCheck },
-    // { id: 1901, key: "Bombay Nursing", name: "Bombay Nursing", icon: Stethoscope },
-    { id: 24, key: "Water", name: "Water", icon: Droplets },
-    { id: 841, key: "TradeLicense", name: "Market / Trade License", icon: BriefcaseBusiness },
-    { id: 26, key: "PWD", name: "PWD", icon: Wrench },
-    { id: 1041, key: "Sewerage", name: "Sewerage", icon: Waves },
-    { id: 503, key: "Health", name: "Health", icon: HardHat },
-    { id: 1042, key: "TreeCutting", name: "Tree Cutting", icon: TreePine },
-    // { id: 725, key: "InformationRelations", name: "Information Relations", icon: Megaphone },
-    // { id: 689, key: "Encroachment", name: "Encroachment", icon: ShieldAlert },
-    { id: 683, key: "SolidWaste", name: "Solid Waste", icon: Trash2 },
-    { id: 3, key: "Advertisement", name: "Advertisement", icon: Megaphone },
-];
+// const ULB3_DEPARTMENTS = [
+//     { id: 1, key: "BirthDeath", name: "Birth & Death", icon: Baby },
+//     { id: 7, key: "Property", name: "Property", icon: Landmark },
+//     { id: 23, key: "Town Planning", name: "Town Planning", icon: Map },
+//     // { id: 18, key: "Market", name: "Market", icon: Store },
+//     { id: 25, key: "Marraige", name: "Marriage", icon: Heart },
+//     { id: 10, key: "FireBrigade", name: "Fire Brigade", icon: Flame },
+//     { id: 290, key: "NOC", name: "NOC", icon: FileCheck },
+//     // { id: 1901, key: "Bombay Nursing", name: "Bombay Nursing", icon: Stethoscope },
+//     { id: 24, key: "Water", name: "Water", icon: Droplets },
+//     { id: 841, key: "TradeLicense", name: "Market / Trade License", icon: BriefcaseBusiness },
+//     { id: 26, key: "PWD", name: "PWD", icon: Wrench },
+//     { id: 1041, key: "Sewerage", name: "Sewerage", icon: Waves },
+//     { id: 503, key: "Health", name: "Health", icon: HardHat },
+//     { id: 1042, key: "TreeCutting", name: "Tree Cutting", icon: TreePine },
+//     // { id: 725, key: "InformationRelations", name: "Information Relations", icon: Megaphone },
+//     // { id: 689, key: "Encroachment", name: "Encroachment", icon: ShieldAlert },
+//     { id: 683, key: "SolidWaste", name: "Solid Waste", icon: Trash2 },
+//     { id: 3, key: "Advertisement", name: "Advertisement", icon: Megaphone },
+// ];
 
 const Layout = () => {
     const { user, requestInitialized } = useAuth();
+    console.log({user})
     const ulbId = user?.ulbId;
     const [departments, setDepartments] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
@@ -44,10 +45,10 @@ const Layout = () => {
         }
 
         const fetchDepartments = async () => {
-            if (ulbId == 3) {
-                setDepartments(ULB3_DEPARTMENTS.map((department) => ({ ...department, ulbId: 3 })));
-                return;
-            }
+            // if (ulbId == 3) {
+            //     setDepartments(ULB3_DEPARTMENTS.map((department) => ({ ...department, ulbId: 3 })));
+            //     return;
+            // }
 
             Swal.fire({
                 text: "Loading departments..",
@@ -76,7 +77,7 @@ const Layout = () => {
                         icon: Building2,
                         seqId: item.SEQID,
                         entryId: item.ENTRYID,
-                        path: item.VAR_ENTRY_PATH,
+                        // path: item.VAR_ENTRY_PATH,
                         deptName: item.DEPTNAME,
                         ulbId: item.ULBID,
                     }));
@@ -87,7 +88,6 @@ const Layout = () => {
                 setDepartments([]);
 
                 await Swal.fire({
-                    icon: "error",
                     text: error?.response?.data?.message || error?.response?.data?.error || "Unable to fetch departments.",
                 });
             } finally {

@@ -55,10 +55,10 @@ const getIllegalTypeRepo = async () => {
 // ============================================================
 const getApplicantTypeRepo = async (ulbId) => {
   const query = `
-    SELECT
+      SELECT
       var_applitype_name,
       num_applitype_id
-    FROM aorts_applitype_mas
+    FROM  market.aomk_applitype_mas
     WHERE num_applitype_ulbid = :ulbId
       AND var_applitype_flag = 'Y'
   `;
@@ -75,10 +75,10 @@ const getApplicantTypeRepo = async (ulbId) => {
 // ============================================================
 const getWardRepo = async (ulbId) => {
   const query = `
-    SELECT DISTINCT
+     SELECT DISTINCT
       wardname,
       wardid
-    FROM vw_zonemas
+    FROM prop.vw_zonemas
     WHERE ulbid = :ulbId
   `;
 
@@ -97,7 +97,7 @@ const getLicenseTypeRepo = async () => {
     SELECT
       var_licensetype_name,
       num_licensetype_id
-    FROM aorts_licensetype_mas
+    FROM market.aomk_licensetype_mas
   `;
 
   const result = await executeQueryTMC(query);
@@ -108,22 +108,20 @@ const getLicenseTypeRepo = async () => {
 // ============================================================
 // GET TRADE CATEGORY
 // ============================================================
-const getTradeCategoryRepo = async (licenseType, jalanShil) => {
+const getTradeCategoryRepo = async (licenseType) => {
   const query = `
     SELECT
       var_tradecategory_name,
-      num_category_catgryid
-    FROM aorts_category_confg
-    INNER JOIN aorts_tradecategory_mas
-      ON num_tradecategory_id = num_category_catgryid
+      num_tradecategory_id
+    FROM     market.aomk_tradecatconfig_mas
+    INNER JOIN market.aomk_tradecategory_mas
+      ON num_tradecategory_id = num_tradecatconf_tradecatid
     WHERE var_tradecategory_flag = 'Y'
-      AND var_category_type = :licenseType
-      AND var_category_jwalanshilstat = :jalanShil
+      AND num_tradecategory_id = :licenseType
   `;
 
   const result = await executeQueryTMC(query, {
     licenseType,
-    jalanShil,
   });
 
   return result.rows || [];
@@ -134,11 +132,11 @@ const getTradeCategoryRepo = async (licenseType, jalanShil) => {
 // ============================================================
 const getTradeDetailsRepo = async (ulbId) => {
   const query = `
-    SELECT
+     SELECT
       num_trade_id AS tradeid,
       var_trade_name AS tradename,
       'N' AS flag
-    FROM aorts_trade_mas
+    FROM market.aomk_trade_mas 
     WHERE var_trade_flag = 'Y'
       AND num_trade_ulbid = :ulbId
   `;
@@ -211,12 +209,12 @@ const getTradeTypeDetailsRepo = async (ulbId, tradeCategoryId, tradeTypeId) => {
       num_rate_id AS tradetypeid,
       0 AS Rate,
       'N' AS flag
-    FROM aorts_tradetypes_mas
-    INNER JOIN aorts_tradecategory_mas
+    FROM  market.aomk_tradetype_mas  
+    INNER JOIN  market.aomk_tradecategory_mas  
       ON aomk_tradetype_tradecategoryid = num_tradecategory_id
      AND aomk_tradetype_ulbid = num_tradecategory_ulbid
-    INNER JOIN aorts_rate_mas
-      ON num_rate_tradetypename = num_tradetype_id
+    INNER JOIN market.aomk_rate_mas
+      ON num_rate_tradetypeid = num_tradetype_id
      AND num_rate_ulbid = aomk_tradetype_ulbid
     WHERE var_tradetype_flag = 'Y'
       AND aomk_tradetype_ulbid = :ulbId
@@ -265,7 +263,7 @@ const getApplicationDetailsRepo = async (applicationId, ulbId) => {
       dat_appli_todt,
       NVL(num_appli_amount, 0) AS amount,
       num_appli_licensetypeid
-    FROM aomk_appli_mas
+    FROM market.aomk_appli_mas
     WHERE num_appli_id = :applicationId
       AND num_appli_ulbid = :ulbId
   `;
@@ -654,7 +652,7 @@ const updateDirectorImagesRepo = async (data) => {
         }
 
         const query = `
-          UPDATE aorts_applidirector_det
+           UPDATE market.aomk_applidirector_det
           SET blo_applitype_photo = :BlobDirectorImg
           WHERE num_applidirector_id = :directorId
             AND num_applidirector_appliid = :appid
@@ -1091,22 +1089,20 @@ const documentInsertRepo = async (data) => {
 // ============================================================
 // GET TRADE CATEGORY BY JWALAN STATUS
 // ============================================================
-const getTradeCategoryByJwalanRepo = async (jwalanshilStatus, type) => {
+const getTradeCategoryByJwalanRepo = async (type) => {
   const query = `
-    SELECT
+     SELECT
       var_tradecategory_name,
-      num_category_catgryid
-    FROM aorts_category_confg
-    INNER JOIN aorts_tradecategory_mas
-      ON num_tradecategory_id = num_category_catgryid
+      num_tradecategory_id
+    FROM  market.aomk_tradecatconfig_mas
+    INNER JOIN market.aomk_tradecategory_mas  
+      ON num_tradecategory_id = num_tradecatconf_tradecatid
     WHERE var_tradecategory_flag = 'Y'
-      AND var_category_type = :type
-      AND var_category_jwalanshilstat = :jwalanshilStatus
+      AND num_tradecategory_id = :type
   `;
 
   const result = await executeQueryTMC(query, {
     type,
-    jwalanshilStatus,
   });
 
   return result.rows || [];
@@ -1114,10 +1110,10 @@ const getTradeCategoryByJwalanRepo = async (jwalanshilStatus, type) => {
 
 const getZoneByWardRepo = async (wardId, ulbId) => {
   const query = `
-    SELECT DISTINCT
+      SELECT DISTINCT
       zonename,
       zoneid
-    FROM vw_zonemas
+    FROM prop.vw_zonemas
     WHERE wardid = :wardId
       AND ulbid = :ulbId
   `;
@@ -1131,7 +1127,7 @@ const getZoneByWardRepo = async (wardId, ulbId) => {
 // ============================================================
 const getExistingLicenseDetailsRepo = async (oldLicencNo, ulbId) => {
   const query = `
-    SELECT
+   SELECT
       num_appli_id,
       var_appli_applino,
       var_appli_applidt,
@@ -1159,7 +1155,7 @@ const getExistingLicenseDetailsRepo = async (oldLicencNo, ulbId) => {
       dat_appli_todt,
       NVL(num_appli_amount, 0) AS amount,
       num_appli_licensetypeid
-    FROM aomk_appli_mas
+    FROM market.aomk_appli_mas
     WHERE var_appli_oldlicencno = :oldLicencNo
       AND num_appli_ulbid = :ulbId
     ORDER BY num_appli_id DESC
@@ -1181,8 +1177,8 @@ const getExistingLicenseTradeTypeDetailsRepo = async (applicationId, ulbId) => {
       NVL(num_applitrade_traderate, 0) AS Rate,
       num_rate_tradetypename AS tradetype,
       num_rate_id AS tradetypeid
-    FROM aomk_applitradetyp_det
-    INNER JOIN aomk_rate_mas
+    FROM market.aomk_applitradetyp_det
+    INNER JOIN market.aomk_rate_mas
       ON num_rate_id = num_applitradetype_trdtypid
      AND num_rate_ulbid = num_applitradetyp_ulbid
     WHERE num_applitradetype_appliid = :applicationId
@@ -1198,11 +1194,11 @@ const getExistingLicenseTradeTypeDetailsRepo = async (applicationId, ulbId) => {
 // ============================================================
 const getExistingLicenseTradeDetailsRepo = async (applicationId, ulbId) => {
   const query = `
-    SELECT
+     SELECT
       num_applitrade_id,
       num_applitrade_appliid,
       num_applitrade_tradeid
-    FROM aomk_applitrade_det
+    FROM market.aomk_applitrade_det
     WHERE num_applitrade_appliid = :applicationId
       AND num_applitrade_ulbid = :ulbId
   `;
@@ -1221,7 +1217,7 @@ const getExistingLicenseDirectorDetailsRepo = async (applicationId, ulbId) => {
     connection = await getConnectionTMC();
 
     const query = `
-      SELECT
+         SELECT
         num_applidirector_id AS directorId,
         num_applidirector_aadhaarno AS adharno,
         var_applidirector_name AS dirctorname,
@@ -1233,8 +1229,8 @@ const getExistingLicenseDirectorDetailsRepo = async (applicationId, ulbId) => {
         num_applidirector_applitype AS applitypeid,
         var_applitype_name AS applitypename,
         blo_applitype_photo AS imgDirectorImage
-      FROM aomk_applidirector_det
-      INNER JOIN aomk_applitype_mas
+      FROM market.aomk_applidirector_det
+      INNER JOIN  market.aomk_applitype_mas
         ON num_applitype_id = num_applidirector_applitype
        AND num_applidirector_ulbid = num_applitype_ulbid
       WHERE num_applidirector_appliid = :applicationId
@@ -1293,11 +1289,12 @@ const getExistingLicenseDocumentDetailsRepo = async (applicationId, ulbId) => {
         var_applidoc_doctype AS FileType,
         blo_applidoc_image AS filebyte,
         doctypename
-      FROM view_document_mas
-      LEFT JOIN aomk_applidoc_det
+      FROM market.view_document_mas
+      LEFT JOIN market.aomk_applidoc_det
         ON docid = num_applidoc_docid
        AND num_applidoc_appliid = :applicationId
       WHERE ulbid = :ulbId
+    
     `;
 
     const result = await connection.execute(
@@ -1340,8 +1337,8 @@ const getExistingLicenseDocumentDetailsRepo = async (applicationId, ulbId) => {
 // ============================================================
 const checkLicenseCancelledRepo = async (oldLicencNo) => {
   const query = `
-    SELECT COUNT(num_trade_id) AS id
-    FROM aomk_tradeservice_mas
+     SELECT COUNT(num_trade_id) AS id
+    FROM market.aomk_tradeservice_mas
     WHERE var_trade_servicename = 'TLC'
       AND var_trade_licenseno = :oldLicencNo
   `;

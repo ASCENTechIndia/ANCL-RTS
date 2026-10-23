@@ -122,7 +122,7 @@ const router = createBrowserRouter([
         element: <ForgotPassword />,
       },
       {
-        path: "/app/FrmAfterTransactionTMC",
+        path: "/App/FrmAfterTransactionTMC",
         element: <FrmAfterTransactionTMC />,
       },
     ],
@@ -132,116 +132,116 @@ const router = createBrowserRouter([
     element: <PageLayout />,
     children: [
       {
-        path: "/app/FrmTrackApplication",
+        path: "/FrmTrackApplication",
         element: <FrmTrackApplication />,
       },
       {
-        path: "/app/FrmAppeal",
+        path: "/FrmAppeal",
         element: <FrmAppeal />,
       },
       {
-        path: "/app/FrmAppliFee",
+        path: "/FrmAppliFee",
         element: <FrmAppliFee />,
       },
 
       {
-        path: "app/Step0New",
+        path: "/Step0New",
         element: <Watermodule />,
       },
       {
-        path: "app/FrmWaterRegister",
+        path: "/FrmWaterRegister",
         element: <FrmWaterRegister />,
       },
       {
-        path: "app/FrmPlumberLicense",
+        path: "/FrmPlumberLicense",
         element: <FrmPlumberLicense />,
       },
       {
-        path: "/app/FrmAssessmentCerti",
+        path: "/FrmAssessmentCerti",
         element: <FrmAssessmentCerti />,
       },
       {
-        path: "/app/FrmPropertyTransfer",
+        path: "/FrmPropertyTransfer",
         element: <FrmPropertyTransfer />,
       },
       {
-        path: "/app/FrmNewTaxAssesment",
+        path: "/FrmNewTaxAssesment",
         element: <FrmNewTaxAssesment />,
       },
       {
-        path: "/app/FrmNoDuesCerti",
+        path: "/FrmNoDuesCerti",
         element: <FrmNoDuesCerti />,
       },
       {
-        path: "/app/FrmRebateTax",
+        path: "/FrmRebateTax",
         element: <FrmRebateTax />,
       },
       {
-        path: "/app/FrmPropertyAppel",
+        path: "/FrmPropertyAppel",
         element: <FrmPropertyAppel />,
       },
       {
-        path: "/app/FrmMarketEntry",
+        path: "/FrmMarketEntry",
         element: <FrmMarketEntry />,
       },
       {
-        path: "app/FrmMarketLicenseupdt",
+        path: "/FrmMarketLicenseupdt",
         element: <FrmMarketLicenseUpdt />,
       },
       {
-        path: "/app/FrmFirstAppealDocUpload",
+        path: "/FrmFirstAppealDocUpload",
         element: <FrmFirstAppealDocUpload />,
       },
       {
-        path: "/app/FrmFirstAppeal",
+        path: "/FrmFirstAppeal",
         element: <FrmFirstAppeal />,
       },
       // {
-      //   path: "/app/FrmSecondAppeal",
+      //   path: "/FrmSecondAppeal",
       //   element: <FrmSecondAppeal />,
       // },
       {
-        path: "/app/FrmMarriageRgstn",
+        path: "/FrmMarriageRgstn",
         element: <FrmMarriageRgstn />,
       },
       {
-        path: "/app/FrmServiceApplicationMst",
+        path: "/FrmServiceApplicationMst",
         element: <FrmServiceApplicationMst />,
       },
       {
-        path: "/app/FrmServiceApplicationMstNew",
+        path: "/FrmServiceApplicationMstNew",
         element: <FrmServiceApplicationMstNew />,
       },
       {
-        path: "/app/FrmAppoints",
+        path: "/FrmAppoints",
         element: <FrmAppoints />,
       },
       {
-        path: "/app/FrmRoadCutting",
+        path: "/FrmRoadCutting",
         element: <FrmRoadCutting />,
       },
       {
-        path: "/app/Step0",
+        path: "/Step0",
         element: <Step0 />,
       },
       {
-        path: "/app/FrmWaterAppliEntry",
+        path: "/FrmWaterAppliEntry",
         element: <FrmWaterAppliEntry />,
       },
       {
-        path: "/app/FrmWaterAppliDetails",
+        path: "/FrmWaterAppliDetails",
         element: <FrmWaterAppliDetails />,
       },
       // {
-      //   path: "/app/FrmToursTravel",
+      //   path: "/App/FrmToursTravel",
       //   element: <FrmToursTravels />,
       // },
       {
-        path: "/app/FrmMeatShopNOC",
+        path: "/FrmMeatShopNOC",
         element: <FrmMeatShopNOC />
       },
       {
-        path: "/app/FrmNOCService",
+        path: "/FrmNOCService",
         element: <FrmNOCService />
       }
     ],
@@ -255,68 +255,68 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/App/FrmAppAuthorisationList",
+        path: "/FrmAppAuthorisationList",
         element: <FrmAppAuthorisationList />,
       },
       {
-        path: "/App/FrmAppAuthorisationMst",
+        path: "/FrmAppAuthorisationMst",
         element: <FrmAppAuthorisationMst />,
       },
       {
-        path: "/App/MASTER/FrmDocList",
+        path: "/MASTER/FrmDocList",
         element: <FrmDocList />
       },
       {
-        path: "/App/MASTER/FrmDocMst",
+        path: "/MASTER/FrmDocMst",
         element: <FrmDocMst />
       },
       {
-        path: "/app/FrmServiceDocConfig",
+        path: "/FrmServiceDocConfig",
         element: <FrmServiceDocConfig />
       },
       {
-        path: "/app/Reports/FrmRTSOnlineColl",
+        path: "/Reports/FrmRTSOnlineColl",
         element: <FrmRTSOnlineColl />,
       },
       {
-        path: "/app/Reports/FrmRTSOnlineCollDetails",
+        path: "/Reports/FrmRTSOnlineCollDetails",
         element: <FrmRTSOnlineCollDetails />,
       },
       {
-        path: "/app/FrmTradeCtgryTypeCnfgList",
+        path: "/FrmTradeCtgryTypeCnfgList",
         element: <FrmTradeCtgryTypeCnfgList />,
       },
       {
-        path: "/app/FrmTradeCtgryTypeCnfgMst",
+        path: "/FrmTradeCtgryTypeCnfgMst",
         element: <FrmTradeCtgryTypeCnfgMst />,
       },
       {
-        path: "/app/FrmHolidayMst",
+        path: "/FrmHolidayMst",
         element: <FrmHolidayMst />,
       },
       {
-        path: "App/FrmPwdSectorMapingConfg",
+        path: "/FrmPwdSectorMapingConfg",
         element: <FrmTownPlanningSectorMapping />,
       },
       {
-        path: "App/FrmTradeCtgryCnfgList",
+        path: "/FrmTradeCtgryCnfgList",
         element: <FrmTradeCategoryConfigList />,
       },
       {
-        path: "App/FrmTradeCategoryConfigMst",
+        path: "/FrmTradeCategoryConfigMst",
         element: <FrmTradeCategoryConfigMst />,
       },
       {
-        path: "/app/FrmMappingConfig",
+        path: "/FrmMappingConfig",
         element: <FrmMappingConfig />,
       },
 
       {
-        path: "/app/FrmDeptMappingConfig",
+        path: "/FrmDeptMappingConfig",
         element: <FrmDeptMappingConfig />,
       },
       {
-        path: "/App/FrmTradeCtgryList",
+        path: "/FrmTradeCtgryList",
         element: <FrmTradeCtgryList />,
       },
       {
@@ -324,99 +324,99 @@ const router = createBrowserRouter([
         element: <FrmTradeCtgMst />,
       },
       {
-        path: "/App/FrmDashboardAll",
+        path: "/FrmDashboardAll",
         element: <FrmDashboardAll />,
       },
       {
-        path: "/App/FrmTradeCtgrytypList",
+        path: "/FrmTradeCtgrytypList",
         element: <FrmTradeCtgrytypList />,
       },
       {
-        path: "/App/FrmTradeCtgryTypMst",
+        path: "/FrmTradeCtgryTypMst",
         element: <FrmTradeCtgryTypMst />,
       },
       {
-        path: "/App/FrmFirstAppealAuthoRpt",
+        path: "/FrmFirstAppealAuthoRpt",
         element: <FrmFirstAppealAuthoRpt />,
       },
       {
-        path: "/App/FrmSecondAppealAutoRpt",
+        path: "/FrmSecondAppealAutoRpt",
         element: <FrmSecondAppealAutoRpt />,
       },
       {
-        path: "/App/Reports/FrmChallanGenReport",
+        path: "/Reports/FrmChallanGenReport",
         element: <FrmChallanGenReport />
       },
       {
-        path: "/App/Reports/FrmAppliReportEMst",
+        path: "/Reports/FrmAppliReportEMst",
         element: <FrmAppliReportEMst />
       },
       {
-        path: "/App/FrmHearingProccess",
+        path: "/FrmHearingProccess",
         element: <FrmHearingProccess />
       },
       {
-        path: "/App/FrmAppealHearing_New",
+        path: "/FrmAppealHearing_New",
         element: <FrmAppealHearing_New />
       },
       {
-        path: "/App/FrmHearingDateAssign",
+        path: "/FrmHearingDateAssign",
         element: <FrmHearingDateAssign />
       },
       {
-        path: "/app/FrmNOCService",
+        path: "/FrmNOCService",
         element: <FrmNOMNoc />
       },
       {
-        path: "/App/FrmNOCHordingType",
+        path: "/FrmNOCHordingType",
         element: <FrmNOCHordingType />
       },
       {
-        path: "/app/FrmNocRoadType",
+        path: "/FrmNocRoadType",
         element: <FrmNocRoadType />,
       },
       {
-        path: "/app/FrmNocRoadTypeMst",
+        path: "/FrmNocRoadTypeMst",
         element: <FrmNocRoadTypeMst />,
       },
       {
-        path:"/app/FrmBusinessTypeList",
+        path:"/FrmBusinessTypeList",
         element:<FrmBusinessTypeList />
       },
          {
-        path:"/app/FrmBusinessTypeMst",
+        path:"/FrmBusinessTypeMst",
         element:<FrmBusinessTypeMst />
       },
       {
-        path:"/App/FrmNOCHordingTypeList",
+        path:"/FrmNOCHordingTypeList",
         element:<FrmNOCHordingTypeList />
       },
       {
-        path:"/App/FrmNOCHordingTypeMst",
+        path:"/FrmNOCHordingTypeMst",
         element:<FrmNOCHordingTypeMst />
       },
       {
-        path:"/App/FrmNOCHordingSubTypeList",
+        path:"/FrmNOCHordingSubTypeList",
         element:<FrmNOCHordingSubTypeList />
       },
       {
-        path:"/App/FrmNOCHordingSubTypeMst",
+        path:"/FrmNOCHordingSubTypeMst",
         element:<FrmNOCHordingSubTypeMst />
       },     
       {
-        path: "/app/FrmLicenseTypeList",
+        path: "/FrmLicenseTypeList",
         element: <FrmLicenseTypeList />
       },
       {
-        path: "/app/FrmLicenseTypeMst",
+        path: "/FrmLicenseTypeMst",
         element: <FrmLicenseTypeMst />
       },
       {
-        path: "/app/FrmNocRoadType",
+        path: "/FrmNocRoadType",
         element: <FrmNocRoadType />,
       },
       {
-        path: "/app/FrmNocRoadTypeMst",
+        path: "/FrmNocRoadTypeMst",
         element: <FrmNocRoadTypeMst />,
       },
     ]

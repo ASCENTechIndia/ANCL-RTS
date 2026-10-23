@@ -29,7 +29,7 @@ async function getConnectionTypes() {
 
 async function getConnectionSizes() {
   const query = `
-    SELECT num_connsize_size, num_connsize_id 
+    SELECT var_connsize_name, num_connsize_id 
     FROM water.aowt_connsize_mas
   `;
   return await executeQueryTMC(query);
@@ -101,7 +101,7 @@ async function getDocumentDefinitions(params) {
 async function getServicePaymentFlag(serviceId) {
   const query = `
     SELECT var_service_payflag 
-    FROM aorts_tmcservice_def 
+    FROM aorts_service_def 
     WHERE num_service_serviceid = :serviceId
   `;
   return await executeQueryTMC(query, { serviceId: String(serviceId) });
