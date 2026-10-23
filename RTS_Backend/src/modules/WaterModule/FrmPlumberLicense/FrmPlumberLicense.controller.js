@@ -148,10 +148,7 @@ exports.renewPlumberLicenseController = asyncHandler(
             detAddressMar,
         } = req.body;
 
-        const textOrDot = (value) =>
-            value == null || String(value).trim() === ""
-                ? "."
-                : String(value).trim();
+        const textOrDot = (value) => value == null || String(value).trim() === "" ? "." : String(value).trim();
 
         if (!userId) {
             return fail(res, "User ID is required");
@@ -205,10 +202,6 @@ exports.renewPlumberLicenseController = asyncHandler(
             return fail(res, "Please enter valid Email Address");
         }
 
-        if (!detAddress?.trim()) {
-            return fail(res, "Applicant detail address is required");
-        }
-
         const payload = {
             userId: String(userId),
             licenseId: licenseId ?? 0,
@@ -216,28 +209,20 @@ exports.renewPlumberLicenseController = asyncHandler(
             ulbid: Number(ulbid),
             servid: Number(servid),
             source,
-
             renewdt,
             fromdt,
             todt,
-
             appliFName: appliFName.trim(),
             appliMName: appliMName.trim(),
             appliLName: appliLName.trim(),
-
             detMobile: String(detMobile).trim(),
             detEmail: detEmail.trim(),
             detAddress: detAddress.trim(),
-
             zoneid: Number(zoneid) || 0,
-
-            // Additional parameters
             appliDOB: appliDOB || null,
             appliScndMobNo: appliScndMobNo ?? 0,
             appliEducation: textOrDot(appliEducation),
             appliLcnDate: appliLcnDate || null,
-
-            // Critical fix: ensure Marathi names are never empty.
             appliFNameMar: textOrDot(appliFNameMar),
             appliMNameMar: textOrDot(appliMNameMar),
             appliLNameMar: textOrDot(appliLNameMar),
@@ -247,23 +232,13 @@ exports.renewPlumberLicenseController = asyncHandler(
         const data = await service.renewPlumberLicenseService(payload);
 
         if (!data?.success) {
-            return fail(
-                res,
-                data?.message || "Plumber license renewal failed"
-            );
+            return fail(res, data?.message || "Plumber license renewal failed");
         }
 
         if (Number(data?.errorCode) !== 9999) {
-            return fail(
-                res,
-                data?.message || "Plumber license renewal failed"
-            );
+            return fail(res, data?.message || "Plumber license renewal failed");
         }
 
-        return ok(
-            res,
-            data,
-            data.message || "Plumber license renewed successfully"
-        );
+        return ok(res, data, data.message || "Plumber license renewed successfully");
     }
 );
