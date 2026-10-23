@@ -160,6 +160,11 @@ const sql = `
       :IN_LONGITUDE,
       :IN_ZONE,
       :IN_SOURCE,
+      :IN_PRABHAG,
+      :IN_ROADCUTTYPE,
+      :IN_ROADCUTREASON,
+      :IN_ROAD_VCEXACSTART,
+      :IN_ROAD_VCEXACEND,
       :OUT_ERRCODE,
       :OUT_ERRMSG,
       :OUT_APPLINO
@@ -198,6 +203,43 @@ const binds = {
 
   IN_ZONE: Number(data.zoneId || 0),
   IN_SOURCE: String(data.source || "WEB"),
+
+  IN_PRABHAG:
+    data.prabhagId !== undefined &&
+    data.prabhagId !== null &&
+    data.prabhagId !== ""
+      ? { val: Number(data.prabhagId), type: oracledb.NUMBER }
+      : null,
+
+  IN_ROADCUTTYPE:
+    data.roadCutTypeId !== undefined &&
+    data.roadCutTypeId !== null &&
+    data.roadCutTypeId !== ""
+      ? { val: Number(data.roadCutTypeId), type: oracledb.NUMBER }
+      : null,
+
+  IN_ROADCUTREASON:
+    data.roadCutReason && String(data.roadCutReason).trim() !== ""
+      ? {
+          val: String(data.roadCutReason).trim().slice(0, 500),
+          type: oracledb.STRING,
+          maxSize: 500,
+        }
+      : null,
+
+  IN_ROAD_VCEXACSTART:
+    data.vcStartPoint !== undefined &&
+    data.vcStartPoint !== null &&
+    data.vcStartPoint !== ""
+      ? { val: String(data.vcStartPoint).slice(0, 100), type: oracledb.STRING, maxSize: 100 }
+      : null,
+
+  IN_ROAD_VCEXACEND:
+    data.vcEndPoint !== undefined &&
+    data.vcEndPoint !== null &&
+    data.vcEndPoint !== ""
+      ? { val: String(data.vcEndPoint).slice(0, 100), type: oracledb.STRING, maxSize: 100 }
+      : null,
 
   OUT_ERRCODE: {
     dir: oracledb.BIND_OUT,

@@ -98,6 +98,11 @@ const saveRoadCutting = asyncHandler(async (req, res) => {
     longitude,
     zoneId,
     source,
+    prabhagId,
+    roadCutTypeId,
+    roadCutReason,
+    vcStartPoint,
+    vcEndPoint,
   } = req.body;
 
   if (!userId) {
@@ -202,6 +207,26 @@ const saveRoadCutting = asyncHandler(async (req, res) => {
 
     zoneId: Number(zoneId || 0),
     source: source || "WEB",
+        prabhagId:
+    prabhagId !== undefined && prabhagId !== null && prabhagId !== ""
+        ? Number(prabhagId)
+        : null,
+    roadCutTypeId:
+      roadCutTypeId !== undefined && roadCutTypeId !== null && roadCutTypeId !== ""
+        ? Number(roadCutTypeId)
+        : null,
+    roadCutReason:
+      roadCutReason && String(roadCutReason).trim() !== ""
+        ? String(roadCutReason).trim()
+        : null,
+    vcStartPoint:
+      vcStartPoint !== undefined && vcStartPoint !== null && vcStartPoint !== ""
+        ? String(vcStartPoint)
+        : null,
+    vcEndPoint:
+      vcEndPoint !== undefined && vcEndPoint !== null && vcEndPoint !== ""
+        ? String(vcEndPoint)
+        : null,
   });
 
   console.log("Road Cutting Save Service Result:", result);
