@@ -132,7 +132,7 @@ const router = createBrowserRouter([
     element: <PageLayout />,
     children: [
       {
-        path: "/FrmTrackApplication",
+        path: "app/FrmTrackApplication",
         element: <FrmTrackApplication />,
       },
       {

@@ -200,84 +200,148 @@ const getServicePayFlagRepo = async ({serviceId}) => {
     return result.rows;
 };
 
-const saveWaterRegisterRepo = async ({userId, wtregId, servId, consNo, disConId, reason, usageTypeId, tarifRate, connSize, remark, ulbid, zoneId, source, ownerName, usageType, detAppliName, detMobile, detAadhaar, detEmail, detAddress, conAddressSrch, ownerNameSrch, curConSizeSrch, usageTypeNewSrch, erlDate}) => {
-    console.log("Repo: Save Water Register", {userId, wtregId, servId, consNo, ulbid, zoneId});
+const saveWaterRegisterRepo = async ({
+  userId,
+  wtregId,
+  servId,
+  consNo,
+  disConId,
+  reason,
+  usageTypeId,
+  tarifRate,
+  connSize,
+  remark,
+  ulbid,
+  zoneId,
+  source,
+  ownerName,
+  usageType,
+  detAppliName,
+  detAddress,
+  inStr,
+}) => {
+  console.log("Repo: Save Water Register", {
+    userId,
+    wtregId,
+    servId,
+    consNo,
+    ulbid,
+    zoneId,
+  });
 
-    const sql = `
-        BEGIN
-            aorts_wtregister_info_ins(
-                :in_UserId,
-                :in_wtregId,
-                :in_ServId,
-                :in_consNo,
-                :in_DisConId,
-                :in_Reason,
-                :in_UsagtypId,
-                :in_tarifrate,
-                :in_connsize,
-                :in_Remark,
-                :in_ulbid,
-                :IN_ZoneId,
-                :in_source,
-                :in_ownername,
-                :in_usagetype,
-                :in_detAppliName,
-                :in_detMobile,
-                :in_detAadhaar,
-                :in_detEmail,
-                :in_detAddress,
-                :in_ConAddresssrch,
-                :in_OwnerNamesrch,
-                :in_CurConsizesrch,
-                :in_UsageTypenewsrch,
-                :in_ErlDate,
-                :Out_ErrorCode,
-                :Out_ErrorMsg
-            );
-        END;
-    `;
+  const nameParts = String(detAppliName || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
 
-    const binds = {
-        in_UserId: userId,
-        in_wtregId: Number(wtregId ?? 0),
-        in_ServId: Number(servId),
-        in_consNo: consNo,
-        in_DisConId: disConId !== undefined && disConId !== null && disConId !== "" ? Number(disConId) : null,
-        in_Reason: reason ?? null,
-        in_UsagtypId: usageTypeId !== undefined && usageTypeId !== null && usageTypeId !== "" ? Number(usageTypeId) : null,
-        in_tarifrate: tarifRate !== undefined && tarifRate !== null && tarifRate !== "" ? Number(tarifRate) : null,
-        in_connsize: connSize !== undefined && connSize !== null && connSize !== "" ? Number(connSize) : null,
-        in_Remark: remark ?? null,
-        in_ulbid: Number(ulbid),
-        IN_ZoneId: Number(zoneId),
-        in_source: source ?? null,
-        in_ownername: ownerName ?? null,
-        in_usagetype: usageType ?? null,
-        in_detAppliName: detAppliName ?? null,
-        in_detMobile: detMobile ?? null,
-        in_detAadhaar: detAadhaar ?? null,
-        in_detEmail: detEmail ?? null,
-        in_detAddress: detAddress ?? null,
-        in_ConAddresssrch: conAddressSrch ?? null,
-        in_OwnerNamesrch: ownerNameSrch ?? null,
-        in_CurConsizesrch: curConSizeSrch ?? null,
-        in_UsageTypenewsrch: usageTypeNewSrch ?? null,
-        in_ErlDate: erlDate ?? null,
-        Out_ErrorCode: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER},
-        Out_ErrorMsg: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 4000}
-    };
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+  const middleName =
+    nameParts.length > 2 ? nameParts.slice(1, -1).join(" ") : "";
 
-    console.log("Water Register Procedure Binds:", {...binds, Out_ErrorCode: "BIND_OUT", Out_ErrorMsg: "BIND_OUT"});
+  const sql = `
+      BEGIN
+          aorts_wtregister_info_ins(
+              :in_UserId,
+              :in_wtregId,
+              :in_ServId,
+              :in_consNo,
+              :in_DisConId,
+              :in_Reason,
+              :in_UsagtypId,
+              :in_tarifrate,
+              :in_connsize,
+              :in_Remark,
+              :in_ulbid,
+              :IN_ZoneId,
+              :in_source,
+              :in_ownername,
+              :in_usagetype,
+              :in_str,
+              :in_firstname,
+              :in_middlename,
+              :in_lastname,
+              :in_appaddress,
+              :in_firstnamemr,
+              :in_middlenamemr,
+              :in_lastnamemr,
+              :in_addressmr,
+              :in_Remarkmar,
+              :in_Reasonmar,
+              :Out_ErrorCode,
+              :Out_ErrorMsg
+          );
+      END;
+  `;
 
-    const result = await executeProcedureTMC({sql, binds});
+  const binds = {
+    in_UserId: String(userId),
+    in_wtregId: Number(wtregId ?? 0),
+    in_ServId: Number(servId),
+    in_consNo: consNo,
+    in_DisConId:
+      disConId !== undefined && disConId !== null && disConId !== ""
+        ? { val: Number(disConId), type: oracledb.NUMBER }
+        : { val: null, type: oracledb.NUMBER },
+    in_Reason: reason ?? null,
+    in_UsagtypId:
+      usageTypeId !== undefined &&
+      usageTypeId !== null &&
+      usageTypeId !== ""
+        ? { val: Number(usageTypeId), type: oracledb.NUMBER }
+        : { val: null, type: oracledb.NUMBER },
+    in_tarifrate:
+      tarifRate !== undefined && tarifRate !== null && tarifRate !== ""
+        ? { val: Number(tarifRate), type: oracledb.NUMBER }
+        : { val: null, type: oracledb.NUMBER },
+    in_connsize:
+      connSize !== undefined && connSize !== null && connSize !== ""
+        ? { val: Number(connSize), type: oracledb.NUMBER }
+        : { val: null, type: oracledb.NUMBER },
+    in_Remark: remark ?? null,
+    in_ulbid: { val: Number(ulbid), type: oracledb.NUMBER },
+    IN_ZoneId: { val: Number(zoneId), type: oracledb.NUMBER },
+    in_source: source ?? null,
+    in_ownername: ownerName ?? null,
+    in_usagetype: usageType ?? null,
 
-    console.log("Water Register Procedure Result:", result);
+    in_str: inStr ?? null,
 
-    if (!result || !result.success) {
-        throw new Error(result?.error || "Failed to execute water register procedure");
-    }
+    in_firstname: firstName,
+    in_middlename: middleName,
+    in_lastname: lastName,
+    in_appaddress: detAddress ?? null,
 
-    return result.outBinds;
+    in_firstnamemr: firstName,
+    in_middlenamemr: middleName,
+    in_lastnamemr: lastName,
+    in_addressmr: detAddress ?? null,
+    in_Remarkmar: remark ?? null,
+    in_Reasonmar: reason ?? null,
+
+    Out_ErrorCode: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+    Out_ErrorMsg: {
+      dir: oracledb.BIND_OUT,
+      type: oracledb.STRING,
+      maxSize: 4000,
+    },
+  };
+
+  console.log("Water Register Procedure Binds:", {
+    ...binds,
+    Out_ErrorCode: "BIND_OUT",
+    Out_ErrorMsg: "BIND_OUT",
+  });
+
+  const result = await executeProcedureTMC({ sql, binds });
+
+  console.log("Water Register Procedure Result:", result);
+
+  if (!result || !result.success) {
+    throw new Error(result?.error || "Failed to execute water register procedure");
+  }
+
+  return result.outBinds;
 };
 
 const uploadWaterDocumentRepo = async ({corpid, serviceid, appno, doctype, documentid, fileBuffer}) => {
@@ -306,7 +370,13 @@ const uploadWaterDocumentRepo = async ({corpid, serviceid, appno, doctype, docum
         corpid: Number(corpid),
         serviceid: Number(serviceid),
         appno,
-        doctype,
+        doctype: (() => {
+            const ext = String(doctype || "").trim().toUpperCase();
+            if (ext === "PDF") return "P";
+            if (ext === "JPG" || ext === "JPEG") return "J";
+            if (ext === "PNG") return "N";
+            return ext.slice(0, 2) || "S";
+        })(),
         documentid: Number(documentid),
         BLOBDocImage: {type: oracledb.BLOB, dir: oracledb.BIND_IN, val: fileBuffer}
     };
