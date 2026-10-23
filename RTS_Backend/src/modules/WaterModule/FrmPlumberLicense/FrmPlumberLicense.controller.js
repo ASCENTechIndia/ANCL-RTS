@@ -96,7 +96,7 @@ exports.savePlumberLicenseController = asyncHandler(
             education,
             tectQuali,
             businessName,
-            tradeLicenceNo: tradeLicenceNo || null,
+            tradeLicenceNo: tradeLicenceNo,
             ulbid,
             servid,
             zoneId,
