@@ -4,32 +4,30 @@ const { AppError } = require("../../../libs/errors");
 async function submitPropAppealService(payload) {
     const {
         userId,
+        ulbId,
         zoneId,
         serviceId,
         propNo,
-        subCode,
+        bilTaxNo,
         landHolder,
         structHolder,
         ownDetails,
         address,
-        appliName,
+        appliFName,
+        appliMName,
+        appliLName,
         mobile,
         email,
         aadhar,
+        telephNo,
         objectType,
         objectDesc,
-        taxDate1,
-        taxDate2,
-        oldUsage,
-        newUsage,
-        oldSubUsage,
-        newSubUsage,
-        oldArea,
-        newArea,
-        oldYrKaryogya,
-        newYrKaryogya,
-        oldKaryogya,
-        newKaryogya,
+        taxDate,
+        usageType,
+        usageSubType,
+        areaConstruct,
+        annualTax,
+        taxable,
         appSource,
     } = payload;
 
@@ -50,42 +48,48 @@ async function submitPropAppealService(payload) {
         throw new AppError("Property Number is required", 400);
     }
 
-    if (!appliName) {
-        throw new AppError("Applicant Name is required", 400);
-    }
-
     if (!address) {
         throw new AppError("Address is required", 400);
     }
 
+    if (!ulbId) {
+        throw new AppError("ULB ID is required", 400);
+    }
+
+    if (!appliFName) {
+        throw new AppError("Applicant First Name is required", 400);
+    }
+
+    if (!bilTaxNo) {
+        throw new AppError("Bill/Tax Notice No is required", 400);
+    }
+
     const result = await repo.insertPropAppeal({
         userId,
+        ulbId,
         zoneId,
         serviceId,
         propNo,
-        subCode,
+        bilTaxNo,
         landHolder,
         structHolder,
         ownDetails,
         address,
-        appliName,
+        appliFName,
+        appliMName,
+        appliLName,
         mobile,
         email,
         aadhar,
+        telephNo,
         objectType,
         objectDesc,
-        taxDate1,
-        taxDate2,
-        oldUsage,
-        newUsage,
-        oldSubUsage,
-        newSubUsage,
-        oldArea,
-        newArea,
-        oldYrKaryogya,
-        newYrKaryogya,
-        oldKaryogya,
-        newKaryogya,
+        taxDate,
+        usageType,
+        usageSubType,
+        areaConstruct,
+        annualTax,
+        taxable,
         appSource,
     });
 
@@ -97,11 +101,11 @@ async function submitPropAppealService(payload) {
         };
     }
 
-    const applicationNo = result.out_applino;
+    const rawMsg = result.out_ErrMsg || "";
+    const appNoMatch = rawMsg.match(/Appli\s*no\s*:\s*(.+)$/i);
+    const applicationNo = appNoMatch ? appNoMatch[1].trim() : null;
 
-    const parts = result.out_ErrMsg ? result.out_ErrMsg.split("$") : [];
-
-    const message = parts[0] || "Property Appeal submitted successfully";
+    const message = rawMsg.split("$")[0] || "Property Appeal submitted successfully";
 
     return {
         success: true,

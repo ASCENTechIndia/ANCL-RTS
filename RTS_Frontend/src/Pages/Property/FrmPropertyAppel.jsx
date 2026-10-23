@@ -565,35 +565,70 @@ const FrmPropertyAppel = () => {
         }
       }
 
+      // const payload = {
+      //   userId: String(userId),
+      //   zoneId: values.zone,
+      //   serviceId: Number(serviceId),
+      //   propNo: values.ptn,
+      //   // subCode: values.subcode,
+      //   landHolder: values.landHolder,
+      //   structHolder: values.structureHolder,
+      //   ownDetails: values.ownerDetails,
+      //   address: values.address,
+      //   appliName: values.applicantName,
+      //   mobile: Number(values.mobileNo),
+      //   email: values.emailId,
+      //   aadhar: Number(values.aadharNo),
+      //   objectType: Number(values.objectionType),
+      //   objectDesc: values.objectionDescription,
+
+      //   taxDate1: null,
+      //   taxDate2: null,
+      //   oldUsage: 0,
+      //   newUsage: 0,
+      //   oldSubUsage: 0,
+      //   newSubUsage: 0,
+      //   oldArea: 0,
+      //   newArea: 0,
+      //   oldYrKaryogya: 0,
+      //   newYrKaryogya: 0,
+      //   oldKaryogya: 0,
+      //   newKaryogya: 0,
+      //   appSource: config?.source,
+      // };
+
       const payload = {
         userId: String(userId),
-        zoneId: values.zone,
+        ulbId: String(ulbId),
+        zoneId: Number(values.zone),
         serviceId: Number(serviceId),
         propNo: values.ptn,
-        // subCode: values.subcode,
+        bilTaxNo: values.ptn,
+
         landHolder: values.landHolder,
         structHolder: values.structureHolder,
         ownDetails: values.ownerDetails,
         address: values.address,
-        appliName: values.applicantName,
-        mobile: Number(values.mobileNo),
+
+        appliFName: (values.applicantName?.trim().split(/\s+/)[0]) || values.applicantName,
+        appliMName: (values.applicantName?.trim().split(/\s+/)[1]) || "-",
+        appliLName: (values.applicantName?.trim().split(/\s+/)[2]) || "-",
+
+        mobile: String(values.mobileNo),
         email: values.emailId,
-        aadhar: Number(values.aadharNo),
+        aadhar: String(values.aadharNo || ""),
+        telephNo: null,
+
         objectType: Number(values.objectionType),
         objectDesc: values.objectionDescription,
 
-        taxDate1: null,
-        taxDate2: null,
-        oldUsage: 0,
-        newUsage: 0,
-        oldSubUsage: 0,
-        newSubUsage: 0,
-        oldArea: 0,
-        newArea: 0,
-        oldYrKaryogya: 0,
-        newYrKaryogya: 0,
-        oldKaryogya: 0,
-        newKaryogya: 0,
+        taxDate: null,
+        usageType: 0,
+        usageSubType: 0,
+        areaConstruct: null,
+        annualTax: null,
+        taxable: null,
+
         appSource: config?.source,
       };
 

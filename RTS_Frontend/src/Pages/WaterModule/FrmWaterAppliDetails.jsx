@@ -661,7 +661,7 @@ const FrmWaterAppliDetails = () => {
 
       const documentString = buildDocumentString();
 
-      if (!documentString) {
+      if (tableData.length > 0 && !documentString) {
         Swal.fire({ text: "Select Atleast One Document for upload" });
         return;
       }
@@ -706,21 +706,27 @@ const FrmWaterAppliDetails = () => {
         zoneId: Number(values.zoneId),
 
         source: config.source,
+        appliFNameMr: values.firstNameMr,
+        appliMNameMr: values.middleNameMr,
+        appliLNameMr: values.lastNameMr,
 
-        ownerName: `${values.noFirstName} ${
-          values.noMiddleName
-        } ${values.noLastName}`.trim(),
+        currOFNameMr: values.oFirstNameMr,
+        currOMNameMr: values.oMiddleNameMr,
+        currOLNameMr: values.oLastNameMr,
 
-        usageType: "RESIDENTIAL",
+        currCOFNameMr: values.coFirstNameMr,
+        currCOMNameMr: values.coMiddleNameMr,
+        currCOLNameMr: values.coLastNameMr,
 
-        detAppliName: `${values.firstName} ${
-          values.middleName
-        } ${values.lastName}`.trim(),
+        newOFNameMr: values.noFirstNameMr,
+        newOMNameMr: values.noMiddleNameMr,
+        newOLNameMr: values.noLastNameMr,
 
-        detMobile: values.mobileNo,
-        detAadhaar: values.aadharNo,
-        detEmail: values.email,
-        detAddress: values.resNo,
+        newCOFNameMr: values.ncoFirstNameMr,
+        newCOMNameMr: values.ncoMiddleNameMr,
+        newCOLNameMr: values.ncoLastNameMr,
+
+        inStr: null,
       };
 
       const response = await axios.post(

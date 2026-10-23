@@ -5,236 +5,142 @@ const { executeQueryTMC } = require("../../../db/queryExecutor");
 async function insertPropAppeal(params) {
   const {
     userId,
+    ulbId,
     zoneId,
     serviceId,
     propNo,
-    subCode,
+    bilTaxNo,
     landHolder,
     structHolder,
     ownDetails,
     address,
-    appliName,
+    appliFName,
+    appliMName,
+    appliLName,
     mobile,
     email,
     aadhar,
+    telephNo,
     objectType,
     objectDesc,
-    taxDate1,
-    taxDate2,
-    oldUsage,
-    newUsage,
-    oldSubUsage,
-    newSubUsage,
-    oldArea,
-    newArea,
-    oldYrKaryogya,
-    newYrKaryogya,
-    oldKaryogya,
-    newKaryogya,
+    taxDate,
+    usageType,
+    usageSubType,
+    areaConstruct,
+    annualTax,
+    taxable,
     appSource,
   } = params;
 
   console.log("Insert Property Appeal:", {
     userId,
+    ulbId,
     zoneId,
     serviceId,
     propNo,
-    appliName,
+    appliFName,
+    appliMName,
+    appliLName,
     appSource,
   });
 
   const sql = `
     BEGIN
-      aorts_PropAppeal_ins(
+      aorts_PropertyAppel_ins(
         :IN_USERID,
-        :IN_Zoneid,
-        :IN_Serviceid,
-        :IN_PropNO,
-        :IN_SubCode,
-        :IN_LandHolder,
-        :IN_StructHolder,
-        :IN_OwnDetails,
+        :IN_propaplId,
+        :in_ulbID,
+        :IN_AppliFName,
+        :IN_AppliMName,
+        :IN_AppliLName,
+        :IN_MobNO,
+        :IN_EMAIL,
+        :IN_AADHARNO,
+        :IN_TELEPNO,
+        :IN_Objection,
+        :IN_BilTaxNo,
         :IN_Address,
-        :IN_Appliname,
-        :IN_Mobile,
-        :IN_Email,
-        :IN_Aadhar,
-        :IN_Objecttype,
-        :IN_ObjectDesc,
-        :IN_TaxDate1,
-        :IN_TaxDate2,
-        :IN_OldUsage,
-        :IN_NewUsage,
-        :IN_OldSubUsage,
-        :IN_NewSubUsage,
-        :IN_OldArea,
-        :IN_NewArea,
-        :IN_OldYrKaryogya,
-        :IN_NewYrKaryogya,
-        :IN_OldKaryogya,
-        :IN_NewKaryogya,
+        :IN_OwnEngFName,
+        :IN_OwnEngMName,
+        :IN_OwnEngLName,
+        :IN_OwnMraFName,
+        :IN_OwnMraMName,
+        :IN_OwnMraLName,
+        :IN_ObjDesc,
+        :IN_DtTax,
+        :IN_Usagesty,
+        :IN_Usagesubty,
+        :IN_areaconstruct,
+        :IN_annualtax,
+        :IN_taxable,
+        :IN_PropNo,
+        :IN_SERVICEID,
+        :IN_Zoneid,
         :in_source,
         :out_errcode,
-        :out_ErrMsg,
-        :out_applino
+        :out_ErrMsg
       );
     END;
   `;
 
   const binds = {
-    IN_USERID: userId,
-    IN_Zoneid: {
-      val: Number(zoneId),
-      type: oracledb.NUMBER,
-    },
-    IN_Serviceid: {
-      val: Number(serviceId),
-      type: oracledb.NUMBER,
-    },
-    IN_PropNO: propNo || null,
-    IN_SubCode: subCode || null,
-    IN_LandHolder: landHolder || null,
-    IN_StructHolder: structHolder || null,
-    IN_OwnDetails: ownDetails || null,
+    IN_USERID: String(userId),
+    IN_propaplId: { val: null, type: oracledb.NUMBER },
+    in_ulbID: { val: Number(ulbId), type: oracledb.NUMBER },
+    IN_AppliFName: appliFName || null,
+    IN_AppliMName: appliMName || "-",
+    IN_AppliLName: appliLName || "-",
+    IN_MobNO: mobile ? String(mobile) : null,
+    IN_EMAIL: email || null,
+    IN_AADHARNO: aadhar ? String(aadhar) : null,
+    IN_TELEPNO: telephNo || null,
+    IN_Objection:
+      objectType !== undefined && objectType !== null && objectType !== ""
+        ? { val: Number(objectType), type: oracledb.NUMBER }
+        : null,
+    IN_BilTaxNo: bilTaxNo || null,
     IN_Address: address || null,
-    IN_Appliname: appliName || null,
-    IN_Mobile:
-      mobile !== undefined && mobile !== null && mobile !== ""
-        ? {
-          val: Number(mobile),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_Email: email || null,
-    IN_Aadhar:
-      aadhar !== undefined && aadhar !== null && aadhar !== ""
-        ? {
-          val: Number(aadhar),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_Objecttype:
-      objectType !== undefined &&
-        objectType !== null &&
-        objectType !== ""
-        ? {
-          val: Number(objectType),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_ObjectDesc: objectDesc || null,
-    IN_TaxDate1: taxDate1
-      ? {
-        val: new Date(taxDate1),
-        type: oracledb.DATE,
-      }
+        IN_OwnEngFName: ownDetails
+      ? { val: ownDetails.slice(0, 500), type: oracledb.STRING, maxSize: 500 }
       : null,
-    IN_TaxDate2: taxDate2
-      ? {
-        val: new Date(taxDate2),
-        type: oracledb.DATE,
-      }
+    IN_OwnEngMName: ownDetails
+      ? { val: ownDetails.slice(0, 500), type: oracledb.STRING, maxSize: 500 }
       : null,
-    IN_OldUsage:
-      oldUsage !== undefined && oldUsage !== null && oldUsage !== ""
-        ? {
-          val: Number(oldUsage),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_NewUsage:
-      newUsage !== undefined && newUsage !== null && newUsage !== ""
-        ? {
-          val: Number(newUsage),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_OldSubUsage:
-      oldSubUsage !== undefined &&
-        oldSubUsage !== null &&
-        oldSubUsage !== ""
-        ? {
-          val: Number(oldSubUsage),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_NewSubUsage:
-      newSubUsage !== undefined &&
-        newSubUsage !== null &&
-        newSubUsage !== ""
-        ? {
-          val: Number(newSubUsage),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_OldArea:
-      oldArea !== undefined && oldArea !== null && oldArea !== ""
-        ? {
-          val: Number(oldArea),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_NewArea:
-      newArea !== undefined && newArea !== null && newArea !== ""
-        ? {
-          val: Number(newArea),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_OldYrKaryogya:
-      oldYrKaryogya !== undefined &&
-        oldYrKaryogya !== null &&
-        oldYrKaryogya !== ""
-        ? {
-          val: Number(oldYrKaryogya),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_NewYrKaryogya:
-      newYrKaryogya !== undefined &&
-        newYrKaryogya !== null &&
-        newYrKaryogya !== ""
-        ? {
-          val: Number(newYrKaryogya),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_OldKaryogya:
-      oldKaryogya !== undefined &&
-        oldKaryogya !== null &&
-        oldKaryogya !== ""
-        ? {
-          val: Number(oldKaryogya),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    IN_NewKaryogya:
-      newKaryogya !== undefined &&
-        newKaryogya !== null &&
-        newKaryogya !== ""
-        ? {
-          val: Number(newKaryogya),
-          type: oracledb.NUMBER,
-        }
-        : null,
-    in_source: appSource,
+    IN_OwnEngLName: ownDetails
+      ? { val: ownDetails.slice(0, 500), type: oracledb.STRING, maxSize: 500 }
+      : null,
+    IN_OwnMraFName: ownDetails
+      ? { val: ownDetails.slice(0, 500), type: oracledb.STRING, maxSize: 500 }
+      : null,
+    IN_OwnMraMName: ownDetails
+      ? { val: ownDetails.slice(0, 500), type: oracledb.STRING, maxSize: 500 }
+      : null,
+    IN_OwnMraLName: ownDetails
+      ? { val: ownDetails.slice(0, 500), type: oracledb.STRING, maxSize: 500 }
+      : null,
 
-    out_errcode: {
-      dir: oracledb.BIND_OUT,
-      type: oracledb.NUMBER,
-    },
+    IN_ObjDesc: objectDesc || null,
+    IN_DtTax: taxDate
+      ? { val: new Date(taxDate), type: oracledb.DATE }
+      : null,
+    IN_Usagesty:
+      usageType !== undefined && usageType !== null && usageType !== ""
+        ? { val: Number(usageType), type: oracledb.NUMBER }
+        : null,
+    IN_Usagesubty:
+      usageSubType !== undefined && usageSubType !== null && usageSubType !== ""
+        ? { val: Number(usageSubType), type: oracledb.NUMBER }
+        : null,
+    IN_areaconstruct: areaConstruct != null ? String(areaConstruct) : null,
+    IN_annualtax: annualTax != null ? String(annualTax) : null,
+    IN_taxable: taxable != null ? String(taxable) : null,
+    IN_PropNo: propNo || null,
+    IN_SERVICEID: { val: Number(serviceId), type: oracledb.NUMBER },
+    IN_Zoneid: { val: Number(zoneId), type: oracledb.NUMBER },
+    in_source: appSource || null,
 
-    out_ErrMsg: {
-      dir: oracledb.BIND_OUT,
-      type: oracledb.STRING,
-      maxSize: 4000,
-    },
-
-    out_applino: {
-      dir: oracledb.BIND_OUT,
-      type: oracledb.STRING,
-      maxSize: 500,
-    },
+    out_errcode: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+    out_ErrMsg: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 4000 },
   };
 
   const result = await executeProcedureTMC({
@@ -248,7 +154,7 @@ async function insertPropAppeal(params) {
 
   console.log(
     "Property Appeal Insert Result:",
-    result.outBinds
+    result
   );
 
   return result.outBinds;
