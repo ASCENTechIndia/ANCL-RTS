@@ -136,33 +136,26 @@ exports.saveWaterRegisterController = asyncHandler(
         }
 
 
-        const data = await service.saveWaterRegisterService({
-                userId,
-                wtregId: wtregId ?? 0,
-                servId,
-                consNo,
-                disConId,
-                reason,
-                usageTypeId,
-                tarifRate,
-                connSize,
-                remark,
-                ulbid,
-                zoneId,
-                source,
-                ownerName,
-                usageType,
-                detAppliName,
-                detMobile,
-                detAadhaar,
-                detEmail,
-                detAddress,
-                conAddressSrch,
-                ownerNameSrch,
-                curConSizeSrch,
-                usageTypeNewSrch,
-                erlDate
-            });
+      const data = await service.saveWaterRegisterService({
+            userId,
+            wtregId: wtregId ?? 0,
+            servId,
+            consNo,
+            disConId,
+            reason,
+            usageTypeId,
+            tarifRate,
+            connSize,
+            remark,
+            ulbid,
+            zoneId,
+            source,
+            ownerName,
+            usageType,
+            detAppliName,
+            detAddress,
+            inStr: null,
+        });
 
 
         if (!data.success) {

@@ -391,7 +391,7 @@ const FrmWaterRegister = () => {
             return;
         }
 
-        if (!documents.length) {
+        if (documents.length) {
             Swal.fire({
                 // icon: "warning",
                 text: "Document Required."
@@ -834,7 +834,7 @@ const FrmWaterRegister = () => {
                                                     key={item.NUM_CONNSIZE_ID}
                                                     value={String(item.NUM_CONNSIZE_ID)}
                                                 >
-                                                    {item.NUM_CONNSIZE_SIZE}
+                                                    {item.VAR_CONNSIZE_NAME}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
