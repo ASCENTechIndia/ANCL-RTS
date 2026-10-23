@@ -119,7 +119,7 @@ const getTradeCategoryRepo = async (licenseType) => {
     WHERE var_tradecategory_flag = 'Y'
       AND num_tradecategory_id = :licenseType
   `;
-
+  console.log("query :", query);
   const result = await executeQueryTMC(query, {
     licenseType,
   });
@@ -480,12 +480,12 @@ const applicationEntryRepo = async (data) => {
   try {
     const fromDate = data.fromDate ? new Date(`${data.fromDate}T00:00:00`) : null;
     const toDate = data.toDate ? new Date(`${data.toDate}T00:00:00`) : null;
-
+    console.log({data})
     const result = await withTxTMC(async (conn) => {
       const res = await conn.execute(
         `
         BEGIN
-          aomk_appli_ins(
+          market.aomk_appli_ins(
             :In_UserId,
             :In_Appid,
             :In_AppliNo,
@@ -615,6 +615,8 @@ const applicationEntryRepo = async (data) => {
       console.log("applicationEntryRepo:", res);
       return res.outBinds;
     });
+
+    console.log({result})
 
     return {
       success: true,
@@ -1245,7 +1247,7 @@ const getExistingLicenseDirectorDetailsRepo = async (applicationId, ulbId) => {
         fetchInfo: {
           IMGDIRECTORIMAGE: { type: oracledb.BUFFER },
         },
-      }
+      },
     );
 
     const rows = result.rows || [];
@@ -1265,7 +1267,9 @@ const getExistingLicenseDirectorDetailsRepo = async (applicationId, ulbId) => {
     throw error;
   } finally {
     if (connection) {
-      try { await connection.close(); } catch (error) {
+      try {
+        await connection.close();
+      } catch (error) {
         console.error("ERROR CLOSING ANCL CONNECTION:", error.message);
       }
     }
@@ -1305,7 +1309,7 @@ const getExistingLicenseDocumentDetailsRepo = async (applicationId, ulbId) => {
         fetchInfo: {
           FILEBYTE: { type: oracledb.BUFFER },
         },
-      }
+      },
     );
 
     const rows = result.rows || [];
@@ -1325,7 +1329,9 @@ const getExistingLicenseDocumentDetailsRepo = async (applicationId, ulbId) => {
     throw error;
   } finally {
     if (connection) {
-      try { await connection.close(); } catch (error) {
+      try {
+        await connection.close();
+      } catch (error) {
         console.error("ERROR CLOSING ANCL CONNECTION:", error.message);
       }
     }

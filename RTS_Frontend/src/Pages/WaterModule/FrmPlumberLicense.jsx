@@ -415,7 +415,7 @@ const FrmPlumberLicense = () => {
                     education: String(values.education),
                     tectQuali: values.technicalQualification.trim(),
                     businessName: values.businessName.trim(),
-                    tradeLicenceNo: values.tradeLicenceNo.trim(),
+                    tradeLicenceNo: values.tradeLicenceNo.trim() || 0,
                     ulbid: Number(ulbId),
                     servid: Number(serviceId),
                     zoneId: Number(values.zoneId),

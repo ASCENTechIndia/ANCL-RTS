@@ -481,10 +481,10 @@ const FrmMarketEntry = () => {
           getSelfDeclare(),
         ]);
 
-        if (mode === 1) {
-          await loadTradeCategory("T", "Y");
-        }
-
+        // if (mode === 1) {
+          await loadTradeCategory("62", "Y");
+        // }
+s
         if (mode === 2 && applicationId) {
           const appData = await getApplicationDetails(applicationId);
           if (appData?.application) {
