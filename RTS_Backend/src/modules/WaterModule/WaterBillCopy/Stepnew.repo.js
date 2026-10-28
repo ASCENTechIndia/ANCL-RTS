@@ -359,6 +359,7 @@ const saveApplicantInfoRepo = async (payload) => {
                 }
             );
 
+            console.log("payload: ", payload);
             console.log("Procedure OUT Binds:", result.outBinds);
 
             return result.outBinds;

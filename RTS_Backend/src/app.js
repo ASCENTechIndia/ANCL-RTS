@@ -22,7 +22,7 @@ app.set("trust proxy", 1);
 // security & parsing
 // app.use(cors({ origin: NODE_ENV === "production" ? ["https://yourdomain.com"] : "*", credentials: true }));
 const allowedOrigins = [
-  "https://rts.nagarkaryavalinewuat.com", 
+  "https://karjatrts.nagarkaryavalinewuat.com", 
 
   "http://localhost:5173"];
 

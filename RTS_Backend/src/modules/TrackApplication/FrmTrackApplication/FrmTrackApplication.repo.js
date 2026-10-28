@@ -144,7 +144,7 @@ const getAppealDetailsRepo = async (appno) => {
 
       FROM aorts_application_det
 
-      INNER JOIN aorts_tmcservice_def
+      INNER JOIN aorts_service_def
         ON num_service_serviceid = num_application_serviceid
 
       WHERE var_appliaction_recieptno IS NOT NULL
@@ -371,13 +371,13 @@ const getApplicationCertificateRepo = async (applino) => {
 // ============================================================
 const getPaymentFlagRepo = async () => {
   const query = `
-    SELECT
+        SELECT
       RTRIM(
         LISTAGG(num_service_serviceid || ',')
         WITHIN GROUP(ORDER BY num_service_serviceid),
         ','
       ) AS L_DOCSERVICEID
-    FROM aorts_tmcservice_def
+    FROM aorts_service_def
     WHERE var_service_payflag = 'Y'
   `;
 
@@ -424,7 +424,7 @@ const getApplicationPaymentDetailsRepo = async (applino, isDocVerifyService) => 
         var_appl_address,
         num_application_amount AS rate
       FROM aorts_applicant_infodet
-      INNER JOIN aorts_tmcservice_def
+      INNER JOIN aorts_service_def
         ON num_service_serviceid = num_appl_serviceid
       INNER JOIN aorts_application_det
         ON var_application_appno = var_appl_appno
@@ -432,7 +432,7 @@ const getApplicationPaymentDetailsRepo = async (applino, isDocVerifyService) => 
     `;
   } else {
     query = `
-      SELECT
+     SELECT
         var_appl_appno,
         var_service_eng_name,
         var_appl_email,
@@ -444,7 +444,7 @@ const getApplicationPaymentDetailsRepo = async (applino, isDocVerifyService) => 
         var_appl_address,
         num_service_rate AS rate
       FROM aorts_applicant_infodet
-      INNER JOIN aorts_tmcservice_def
+      INNER JOIN aorts_service_def
         ON num_service_serviceid = num_appl_serviceid
       WHERE var_appl_appno = :applino
     `;
@@ -490,10 +490,10 @@ const getApplicationStepsRepo = async (ulbId, applino, serviceId) => {
   // 2. Get Department ID
   // ----------------------------------------------------------
   const departmentQuery = `
-    SELECT
-      num_service_deptid AS departmentId
-    FROM aorts_tmcservice_def
-    WHERE num_service_serviceid = :serviceId
+        SELECT
+          num_service_deptid AS departmentId
+        FROM aorts_service_def
+        WHERE num_service_serviceid = :serviceId
   `;
 
   const departmentResult = await executeQueryTMC(departmentQuery, {
@@ -537,7 +537,7 @@ const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
     query = " select var_service_eng_name || '/' || var_service_mar_name servid,zonename zoneid, wardname, var_newtaxasses_appno appno, ";
     query += " var_propassess_appliname appliname, dat_newtaxasses_insdate appdate, var_newtaxasses_appliadd address, dat_applitrack_insdt authdate, VAR_NEWTAXASSES_JAVAKNO outno ";
     query += " from aorts_newtaxasses_mas ";
-    query += " inner join aorts_tmcservice_def on num_service_serviceid = num_newtaxasses_servid ";
+    query += " inner join aorts_service_def on num_service_serviceid = num_newtaxasses_servid ";
     query += " inner join prop.vw_zonemas on num_newtaxasses_zoneid = zoneid INNER JOIN aorts_applitracking_det ON var_applitrack_applno = var_newtaxasses_appno ";
     query += " where var_newtaxasses_appno = '" + appNo + "' and ulbid = '" + ulbId + "' ";
   }
@@ -551,7 +551,7 @@ const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
     query +=
       " case when var_noduescert_subcode is not null then var_noduescert_propno||'/'||var_noduescert_subcode else var_noduescert_propno end  propno, var_noduescert_subcode subcode,var_noduescert_owndtls owndtls, NUM_NODUESCERT_YEARTAX YEARTAX, dat_applitrack_insdt authdate, var_noduescert_javakno outno ";
     query += " from aorts_noduescert_mas";
-    query += " inner join aorts_tmcservice_def on num_service_serviceid = num_noduescert_servid";
+    query += " inner join aorts_service_def on num_service_serviceid = num_noduescert_servid";
     query += " inner join prop.vw_zonemas on num_noduescert_zoneid = zoneid inner join aorts_applitracking_det on var_applitrack_applno=var_noduescert_appno and num_applitrack_stageid=3 ";
     query += " where var_noduescert_appno = '" + appNo + "' and ulbid = '" + ulbId + "' ";
   }
@@ -571,7 +571,7 @@ const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
     query += " var_proptrans_address address, var_transfertype_name transfertype, ";
     query += " var_proptrans_newownname newownname, dat_applitrack_insdt authdate, VAR_PROPTRANS_JAVAKNO outno ";
     query += " FROM aorts_proptrans_mas ";
-    query += " INNER JOIN aorts_tmcservice_def ";
+    query += " INNER JOIN aorts_service_def ";
     query += " ON num_service_serviceid = num_proptrans_servid ";
     query += " INNER JOIN prop.vw_zonemas ON num_proptrans_zoneid = zoneid ";
     query += " INNER JOIN prop.aoms_transfertype_mas ";
@@ -593,7 +593,7 @@ const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
     query += " var_taxexemption_ownername ownername, ";
     query += " var_rebatetype_name exemptiontype, dat_applitrack_insdt authdate, VAR_TAXEXEMPTION_JAVAKNO outno ";
     query += " FROM aorts_taxexemption_mas ";
-    query += " INNER JOIN aorts_tmcservice_def ";
+    query += " INNER JOIN aorts_service_def ";
     query += " ON num_service_serviceid = num_taxexemption_servid ";
     query += " INNER JOIN prop.vw_zonemas ON num_taxexemption_zoneid = zoneid ";
     query += " LEFT JOIN aorts_rebatetype_mas ";
@@ -737,7 +737,7 @@ const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
     query += " dt_nocappli_insdt AS NOCINSDATE, dat_application_recieptdate AS APPLICATIONDATE ";
     query += " FROM aorts_nocapplication_def ";
     query += " INNER JOIN aorts_application_det ON var_application_appno = var_nocappli_applno ";
-    query += " INNER JOIN aorts_tmcservice_def ON num_service_serviceid = num_nocappli_serviceid ";
+    query += " INNER JOIN aorts_service_def ON num_service_serviceid = num_nocappli_serviceid ";
     query += " WHERE var_application_appno = '" + appNo + "' ";
     query += " AND num_service_serviceid = '" + serviceId + "' ";
     query += " AND num_nocappli_ulbid = '" + ulbId + "' ";
@@ -764,11 +764,12 @@ const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
 // ============================================================
 const getReApplyServiceDetailsRepo = async (serviceId) => {
   const query = `
-    SELECT
-      var_service_url,
+     SELECT
+      var_servmenu_pageurl,
       num_service_rate,
       var_service_eng_name
-    FROM aorts_tmcservice_def
+    FROM aorts_service_def
+    inner join  aorts_servmenu_mas on num_servmenu_servid=num_service_serviceid
     WHERE num_service_serviceid = :serviceId
   `;
 

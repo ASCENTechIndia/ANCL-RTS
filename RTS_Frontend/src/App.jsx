@@ -140,7 +140,7 @@ const router = createBrowserRouter([
         element: <FrmAppeal />,
       },
       {
-        path: "/FrmAppliFee",
+        path: "/app/FrmAppliFee",
         element: <FrmAppliFee />,
       },
 
