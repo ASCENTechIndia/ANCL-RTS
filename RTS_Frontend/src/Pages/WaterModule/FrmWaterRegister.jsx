@@ -391,13 +391,13 @@ const FrmWaterRegister = () => {
             return;
         }
 
-        if (documents.length) {
-            Swal.fire({
-                // icon: "warning",
-                text: "Document Required."
-            });
-            return;
-        }
+        // if (!documents.length) {
+        //     Swal.fire({
+        //         // icon: "warning",
+        //         text: "Document Required."
+        //     });
+        //     return;
+        // }
 
         const missingDocuments = documents.filter((item) => !item.file);
         if (missingDocuments.length) {
