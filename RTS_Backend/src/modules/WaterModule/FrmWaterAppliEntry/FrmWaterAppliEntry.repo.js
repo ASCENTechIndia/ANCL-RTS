@@ -162,7 +162,7 @@ async function getApplicationDetails(appNo) {
       AND m.var_applientry_rtsno = i.var_appl_appno
     WHERE m.var_applientry_rtsno = :appNo
   `;
-  
+
   return await executeQueryTMC(query, { appNo: String(appNo) });
 }
 
@@ -474,6 +474,80 @@ async function insertWaterApplication(params) {
   return result;
 }
 
+
+async function insertRTSAppliDetails(params) {
+  const { userId, appliFlag, appliData, appliDtlsData } = params;
+
+  const sql = `
+    BEGIN
+      water.aoms_RTSAppliDetails_ins(
+        :in_UserId,
+        :in_appliflag,
+        :in_applidata,
+        :in_applidtlsdata,
+        :out_ErrorCode,
+        :out_ErrorMsg,
+        :out_str
+      );
+    END;
+  `;
+
+  const binds = {
+    in_UserId: String(userId),
+    in_appliflag: appliFlag,
+    in_applidata: appliData,
+    in_applidtlsdata: appliDtlsData || null,
+    out_ErrorCode: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+    out_ErrorMsg: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 4000 },
+    out_str: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 4000 },
+  };
+
+  console.log("Module Inserting Procedure User ID:", userId);
+  console.log("Module Inserting Procedure Application Flag:", appliFlag);
+
+  const result = await executeProcedureTMC({ sql, binds });
+  console.log("Module Inserting Procedure Details Result:", result);
+
+  return result;
+}
+
+async function insertKarjatWaterApplication(params) {
+  const { userId, appliFlag, appliData, appliDtlsData } = params;
+
+  const sql = `
+    BEGIN
+      water.aowt_AppliEnrty_karjat_ins(
+        :in_UserId,
+        :in_appliflag,
+        :in_applidata,
+        :in_applidtlsdata,
+        :out_ErrorCode,
+        :out_ErrorMsg,
+        :out_str
+      );
+    END;
+  `;
+
+  const binds = {
+    in_UserId: String(userId),
+    in_appliflag: appliFlag,
+    in_applidata: appliData,
+    in_applidtlsdata: appliDtlsData || null,
+    out_ErrorCode: {dir: oracledb.BIND_OUT,type: oracledb.NUMBER},
+    out_ErrorMsg: {dir: oracledb.BIND_OUT,type: oracledb.STRING,maxSize: 4000},
+    out_str: {dir: oracledb.BIND_OUT,type: oracledb.STRING,maxSize: 4000},
+  };
+
+  console.log("Karjat Water Application User ID:", userId);
+  console.log("Karjat Water Application Application Flag:", appliFlag);
+
+  const result = await executeProcedureTMC({ sql, binds });
+  console.log("Karjat Water Application Result:", result);
+
+  return result;
+}
+
+
 module.exports = {
   getZones,
   getConnectionTypes,
@@ -488,4 +562,6 @@ module.exports = {
   getApplicationDocuments,
   insertDocument,
   insertWaterApplication,
+  insertRTSAppliDetails,
+  insertKarjatWaterApplication
 };

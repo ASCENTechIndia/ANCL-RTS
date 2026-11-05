@@ -209,3 +209,43 @@ exports.checkPayment = asyncHandler(async (req, res) => {
     "Payment check completed"
   );
 });
+
+exports.submitRTSAppliDetails = asyncHandler(async (req, res) => {
+  const payload = {
+    userId: req.user?.userId || req.body.userId,
+    appliFlag: req.body.appliFlag,
+    appliData: req.body.appliData,
+    appliDtlsData: req.body.appliDtlsData,
+  };
+
+  if (!payload.userId) return fail(res, "User ID is required");
+
+  const result = await service.submitRTSAppliDetailsService(payload);
+
+  if (!result.success) {
+    return fail(res, result.message || "RTS Application submission failed");
+  }
+
+  return ok(res, result, "RTS Application submitted successfully");
+});
+
+exports.submitKarjatWaterApplication = asyncHandler(async (req, res) => {
+  const userId = req.user?.userId || req.body.userId;
+
+  if (!userId) {
+    return fail(res, "User ID is required");
+  }
+
+  const result = await service.submitKarjatWaterApplicationService({
+    userId,
+    appliFlag: req.body.appliFlag,
+    appliData: req.body.appliData,
+    appliDtlsData: req.body.appliDtlsData,
+  });
+
+  if (!result.success) {
+    return fail(res, result.message || "Karjat module entry failed");
+  }
+
+  return ok(res, result, result.message);
+});

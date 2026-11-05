@@ -21,6 +21,7 @@ import ShadCNTable from "@/components/ui/table";
 
 import { useAuth } from "@/context/AuthContext";
 import { useLocation } from "react-router-dom";
+import config from "@/utils/config";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -39,21 +40,9 @@ function FrmWaterAppliEntry() {
   const [selectedFiles, setSelectedFiles] = useState({});
   const [paymentFlag, setPaymentFlag] = useState("N");
 
-  const serviceId =
-    location?.state?.serviceId ||
-    location?.state?.serviceid ||
-    location?.state?.service?.serviceId;
-
-  const corpId =
-    user?.corpId ||
-    user?.corpid ||
-    user?.corpID ||
-    location?.state?.corpId ||
-    location?.state?.corpid ||
-    "10001";
-
-  const ulbId =
-    user?.ulbId || user?.ulbid || user?.ULBID || location?.state?.ulbId || "3";
+  const serviceId = location?.state?.serviceId || location?.state?.serviceid || location?.state?.service?.serviceId;
+  const corpId = user?.corpId || user?.corpid || user?.corpID || location?.state?.corpId || location?.state?.corpid || "10001";
+  const ulbId = user?.ulbId || user?.ulbid || user?.ULBID || location?.state?.ulbId;
 
   const axiosConfig = useMemo(
     () => ({
@@ -428,35 +417,40 @@ function FrmWaterAppliEntry() {
     });
 
   const handleSubmit = async (values, { resetForm }) => {
+    let applicationNo = "";
+    let originalSubmitted = false;
+
     try {
-      // Validate and get transformed values
-      const validationResult =
-        waterApplicationValidationSchema.safeParse(values);
+      const validationResult = waterApplicationValidationSchema.safeParse(values);
 
       if (!validationResult.success) {
-        const firstError = validationResult.error.issues?.[0];
-
         await Swal.fire({
           icon: "warning",
-          text:
-            firstError?.message || "Please fill all required fields correctly.",
+          text: validationResult.error.issues?.[0]?.message || "Please fill all required fields correctly.",
         });
-
         return;
       }
 
-      const validatedValues = validationResult.data;
-
+      const v = validationResult.data;
       const selectedDocumentIds = Object.keys(selectedFiles);
 
-      if (selectedDocumentIds.length === 0) {
+      if (!selectedDocumentIds.length) {
         await Swal.fire({
           icon: "warning",
           text: "Please upload at least one document.",
         });
-
         return;
       }
+
+      const userId = String(user?.userId || user?.userid || user?.USERID || user?.id || "");
+      const userUniqueId = String(user?.userUniqueId || user?.UserUniqueId || user?.USERUNIQUEID || userId);
+      const currentUlbId = String(ulbId);
+      const currentServiceId = String(serviceId);
+      const currentCorpId = String(corpId);
+      const str = (value) => String(value ?? "").replace(/~/g, " ").trim();
+      const coOwner = v.includeCoOwner === "Yes";
+      const cooFlag = coOwner ? "Y" : "N";
+      const govPropFlag = v.isGovtProperty === "Yes" ? "Y" : "N";
 
       Swal.fire({
         title: "Submitting...",
@@ -465,225 +459,320 @@ function FrmWaterAppliEntry() {
         allowEscapeKey: false,
         didOpen: () => Swal.showLoading(),
       });
-
       const documentsPayload = await Promise.all(
         selectedDocumentIds.map(async (documentId) => {
           const file = selectedFiles[documentId];
-
-          const document = documents.find(
-            (item) =>
-              String(item.NUM_DOCUMENT_ID || item.id) === String(documentId),
-          );
-
-          const fileExtension =
-            file?.name?.split(".").pop()?.toUpperCase() || "";
-
-          const fileBuffer = await fileToBase64(file);
+          const document = documents.find((item) => String(item.NUM_DOCUMENT_ID || item.id) === String(documentId));
 
           return {
             docId: String(documentId),
-
-            docName:
-              document?.VAR_DOCUMENT_NAME ||
-              document?.documentName ||
-              file?.name ||
-              "",
-
-            fileExtension,
-
+            docName: document?.VAR_DOCUMENT_NAME || document?.documentName || file?.name || "",
+            fileExtension: file?.name?.split(".").pop()?.toUpperCase() || "",
             checked: true,
-
-            fileBuffer,
+            fileBuffer: await fileToBase64(file),
           };
-        }),
+        })
       );
 
       const payload = {
-        ulbId: String(ulbId),
-
-        corpId: String(corpId),
-
-        userId: String(
-          user?.userId || user?.userid || user?.USERID || user?.id || "",
-        ),
-
-        serviceId: String(serviceId),
-
-        zoneId: String(validatedValues.zoneId),
-
-        appSource: "WEB",
-
-        afName: validatedValues.applicantFirstName || "",
-
-        amName: validatedValues.applicantMiddleName || "",
-
-        alName: validatedValues.applicantLastName || "",
-
-        mobileNo: validatedValues.mobileNumber || "",
-
-        // Uses normalized email from Zod
-        email: validatedValues.email || "",
-
-        aadharNo: validatedValues.aadharCardNo || "",
-
-        propNo: validatedValues.propertyNumber || "",
-
-        resNo: validatedValues.residentialNumber || "",
-
-        address: validatedValues.address || "",
-
-        afNameMr: validatedValues.applicantFirstNameMarathi || "",
-
-        amNameMr: validatedValues.applicantMiddleNameMarathi || "",
-
-        alNameMr: validatedValues.applicantLastNameMarathi || "",
-
-        addressMr: validatedValues.addressMarathi || "",
-
-        conFName: validatedValues.consumerFirstName || "",
-
-        conMName: validatedValues.consumerMiddleName || "",
-
-        conLName: validatedValues.consumerLastName || "",
-
-        conMobNo: validatedValues.consumerMobileNumber || "",
-
-        // Uses normalized consumer email from Zod
-        conEmail: validatedValues.consumerEmail || "",
-
-        conAadharNo: validatedValues.consumerAadharCardNo || "",
-
-        conPropNo: validatedValues.consumerPropertyNumber || "",
-
-        conResNo: validatedValues.consumerResidentialNumber || "",
-
-        conFNameMr: validatedValues.consumerFirstNameMarathi || "",
-
-        conMNameMr: validatedValues.consumerMiddleNameMarathi || "",
-
-        conLNameMr: validatedValues.consumerLastNameMarathi || "",
-
-        cooFlag: validatedValues.includeCoOwner === "Yes" ? "Y" : "N",
-
-        cooFName1:
-          validatedValues.includeCoOwner === "Yes"
-            ? validatedValues.coOwnerFirstName || ""
-            : "",
-
-        cooMName1:
-          validatedValues.includeCoOwner === "Yes"
-            ? validatedValues.coOwnerMiddleName || ""
-            : "",
-
-        cooLName1:
-          validatedValues.includeCoOwner === "Yes"
-            ? validatedValues.coOwnerLastName || ""
-            : "",
-
-        cooFName2:
-          validatedValues.includeCoOwner === "Yes"
-            ? validatedValues.coOwnerFirstNameMarathi || ""
-            : "",
-
-        cooMName2:
-          validatedValues.includeCoOwner === "Yes"
-            ? validatedValues.coOwnerMiddleNameMarathi || ""
-            : "",
-
-        cooLName2:
-          validatedValues.includeCoOwner === "Yes"
-            ? validatedValues.coOwnerLastNameMarathi || ""
-            : "",
-
-        cooAddress:
-          validatedValues.includeCoOwner === "Yes"
-            ? validatedValues.coOwnerAddress || ""
-            : "",
-
-        cooAddressMr:
-          validatedValues.includeCoOwner === "Yes"
-            ? validatedValues.coOwnerAddressMarathi || ""
-            : "",
-
-        connType: String(validatedValues.connectionType),
-
-        connSize: String(validatedValues.connectionSize),
-
-        usageType: String(validatedValues.usageType),
-
-        usageSubType: String(validatedValues.usageSubType),
-
-        noOfPerson: String(validatedValues.noOfPerson),
-
-        noOfFamily: String(validatedValues.noOfFamily),
-
-        noOfConn: String(validatedValues.noOfConnection),
-
-        connStatus: String(validatedValues.connectionStatus),
-
-        busiCert: String(validatedValues.businessCertificate),
-
-        billingType: validatedValues.billingType,
-
-        govPropFlag: validatedValues.isGovtProperty === "Yes" ? "Y" : "N",
-
-        remark: validatedValues.remark,
-
-        reason: validatedValues.reason,
-
+        ulbId: currentUlbId,
+        corpId: currentCorpId,
+        userId,
+        serviceId: currentServiceId,
+        zoneId: String(v.zoneId),
+        appSource: config.source,
+        afName: v.applicantFirstName || "",
+        amName: v.applicantMiddleName || "",
+        alName: v.applicantLastName || "",
+        mobileNo: v.mobileNumber || "",
+        email: v.email || "",
+        aadharNo: v.aadharCardNo || "",
+        propNo: v.propertyNumber || "",
+        resNo: v.residentialNumber || "",
+        address: v.address || "",
+        afNameMr: v.applicantFirstNameMarathi || "",
+        amNameMr: v.applicantMiddleNameMarathi || "",
+        alNameMr: v.applicantLastNameMarathi || "",
+        addressMr: v.addressMarathi || "",
+        conFName: v.consumerFirstName || "",
+        conMName: v.consumerMiddleName || "",
+        conLName: v.consumerLastName || "",
+        conMobNo: v.consumerMobileNumber || "",
+        conEmail: v.consumerEmail || "",
+        conAadharNo: v.consumerAadharCardNo || "",
+        conPropNo: v.consumerPropertyNumber || "",
+        conResNo: v.consumerResidentialNumber || "",
+        conFNameMr: v.consumerFirstNameMarathi || "",
+        conMNameMr: v.consumerMiddleNameMarathi || "",
+        conLNameMr: v.consumerLastNameMarathi || "",
+        cooFlag,
+        cooFName1: coOwner ? v.coOwnerFirstName || "" : "",
+        cooMName1: coOwner ? v.coOwnerMiddleName || "" : "",
+        cooLName1: coOwner ? v.coOwnerLastName || "" : "",
+        cooFName2: coOwner ? v.coOwnerFirstNameMarathi || "" : "",
+        cooMName2: coOwner ? v.coOwnerMiddleNameMarathi || "" : "",
+        cooLName2: coOwner ? v.coOwnerLastNameMarathi || "" : "",
+        cooAddress: coOwner ? v.coOwnerAddress || "" : "",
+        cooAddressMr: coOwner ? v.coOwnerAddressMarathi || "" : "",
+        connType: String(v.connectionType),
+        connSize: String(v.connectionSize),
+        usageType: String(v.usageType),
+        usageSubType: String(v.usageSubType),
+        noOfPerson: String(v.noOfPerson),
+        noOfFamily: String(v.noOfFamily),
+        noOfConn: String(v.noOfConnection),
+        connStatus: String(v.connectionStatus),
+        busiCert: String(v.businessCertificate),
+        billingType: v.billingType || "",
+        govPropFlag,
+        remark: v.remark || "",
+        reason: v.reason || "",
         documents: documentsPayload,
       };
 
-      console.log("Water Application Submit Payload:", payload);
+      const response = await axios.post(`${baseUrl}/api/FrmWaterAppliEntry/submit`, payload, axiosConfig);
+      const responseData = response?.data;
+      const submitData = responseData?.data || {};
 
-      const response = await axios.post(
-        `${baseUrl}/api/FrmWaterAppliEntry/submit`,
-        payload,
-        axiosConfig,
-      );
+      if (!responseData?.ok || !submitData?.success) {
+        throw new Error(submitData?.message || responseData?.message || "Unable to submit water application.");
+      }
+
+      applicationNo = String(submitData.applicationNo || "");
+
+      if (!applicationNo) {
+        throw new Error("Application submitted, but the API did not return an application number.");
+      }
+
+      originalSubmitted = true;
+
+      const isKarjat = ["1890", "1150"].includes(currentUlbId) && currentServiceId === "72";
+      const isStandardRTS = ["590", "591", "1630"].includes(currentUlbId);
+
+      if (isKarjat || isStandardRTS) {
+        let appliData = "";
+        let appliDtlsData = "";
+        let moduleEndpoint = "";
+
+        if (isKarjat) {
+          appliData = [
+            currentCorpId,
+            currentServiceId,
+            applicationNo,
+            userUniqueId,
+            v.applicantFirstName,
+            v.applicantFirstNameMarathi,
+            v.applicantMiddleName,
+            v.applicantMiddleNameMarathi,
+            v.applicantLastName,
+            v.applicantLastNameMarathi,
+            v.mobileNumber,
+            v.email,
+            v.aadharCardNo,
+            v.address,
+            v.addressMarathi,
+            ".",
+            ".",
+            v.zoneId,
+            "",
+            v.propertyNumber,
+            "",
+            "",
+            "",
+            "",
+            applicationNo,
+            "",
+            "",
+            "",
+            "",
+            currentUlbId,
+            config.source,
+            "N",
+          ].map(str).join("~");
+
+          // Karjat: 51 detail fields expected by Oracle procedure
+          appliDtlsData = [
+            currentServiceId,
+            currentUlbId,
+            v.applicantFirstName,
+            v.applicantMiddleName,
+            v.applicantLastName,
+            v.mobileNumber,
+            v.email,
+            v.aadharCardNo,
+            v.propertyNumber,
+            v.residentialNumber,
+            v.consumerFirstName,
+            v.consumerMiddleName,
+            v.consumerLastName,
+            v.consumerMobileNumber,
+            v.consumerEmail,
+            v.consumerAadharCardNo,
+            v.consumerPropertyNumber,
+            v.consumerResidentialNumber,
+            cooFlag,
+            coOwner ? v.coOwnerFirstName : "",
+            coOwner ? v.coOwnerMiddleName : "",
+            coOwner ? v.coOwnerLastName : "",
+            coOwner ? v.coOwnerFirstNameMarathi : "",
+            coOwner ? v.coOwnerMiddleNameMarathi : "",
+            coOwner ? v.coOwnerLastNameMarathi : "",
+            v.connectionType,
+            v.connectionSize,
+            v.usageType,
+            v.usageSubType,
+            v.noOfPerson,
+            v.noOfFamily,
+            v.noOfConnection,
+            v.connectionStatus,
+            v.businessCertificate,
+            v.billingType,
+            govPropFlag,
+            userUniqueId,
+            new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase(),
+            "Application Inserted",
+            v.applicantFirstNameMarathi,
+            v.applicantMiddleNameMarathi,
+            v.applicantLastNameMarathi,
+            v.address,
+            v.addressMarathi,
+            v.consumerFirstNameMarathi,
+            v.consumerMiddleNameMarathi,
+            v.consumerLastNameMarathi,
+            coOwner ? v.coOwnerAddress : "",
+            coOwner ? v.coOwnerAddressMarathi : "",
+            v.remark,
+            v.reason,
+          ].map(str).join("~");
+
+          console.log("Karjat Detail Count:", appliDtlsData.split("~").length);
+          moduleEndpoint = "submit-karjat-water-application";
+        } else {
+          appliData = [
+            userUniqueId,
+            v.zoneId,
+            currentServiceId,
+            currentUlbId,
+            "10001",
+            v.applicantFirstName,
+            v.applicantFirstName,
+            v.applicantMiddleName,
+            v.applicantMiddleName,
+            v.applicantLastName,
+            v.applicantLastName,
+            v.mobileNumber,
+            v.aadharCardNo,
+            v.email,
+            v.address,
+            v.address,
+            "NEW",
+            "NEW",
+            v.zoneId,
+            "0",
+            " ",
+            "1",
+            "",
+            "",
+            "",
+            applicationNo,
+            "",
+            "",
+            "",
+            "",
+            "WEB",
+            "N",
+            "",
+          ].map(str).join("~");
+
+          appliDtlsData = [
+            currentServiceId,
+            currentUlbId,
+            v.applicantFirstName,
+            v.applicantMiddleName,
+            v.applicantLastName,
+            v.mobileNumber,
+            v.email,
+            v.aadharCardNo,
+            v.propertyNumber,
+            v.residentialNumber,
+            v.consumerFirstName,
+            v.consumerMiddleName,
+            v.consumerLastName,
+            v.consumerMobileNumber,
+            v.consumerEmail,
+            v.consumerAadharCardNo,
+            v.consumerPropertyNumber,
+            v.consumerResidentialNumber,
+            cooFlag,
+            coOwner ? v.coOwnerFirstName : "",
+            coOwner ? v.coOwnerMiddleName : "",
+            coOwner ? v.coOwnerLastName : "",
+            coOwner ? v.coOwnerFirstNameMarathi : "",
+            coOwner ? v.coOwnerMiddleNameMarathi : "",
+            coOwner ? v.coOwnerLastNameMarathi : "",
+            v.connectionType,
+            v.connectionSize,
+            v.usageType,
+            v.usageSubType,
+            v.noOfPerson,
+            v.noOfFamily,
+            v.noOfConnection,
+            v.connectionStatus,
+            v.businessCertificate,
+            v.billingType,
+            govPropFlag,
+            userUniqueId,
+            applicationNo,
+          ].map(str).join("~");
+
+          moduleEndpoint = "submit-rts-application-details";
+        }
+
+        console.log("KARJAT REQUEST:", {
+          userId,
+          appliFlag: "AppliEntry",
+          appliDataLength: appliData?.length,
+          appliDtlsDataLength: appliDtlsData?.length,
+          appliDataExists: !!appliData,
+          appliDtlsDataExists: !!appliDtlsData,
+        });
+
+        const moduleResponse = await axios.post(`${baseUrl}/api/FrmWaterAppliEntry/${moduleEndpoint}`,
+          { userId, appliFlag: "AppliEntry", appliData, appliDtlsData }, axiosConfig
+        );
+
+        const moduleResponseData = moduleResponse?.data;
+        const moduleData = moduleResponseData?.data || {};
+
+        if (moduleResponseData?.ok === false || moduleData?.success === false || (moduleData?.errorCode != null && Number(moduleData.errorCode) !== 9999)) {
+          throw new Error(moduleData?.message || moduleResponseData?.message || "Module application entry failed.");
+        }
+      }
 
       Swal.close();
 
-      const responseData = response?.data;
-
-      if (!responseData?.ok) {
-        throw new Error(
-          responseData?.message || "Unable to submit water application.",
-        );
-      }
-
-      const submitData = responseData?.data || {};
-
-      if (!submitData?.success) {
-        throw new Error(
-          submitData?.message || "Unable to submit water application.",
-        );
-      }
-
       await Swal.fire({
-        icon: "success",
-        title: "Success",
-        text:
-          submitData?.message ||
-          responseData?.message ||
-          "Application submitted successfully.",
+        // icon: "success",
+        // title: "Application Submitted Successfully",
+        html: `
+        <p>Water application submitted successfully.</p>
+        <p><strong>Application No:</strong> ${applicationNo.replace(/[&<>"']/g, "")}</p>
+      `,
       });
 
       resetForm();
-
       setSelectedFiles({});
-
       setUsageSubTypes([]);
+
     } catch (error) {
       Swal.close();
 
+      const errorMessage = error?.response?.data?.data?.message || error?.response?.data?.error || error?.message || "Unable to submit water application.";
+
       await Swal.fire({
-        icon: "error",
-        text:
-          error?.response?.data?.data?.message ||
-          error?.response?.data?.message ||
-          error?.message ||
-          "Unable to submit water application.",
+        // icon: originalSubmitted ? "warning" : "error",
+        title: originalSubmitted ? "Application Saved — Module Entry Failed" : "Submission Failed",
+        text: originalSubmitted ? `Application No: ${applicationNo}. The original application and document submission succeeded, but the module entry failed: ${errorMessage}` : errorMessage,
       });
     }
   };

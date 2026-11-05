@@ -137,7 +137,7 @@ async function getApplicationDetailsService(applicationNo) {
   }
 
   const result = await repo.getApplicationDetails(applicationNo);
-  
+
   if (!result.success) {
     throw new AppError(result.error, 500);
   }
@@ -153,7 +153,7 @@ async function getApplicationDetailsService(applicationNo) {
     data: {
       applicationId: row.NUM_APPLIENTRY_ID,
       ulbId: row.NUM_APPLIENTRY_ULBID,
-      
+
       // Applicant Details
       afName: row.VAR_APPLIENTRY_FNAME,
       amName: row.VAR_APPLIENTRY_MNAME,
@@ -165,13 +165,13 @@ async function getApplicationDetailsService(applicationNo) {
       resNo: row.VAR_APPLIENTRY_RESNO,
       address: row.ADDRESS,
       zoneId: row.ZONEID,
-      
+
       // Marathi Applicant Details
       afNameMr: row.AFNAMEMR,
       amNameMr: row.AMNAMEMR,
       alNameMr: row.ALNAMEMR,
       addressMr: row.ADDRESSMR,
-      
+
       // Consumer Details
       conFName: row.VAR_APPLIENTRY_CONFNAME,
       conMName: row.VAR_APPLIENTRY_CONMNAME,
@@ -181,7 +181,7 @@ async function getApplicationDetailsService(applicationNo) {
       conAadharNo: row.NUM_APPLIENTRY_CONADHARNO,
       conPropNo: row.VAR_APPLIENTRY_CONPROPNO,
       conResNo: row.VAR_APPLIENTRY_CONRESNO,
-      
+
       // Co-Owner Details
       cooFlag: row.VAR_APPLIENTRY_COOFLAG,
       cooFName1: row.VAR_APPLIENTRY_COOFNAME1,
@@ -190,7 +190,7 @@ async function getApplicationDetailsService(applicationNo) {
       cooFName2: row.VAR_APPLIENTRY_COOFNAME2,
       cooMName2: row.VAR_APPLIENTRY_COOMNAME2,
       cooLName2: row.VAR_APPLIENTRY_COOLNAME2,
-      
+
       // Connection Details
       connType: row.NUM_APPLIENTRY_CONTYPEID,
       connSize: row.NUM_APPLIENTRY_CONSIZEID,
@@ -203,7 +203,7 @@ async function getApplicationDetailsService(applicationNo) {
       busiCert: row.NUM_APPLIENTRY_BUSICERTID,
       billingType: row.VAR_APPLIENTRY_BILLTYPE,
       govPropFlag: row.VAR_APPLIENTRY_GOVPROPFLAG,
-      
+
       // Remarks
       remark: row.REMARK,
       reason: row.REASON
@@ -445,47 +445,39 @@ async function submitWaterApplicationService(payload) {
   });
 
   if (!appResult.success) {
-    throw new AppError(appResult.error || "Application submission failed", 500);
+    throw new AppError(
+      appResult.error || "Application submission failed",
+      500
+    );
   }
 
-  const outBinds = appResult.outBinds;
+  const outBinds = appResult.outBinds || {};
 
   if (Number(outBinds.out_errcode) !== 9999) {
-    return {
-      success: false,
-      errorCode: outBinds.out_errcode,
-      message: outBinds.out_errMsg,
-    };
+    throw new AppError(outBinds.out_ErrMsg || "Application submission failed", 400);
+  }
+  const applicationNo = outBinds.out_AppliNo;
+  const docStr = outBinds.Out_DocStr;
+
+  if (!applicationNo) {
+    throw new AppError("Application number was not returned by the procedure", 500);
   }
 
-  const applicationNo = outBinds.out_applino;
-
-  if (documents && documents.length > 0) {
+  if (documents?.length > 0) {
     for (const doc of documents) {
-      if (doc.checked && doc.fileBuffer && doc.fileBuffer.length > 0) {
+      if (doc.checked && doc.fileBuffer?.length > 0) {
         try {
           let buffer;
           if (Buffer.isBuffer(doc.fileBuffer)) {
             buffer = doc.fileBuffer;
           } else if (typeof doc.fileBuffer === "string") {
-            if (doc.fileBuffer.startsWith("data:")) {
-              const base64Data = doc.fileBuffer.split(",")[1];
-              buffer = Buffer.from(base64Data, "base64");
-            } else {
-              buffer = Buffer.from(doc.fileBuffer, "base64");
-            }
+            const base64Data = doc.fileBuffer.startsWith("data:") ? doc.fileBuffer.split(",")[1] : doc.fileBuffer;
+            buffer = Buffer.from(base64Data, "base64");
           } else {
             buffer = Buffer.from(doc.fileBuffer);
           }
 
-          await repo.insertDocument({
-            corpId,
-            serviceId,
-            appNo: applicationNo,
-            docType: doc.fileExtension || "PDF",
-            documentId: Number(doc.docId),
-            docBuffer: buffer,
-          });
+          await repo.insertDocument({ corpId, serviceId, appNo: applicationNo, docType: "S", documentId: Number(doc.docId), docBuffer: buffer });
         } catch (error) {
           throw new AppError(`Failed to upload document: ${doc.docName}`, 500);
         }
@@ -494,19 +486,20 @@ async function submitWaterApplicationService(payload) {
   }
 
   const paymentResult = await repo.getServicePaymentFlag(serviceId);
+
   let payFlag = "N";
+
   if (paymentResult.success && paymentResult.rows.length > 0) {
     payFlag = paymentResult.rows[0].VAR_SERVICE_PAYFLAG || "N";
   }
 
-  const message = outBinds.out_errMsg || "Application submitted successfully";
-
   return {
     success: true,
     errorCode: outBinds.out_errcode,
-    message: message,
-    applicationNo: applicationNo,
-    payFlag: payFlag,
+    message: outBinds.out_ErrMsg || "Application submitted successfully",
+    applicationNo,
+    outDocStr: docStr,
+    payFlag,
     redirectTo: payFlag === "N" ? "FrmWaterAppliEntry" : "FrmAppliFee",
   };
 }
@@ -529,6 +522,66 @@ async function checkPaymentService(serviceId, applicationNo) {
   };
 }
 
+async function submitRTSAppliDetailsService(payload) {
+  const { userId, appliFlag, appliData, appliDtlsData } = payload;
+
+  if (!userId) throw new AppError("User ID is required", 400);
+  if (!appliFlag) throw new AppError("Application Flag is required", 400);
+  if (!appliData) throw new AppError("Application Data is required", 400);
+
+  if (appliFlag === "AppliEntry" && !appliDtlsData) {
+    throw new AppError("Application Details Data is required", 400);
+  }
+
+  const result = await repo.insertRTSAppliDetails({ userId, appliFlag, appliData, appliDtlsData });
+
+  if (!result.success) {
+    throw new AppError(result.error || "RTS Application insertion failed", 500);
+  }
+
+  const outBinds = result.outBinds;
+
+  if (Number(outBinds.out_ErrorCode) !== 9999) {
+    return {
+      success: false,
+      errorCode: outBinds.out_ErrorCode,
+      message: outBinds.out_ErrorMsg,
+      applicationNo: outBinds.out_str,
+    };
+  }
+
+  return {
+    success: true,
+    errorCode: outBinds.out_ErrorCode,
+    message: outBinds.out_ErrorMsg,
+    applicationNo: outBinds.out_str,
+  };
+}
+
+async function submitKarjatWaterApplicationService({ userId, appliFlag, appliData, appliDtlsData }) {
+  if (!userId) {
+    throw new AppError("User ID is required", 400);
+  }
+
+  if (!appliFlag || !appliData || !appliDtlsData) {
+    throw new AppError("Required application details are missing", 400);
+  }
+
+  const result = await repo.insertKarjatWaterApplication({ userId, appliFlag, appliData, appliDtlsData });
+  const outBinds = result?.outBinds || {};
+
+  if (Number(outBinds.out_ErrorCode) !== 9999) {
+    throw new AppError(outBinds.out_ErrorMsg || "Karjat module insertion failed", 400);
+  }
+
+  return {
+    success: true,
+    errorCode: outBinds.out_ErrorCode,
+    message: outBinds.out_ErrorMsg,
+    applicationNo: appliData.split("~")[2],
+  };
+}
+
 module.exports = {
   getZonesService,
   getConnectionTypesService,
@@ -543,4 +596,6 @@ module.exports = {
   uploadDocumentService,
   submitWaterApplicationService,
   checkPaymentService,
+  submitRTSAppliDetailsService,
+  submitKarjatWaterApplicationService
 };
