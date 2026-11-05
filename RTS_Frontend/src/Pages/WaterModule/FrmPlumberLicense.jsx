@@ -23,13 +23,14 @@ const FrmPlumberLicense = () => {
     const ulbId = Number(location.state?.ulbId ?? user?.ulbId);
     const userId = location.state?.userId ?? user?.userId;
     const serviceId = Number(location.state?.serviceId ?? user?.serviceId);
+    const corpId = user?.corpId;
     const source = config?.source;
     console.log({ location })
     const [mode, setMode] = useState(serviceId === 24 ? "N" : "R");
     const [serviceName, setServiceName] = useState("Plumber License");
     const [zones, setZones] = useState([]);
     const [educationList, setEducationList] = useState([]);
-    const [documents, setDocuments] = useState([]);
+    // const [documents, setDocuments] = useState([]);
     const [loadingMasters, setLoadingMasters] = useState(false);
 
     const initialValues = {
@@ -86,21 +87,21 @@ const FrmPlumberLicense = () => {
                     axios.get(`${baseUrl}/api/FrmPlumberLicense/education-dropdown`, {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
-                    axios.get(`${baseUrl}/api/FrmWaterRegister/documents`, {
-                        params: { ulbid: ulbId, serviceId },
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
+                    // axios.get(`${baseUrl}/api/FrmWaterRegister/documents`, {
+                    //     params: { ulbid: ulbId, serviceId },
+                    //     headers: { Authorization: `Bearer ${token}` },
+                    // }),
                 ]);
 
                 const zoneResult = results[0];
                 const serviceResult = results[1];
                 const educationResult = results[2];
-                const documentResult = results[3];
+                // const documentResult = results[3];
 
                 const zoneData = zoneResult.status === "fulfilled" ? zoneResult.value?.data?.data?.data || [] : [];
                 const serviceData = serviceResult.status === "fulfilled" ? serviceResult.value?.data?.data?.data || [] : [];
                 const educationData = educationResult.status === "fulfilled" ? educationResult.value?.data?.data?.data || [] : [];
-                const documentData = documentResult.status === "fulfilled" ? documentResult.value?.data?.data?.data || [] : [];
+                // const documentData = documentResult.status === "fulfilled" ? documentResult.value?.data?.data?.data || [] : [];
 
                 console.log("zoneData: ", zoneData);
                 setZones(zoneData);
@@ -110,7 +111,7 @@ const FrmPlumberLicense = () => {
                     setServiceName(serviceData[0]?.VAR_SERVICE_ENG_NAME || "Plumber License");
                 }
 
-                setDocuments(documentData.map((item) => ({ ...item, file: null, })));
+                // setDocuments(documentData.map((item) => ({ ...item, file: null, })));
             } catch (error) {
                 console.error("Plumber License Masters Error:", error);
 
@@ -131,27 +132,27 @@ const FrmPlumberLicense = () => {
         setMode(serviceId === 24 ? "N" : "R");
     }, [serviceId]);
 
-    const handleFileChange = (documentId, file) => {
-        if (!file) return;
-        const extension = file.name.split(".").pop()?.toLowerCase();
-        if (!["jpg", "jpeg", "png", "pdf"].includes(extension)) {
-            Swal.fire({
-                // icon: "warning",
-                text: "Document should be acceptable in JPEG/JPG/PNG/PDF format only.",
-            });
-            return;
-        }
+    // const handleFileChange = (documentId, file) => {
+    //     if (!file) return;
+    //     const extension = file.name.split(".").pop()?.toLowerCase();
+    //     if (!["jpg", "jpeg", "png", "pdf"].includes(extension)) {
+    //         Swal.fire({
+    //             // icon: "warning",
+    //             text: "Document should be acceptable in JPEG/JPG/PNG/PDF format only.",
+    //         });
+    //         return;
+    //     }
 
-        if (file.size > 5 * 1024 * 1024) {
-            Swal.fire({
-                // icon: "warning",
-                text: "Document size should be less than 5 MB.",
-            });
-            return;
-        }
+    //     if (file.size > 5 * 1024 * 1024) {
+    //         Swal.fire({
+    //             // icon: "warning",
+    //             text: "Document size should be less than 5 MB.",
+    //         });
+    //         return;
+    //     }
 
-        setDocuments((previous) => previous.map((item) => String(item.DOCID) === String(documentId) ? { ...item, file } : item));
-    };
+    //     setDocuments((previous) => previous.map((item) => String(item.DOCID) === String(documentId) ? { ...item, file } : item));
+    // };
 
     const formatOracleDate = (date) => {
         if (!date) return "";
@@ -381,23 +382,23 @@ const FrmPlumberLicense = () => {
                 return;
             }
         }
-        if (!documents.length) {
-            Swal.fire({
-                // icon: "warning",
-                text: "Document Required.",
-            });
-            return;
-        }
+        // if (!documents.length) {
+        //     Swal.fire({
+        //         // icon: "warning",
+        //         text: "Document Required.",
+        //     });
+        //     return;
+        // }
 
-        const missingDocuments = documents.filter((item) => !item.file);
+        // const missingDocuments = documents.filter((item) => !item.file);
 
-        if (missingDocuments.length > 0) {
-            Swal.fire({
-                // icon: "warning",
-                text: "Please Upload All the Documents.",
-            });
-            return;
-        }
+        // if (missingDocuments.length > 0) {
+        //     Swal.fire({
+        //         // icon: "warning",
+        //         text: "Please Upload All the Documents.",
+        //     });
+        //     return;
+        // }
 
         try {
             let response;
@@ -517,49 +518,209 @@ const FrmPlumberLicense = () => {
                 return;
             }
 
-            Swal.fire({
-                text: "Uploading Documents...",
-                // text: `Application No: ${appNo}`,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false,
-                didOpen: () => Swal.showLoading(),
-            });
 
-            const uploadResults = await Promise.allSettled(documents.map(async (document) => {
-                const formData = new FormData();
+            // Module Insert and Karjat Procedure (Renewal)
 
-                formData.append("corpid", String(ulbId));
-                formData.append("serviceid", String(serviceId));
-                formData.append("appno", String(appNo));
-                formData.append("doctype", document.DOCTYPE || "A");
-                formData.append("documentid", String(document.DOCID));
-                formData.append("file", document.file);
+            const str = (value) => value === null || value === undefined ? "" : String(value).trim();
+            const axiosConfig = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            };
 
-                return axios.post(`${baseUrl}/api/FrmWaterRegister/upload-document`,
-                    formData,
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
+            // Only execute module inserts for Renewal
+            if (mode === "R") {
+                if (["590", "591", "1630"].includes(String(ulbId))) {
+                    const Requeststr = [
+                        userId,
+                        values.zoneId,
+                        serviceId,
+                        ulbId,
+                        "10001",
+                        values.renewalFirstName,
+                        values.renewalFirstName,
+                        values.renewalMiddleName,
+                        values.renewalMiddleName,
+                        values.renewalLastName,
+                        values.renewalLastName,
+                        values.renewalMobile,
+                        " ",
+                        " ",
+                        values.renewalAddress,
+                        values.renewalAddress,
+                        "NEW",
+                        "NEW",
+                        values.zoneId,
+                        0,
+                        "",
+                        1,
+                        "",
+                        "",
+                        "",
+                        appNo,
+                        "",
+                        "",
+                        "",
+                        "",
+                        source,
+                        "N",
+                        "",
+                    ].map(str).join("~");
+
+                    const requestdtlsstr = [serviceId, ulbId, appNo, values.renewalLicenseNo, formatOracleDate(values.renewalDate), formatOracleDate(values.fromDate), formatOracleDate(values.toDate), userId].map(str).join("~");
+
+                    console.log("Standard Module Request:", {
+                        Requeststr,
+                        RequeststrCount: Requeststr.split("~").length,
+                        requestdtlsstr,
+                        requestdtlsstrCount: requestdtlsstr.split("~").length,
+                    });
+
+                    const moduleResponse = await axios.post(`${baseUrl}/api/FrmWaterAppliEntry/submit-rts-application-details`,
+                        {
+                            userId: String(userId),
+                            appliFlag: "AppliEntry",
+                            appliData: Requeststr,
+                            appliDtlsData: requestdtlsstr,
+                        },
+                        axiosConfig
+                    );
+
+                    const moduleResult = moduleResponse?.data?.data || {};
+
+                    if (moduleResponse?.data?.ok === false || moduleResult?.success === false || (moduleResult?.errorCode != null && Number(moduleResult.errorCode) !== 9999)) {
+                        throw new Error(moduleResult?.message || moduleResponse?.data?.message || "Standard module insertion failed.");
                     }
-                );
-            })
-            );
+                }
 
-            const failedUploads = uploadResults.filter((item) => item.status === "rejected");
+                if (["1890", "1150"].includes(String(ulbId)) && String(serviceId) === "25") {
+                    const Requeststr = [
+                        corpId,
+                        serviceId,
+                        appNo,
+                        userId,
+                        values.renewalFirstName,
+                        values.renewalFirstNameMar,
+                        values.renewalMiddleName,
+                        values.renewalMiddleNameMar,
+                        values.renewalLastName,
+                        values.renewalLastNameMar,
+                        values.renewalMobile,
+                        0,
+                        values.renewalEmail,
+                        values.renewalAddress,
+                        values.renewalAddressMar,
+                        ".",
+                        ".",
+                        values.zoneId,
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        appNo,
+                        "",
+                        "",
+                        "",
+                        "",
+                        ulbId,
+                        source,
+                        "N",
+                    ].map(str).join("~");
 
-            if (failedUploads.length > 0) {
-                Swal.close();
-                console.error("Document Upload Errors:", failedUploads);
-                Swal.fire({
-                    icon: "error",
-                    title: "Document Upload Failed",
-                    text: `${failedUploads.length} document(s) could not be uploaded. Application No: ${appNo}`,
-                });
+                    const requestdtlsstr = [
+                        serviceId,
+                        ulbId,
+                        values.renewalLicenseNo,
+                        formatOracleDate(values.renewalDate),
+                        formatOracleDate(values.fromDate),
+                        formatOracleDate(values.toDate),
+                        userId,
+                        values.renewalFirstName,
+                        values.renewalMiddleName,
+                        values.renewalLastName,
+                        values.renewalMobile,
+                        values.renewalEmail,
+                        values.renewalAddress,
+                        "",
+                        values.renewalSecondMobile || 0,
+                        values.renewalEducation,
+                        values.renewalOldLicenseDate ? formatOracleDate(values.renewalOldLicenseDate) : "",
+                    ].map(str).join("~");
 
-                return;
+                    console.log("Karjat Module Request:", {
+                        Requeststr,
+                        RequeststrCount: Requeststr.split("~").length,
+                        requestdtlsstr,
+                        requestdtlsstrCount: requestdtlsstr.split("~").length,
+                    });
+
+                    const karjatResponse = await axios.post(
+                        `${baseUrl}/api/FrmWaterAppliEntry/submit-karjat-water-application`,
+                        {
+                            userId: String(userId),
+                            appliFlag: "AppliEntry",
+                            appliData: Requeststr,
+                            appliDtlsData: requestdtlsstr,
+                        },
+                        axiosConfig
+                    );
+
+                    const karjatResult = karjatResponse?.data?.data || {};
+
+                    if (karjatResponse?.data?.ok === false || karjatResult?.success === false || (karjatResult?.errorCode != null && Number(karjatResult.errorCode) !== 9999)) {
+                        throw new Error(karjatResult?.message || karjatResponse?.data?.message || "Karjat module insertion failed.");
+                    }
+                }
             }
 
-            Swal.close();
+
+
+            // Swal.fire({
+            //     text: "Uploading Documents...",
+            //     // text: `Application No: ${appNo}`,
+            //     allowOutsideClick: false,
+            //     allowEscapeKey: false,
+            //     showConfirmButton: false,
+            //     didOpen: () => Swal.showLoading(),
+            // });
+
+            // const uploadResults = await Promise.allSettled(documents.map(async (document) => {
+            //     const formData = new FormData();
+
+            //     formData.append("corpid", String(ulbId));
+            //     formData.append("serviceid", String(serviceId));
+            //     formData.append("appno", String(appNo));
+            //     formData.append("doctype", document.DOCTYPE || "A");
+            //     formData.append("documentid", String(document.DOCID));
+            //     formData.append("file", document.file);
+
+            //     return axios.post(`${baseUrl}/api/FrmWaterRegister/upload-document`,
+            //         formData,
+            //         {
+            //             headers: { Authorization: `Bearer ${token}` },
+            //         }
+            //     );
+            // })
+            // );
+
+            // const failedUploads = uploadResults.filter((item) => item.status === "rejected");
+
+            // if (failedUploads.length > 0) {
+            //     Swal.close();
+            //     console.error("Document Upload Errors:", failedUploads);
+            //     Swal.fire({
+            //         icon: "error",
+            //         title: "Document Upload Failed",
+            //         text: `${failedUploads.length} document(s) could not be uploaded. Application No: ${appNo}`,
+            //     });
+
+            //     return;
+            // }
+
+            // Swal.close();
 
             await Swal.fire({
                 // icon: "success",
@@ -573,7 +734,7 @@ const FrmPlumberLicense = () => {
                 values: { ...initialValues, zoneId: "12" },
             });
 
-            setDocuments((previous) => previous.map((item) => ({ ...item, file: null })));
+            // setDocuments((previous) => previous.map((item) => ({ ...item, file: null })));
             navigate("/app/FrmTrackApplication")
         } catch (error) {
             Swal.close();
@@ -853,6 +1014,30 @@ const FrmPlumberLicense = () => {
                                         />
                                     </div>
 
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                        <div className="sm:w-40 shrink-0 flex justify-start sm:justify-between items-center">
+                                            <Label required text="Zone" />
+                                            <span>:</span>
+                                        </div>
+                                        <Select
+                                            value={values.zoneId}
+                                            onValueChange={(value) => {
+                                                setFieldValue("zoneId", value);
+                                            }}
+                                        >
+                                            <SelectTrigger className="w-full h-9">
+                                                <SelectValue placeholder="-- Select Zone --" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {zones.map((zone) => (
+                                                    <SelectItem key={zone.WARDID} value={String(zone.WARDID)}>
+                                                        {zone.WARDNAME}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
                                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                                         <div className="flex shrink-0 items-center sm:w-48 sm:justify-between">
                                             <Label text="Renewal Date" required />
@@ -997,7 +1182,7 @@ const FrmPlumberLicense = () => {
                                 </div>
                             )}
 
-                            {documents.length > 0 && (
+                            {/* {documents.length > 0 && (
                                 <div className="mt-6 border-t border-gray-200 pt-5">
                                     <div className="mx-auto w-full max-w-6xl overflow-x-auto">
                                         <ShadCNTable
@@ -1038,7 +1223,7 @@ const FrmPlumberLicense = () => {
                                         />
                                     </div>
                                 </div>
-                            )}
+                            )} */}
 
                             <div className="flex flex-wrap items-center justify-center gap-3 pt-7">
                                 <Button type="submit" disabled={loadingMasters}>{mode === "N" ? "Submit" : "Submit"}</Button>
@@ -1047,7 +1232,7 @@ const FrmPlumberLicense = () => {
                                     variant="outline"
                                     onClick={() => {
                                         resetForm({ values: { ...initialValues, zoneId: "12" } });
-                                        setDocuments((previous) => previous.map((item) => ({ ...item, file: null })));
+                                        // setDocuments((previous) => previous.map((item) => ({ ...item, file: null })));
                                     }}
                                 >
                                     Reset
