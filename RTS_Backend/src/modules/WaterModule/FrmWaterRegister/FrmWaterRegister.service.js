@@ -121,9 +121,9 @@ const uploadWaterDocumentService = async (payload) => {
     return {success: true, message: "Document uploaded successfully", rowsAffected: result.rowCount || 0};
 };
 
-const getConnectionDetailsService = async ({userId, consumerNo}) => {
-    console.log("Service: Fetch Connection Details", {userId, consumerNo,});
-    const result = await repo.getConnectionDetailsRepo({userId, consumerNo,});
+const getConnectionDetailsService = async ({userId, consumerNo, ulbId}) => {
+    console.log("Service: Fetch Connection Details", {userId, consumerNo, ulbId});
+    const result = await repo.getConnectionDetailsRepo({userId, consumerNo, ulbId});
     return result;
 };
 
