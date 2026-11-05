@@ -4,7 +4,12 @@ const auth = require("../../../middlewares/auth.middleware");
 
 const router = express.Router();
 
-router.post("/prop-appeal", auth(), controller.createPropAppeal);
+router.get("/wards", auth(), controller.getWards);
+router.get("/usage-types", auth(), controller.getUsageTypes);
 router.get("/objections", auth(), controller.getObjections);
+router.get("/usage-sub-types", auth(), controller.getUsageSubTypes);
+router.post("/property-details", auth(), controller.getPropertyDetails)
+
+router.post("/prop-appeal", auth(), controller.createPropAppeal);
 
 module.exports = router;

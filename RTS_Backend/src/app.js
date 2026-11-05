@@ -82,6 +82,7 @@ app.use("/api/FrmNoDuesCerti", require("./modules/Property/FrmNoDuesCerti/FrmNoD
 app.use("/api/FrmNewTaxAssesment", require("./modules/Property/FrmNewTaxAssesment/FrmNewTaxAssesment.route"));
 app.use("/api/FrmPropertyAppel", require("./modules/Property/FrmPropertyAppel/FrmPropertyAppel.route"));
 app.use("/api/FrmAfterTransactionTMC", require("./modules/Property/FrmAfterTransactionTMC/FrmAfterTransactionTMC.routes"))
+app.use("/api/FrmNewTaxRecoveryReg", require("./modules/Property/FrmNewTaxRecoveryReg/FrmNewTaxRecoveryReg.routes"));
 
 //Water module 
 app.use("/api/watermodule", require("./modules/WaterModule/WaterBillCopy/Stepnew.route"))

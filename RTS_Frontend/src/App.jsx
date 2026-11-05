@@ -80,6 +80,7 @@ import FrmLicenseTypeList from "./Pages/Admin/FrmLicenseTypeList";
 import FrmLicenseTypeMst from "./Pages/Admin/FrmLicenseTypeMst";      
 import FrmNocRoadType from "./Pages/Admin/FrmNocRoadType";
 import FrmNocRoadTypeMst from "./Pages/Admin/FrmNocRoadTypeMst";
+import FrmNewTaxRecoveryReg from "./Pages/Property/FrmNewTaxRecoveryReg";
 
 
 function HomePage() {
@@ -243,7 +244,11 @@ const router = createBrowserRouter([
       {
         path: "/FrmNOCService",
         element: <FrmNOCService />
-      }
+      },
+      {
+        path: "/FrmNewTaxRecoveryReg",
+        element: <FrmNewTaxRecoveryReg />
+      },
     ],
   },
   {
