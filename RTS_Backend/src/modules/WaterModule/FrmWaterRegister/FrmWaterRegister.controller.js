@@ -206,7 +206,7 @@ exports.uploadWaterDocumentController = asyncHandler(
 
 exports.getConnectionDetailsController = asyncHandler(
     async (req, res) => {
-        const {consumerNo, userId} = req.query;
+        const {consumerNo, userId, ulbId} = req.query;
 
         if (!consumerNo) {
             throw new AppError("Consumer No is required", 400);
@@ -215,7 +215,7 @@ exports.getConnectionDetailsController = asyncHandler(
             throw new AppError("User ID is required", 400);
         }
 
-        const result = await service.getConnectionDetailsService({userId, consumerNo});
+        const result = await service.getConnectionDetailsService({userId, consumerNo, ulbId});
         return res.status(200).json({ok: true, message: "Connection details fetched successfully", data: result});
     }
 );

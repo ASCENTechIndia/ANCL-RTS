@@ -92,7 +92,7 @@ const FrmWaterAppliDetails = () => {
   const [consumerSearch, setConsumerSearch] = useState("");
   const [searching, setSearching] = useState(false);
 
-  const tableHeaders = ["Select", "Document Name","Upload"];
+  const tableHeaders = ["Select", "Document Name", "Upload"];
 
   const tableKeyMapping = {
     Select: "checked",
@@ -333,7 +333,7 @@ const FrmWaterAppliDetails = () => {
       const response = await axios.get(
         `${BASE_URL}/api/FrmWaterRegister/connection-details`,
         {
-          params: { consumerNo: value, userId },
+          params: { consumerNo: value, userId, ulbId },
           headers: { Authorization: `Bearer ${token}` },
         },
       );
@@ -526,7 +526,7 @@ const FrmWaterAppliDetails = () => {
       }
       const normalizedEmail = values.email.trim().toLowerCase();
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(normalizedEmail)) {
         Swal.fire({
           text: "Please enter a valid Email ID.",
@@ -761,8 +761,8 @@ const FrmWaterAppliDetails = () => {
 
       setApplicationId(
         response.data?.data?.appDetId ||
-          response.data?.data?.applicationId ||
-          applicationId,
+        response.data?.data?.applicationId ||
+        applicationId,
       );
 
       const selectedDocuments = documents.filter((doc) =>
@@ -781,6 +781,120 @@ const FrmWaterAppliDetails = () => {
           savedApplicationNo,
         );
       }
+
+
+      // Karjat Module Entry
+      if (["1890", "1150"].includes(String(ulbId)) && ["18", "20"].includes(String(serviceId))) {
+        const str = (value) => value === null || value === undefined ? "" : String(value).trim();
+
+        // Main application details: 32 fields
+        const appliData = [
+          corpId,                  // 1
+          serviceId,               // 2
+          savedApplicationNo,      // 3
+          userId,                  // 4
+          values.firstName,        // 5
+          values.firstNameMr,      // 6
+          values.middleName,       // 7
+          values.middleNameMr,     // 8
+          values.lastName,         // 9
+          values.lastNameMr,       // 10
+          values.mobileNo,         // 11
+          values.aadharNo,         // 12 - Aadhaar
+          values.email,            // 13 - Email
+          ".",                     // 14
+          ".",                     // 15
+          ".",                     // 16
+          ".",                     // 17
+          values.zoneId,           // 18
+          "",                      // 19
+          consumerSearch,          // 20
+          "",                      // 21
+          "",                      // 22
+          "",                      // 23
+          "",                      // 24
+          savedApplicationNo,      // 25
+          "",                      // 26
+          "",                      // 27
+          "",                      // 28
+          "",                      // 29
+          ulbId,                   // 30
+          config.source,  // 31
+          "N",                     // 32
+        ].map(str).join("~");
+
+        // Water application details: 39 fields
+        const appliDtlsData = [
+          serviceId,               // 1
+          ulbId,                   // 2
+          consumerSearch,          // 3
+          values.firstName,        // 4
+          values.middleName,       // 5
+          values.lastName,         // 6
+          values.mobileNo,         // 7
+          values.email,            // 8
+          values.aadharNo,         // 9
+          values.propNo,           // 10
+          values.resNo,            // 11
+          values.oFirstName,       // 12
+          values.oMiddleName,      // 13
+          values.oLastName,        // 14
+          values.coFirstName,      // 15
+          values.coMiddleName,     // 16
+          values.coLastName,       // 17
+          values.noFirstName,      // 18
+          values.noMiddleName,     // 19
+          values.noLastName,       // 20
+          values.ncoFirstName,     // 21
+          values.ncoMiddleName,    // 22
+          values.ncoLastName,      // 23
+          userId,                  // 24
+          values.firstNameMr,      // 25
+          values.middleNameMr,     // 26
+          values.lastNameMr,       // 27
+          values.oFirstNameMr,     // 28
+          values.oMiddleNameMr,    // 29
+          values.oLastNameMr,      // 30
+          values.coFirstNameMr,    // 31
+          values.coMiddleNameMr,   // 32
+          values.coLastNameMr,     // 33
+          values.noFirstNameMr,    // 34
+          values.noMiddleNameMr,   // 35
+          values.noLastNameMr,     // 36
+          values.ncoFirstNameMr,   // 37
+          values.ncoMiddleNameMr,  // 38
+          values.ncoLastNameMr,    // 39
+        ].map(str).join("~");
+
+        console.log("Karjat Application Data Count:", appliData.split("~").length);
+        console.log("Karjat Detail Data Count:", appliDtlsData.split("~").length);
+
+        const karjatResponse = await axios.post(`${BASE_URL}/api/FrmWaterAppliEntry/submit-karjat-water-application`,
+          {
+            userId: String(userId),
+            appliFlag: "AppliEntry",
+            appliData,
+            appliDtlsData,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("Karjat Application Response:", karjatResponse.data);
+
+        if (!karjatResponse.data?.ok) {
+          throw new Error(
+            karjatResponse.data?.message ||
+            karjatResponse.data?.error ||
+            "Karjat module application failed"
+          );
+        }
+      }
+
 
       await Swal.fire({
         text: response.data?.message,
@@ -843,13 +957,13 @@ const FrmWaterAppliDetails = () => {
       previousDocuments.map((doc) =>
         Number(doc.DocId) === Number(docId)
           ? {
-              ...doc,
-              uploadedFile: file,
-              uploaded: false,
-              imageUrl: file.type.startsWith("image/")
-                ? URL.createObjectURL(file)
-                : "",
-            }
+            ...doc,
+            uploadedFile: file,
+            uploaded: false,
+            imageUrl: file.type.startsWith("image/")
+              ? URL.createObjectURL(file)
+              : "",
+          }
           : doc,
       ),
     );
@@ -891,9 +1005,9 @@ const FrmWaterAppliDetails = () => {
           previousDocuments.map((item) =>
             Number(item.DocId) === Number(doc.DocId)
               ? {
-                  ...item,
-                  uploaded: true,
-                }
+                ...item,
+                uploaded: true,
+              }
               : item,
           ),
         );
@@ -1040,7 +1154,7 @@ const FrmWaterAppliDetails = () => {
                     </div>
                   </div>
 
-                   <div className="flex items-center sm:w-full gap-5">
+                  <div className="flex items-center sm:w-full gap-5">
                     <div className="sm:w-46 shrink-0 flex justify-start sm:justify-between items-center">
                       <Label
                         required

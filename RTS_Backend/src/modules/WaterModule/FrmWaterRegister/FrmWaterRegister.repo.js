@@ -389,13 +389,17 @@ const uploadWaterDocumentRepo = async ({corpid, serviceid, appno, doctype, docum
     return result;
 };
 
-const getConnectionDetailsRepo = async ({ userId, consumerNo }) => {
-    console.log("Repo: Fetch Connection Details", { userId, consumerNo });
+const getConnectionDetailsRepo = async ({ userId, consumerNo, ulbId }) => {
+    console.log("Repo: Fetch Connection Details", { userId, consumerNo, ulbId });
 
     if (!userId) throw new Error("User ID is required");
     if (!consumerNo) throw new Error("Consumer No is required");
 
-    const clientUrl = process.env.TMC_IGR_URL;
+    const sql = `select var_igrulburl_apiurl clienturl  from  water.vw_igrapiurl   where num_igrwater_ulbid=:ulbId and var_igrulburl_code='RTS'`
+
+    const result = await executeQueryTMC(sql, {ulbId})
+
+    const clientUrl = result?.CLIENTURL ?? process.env.TMC_IGR_URL;
 
     if (!clientUrl) {
         throw new Error("TMC_IGR_URL is not configured");

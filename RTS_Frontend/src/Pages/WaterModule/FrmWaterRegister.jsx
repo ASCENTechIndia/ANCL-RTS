@@ -182,7 +182,7 @@ const FrmWaterRegister = () => {
         try {
             const response = await axios.get(`${baseUrl}/api/FrmWaterRegister/connection-details`,
                 {
-                    params: { consumerNo: value, userId },
+                    params: { consumerNo: value, userId, ulbId },
                     headers: { Authorization: `Bearer ${token}` }
                 }
             );
