@@ -148,7 +148,8 @@ app.use("/api/FrmBusinessTypeListMst", require("./modules/AdminDepartment/FrmBus
 app.use("/api/FrmNOCHordingType", require("./modules/AdminDepartment/FrmNOCHordingType/FrmNOCHordingType.routes"))
 app.use("/api/FrmNOCHordingSubType", require("./modules/AdminDepartment/FrmNOCHordingSubType/FrmNOCHordingSubType.routes"));
 app.use("/api/FrmLicenseType", require("./modules/AdminDepartment/FrmLicenseTypeList/FrmLicenseTypeList.route"));
-app.use("/api/FrmNocRoadType",    require("./modules/AdminDepartment/FrmRoadType/frmNocRoadType.routes"));
+app.use("/api/FrmNocRoadType", require("./modules/AdminDepartment/FrmRoadType/frmNocRoadType.routes"));
+app.use("/api/Step0", require("./modules/WaterModule/Step0/Step0.routes"));
 
 app.use(errorMiddleware);
 

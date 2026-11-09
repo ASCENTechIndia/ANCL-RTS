@@ -81,6 +81,7 @@ import FrmLicenseTypeMst from "./Pages/Admin/FrmLicenseTypeMst";
 import FrmNocRoadType from "./Pages/Admin/FrmNocRoadType";
 import FrmNocRoadTypeMst from "./Pages/Admin/FrmNocRoadTypeMst";
 import FrmNewTaxRecoveryReg from "./Pages/Property/FrmNewTaxRecoveryReg";
+import FrmStep0 from "./Pages/WaterModule/FrmStep0";
 
 
 function HomePage() {
@@ -223,8 +224,12 @@ const router = createBrowserRouter([
       },
       {
         path: "/Step0",
-        element: <Step0 />,
+        element: <FrmStep0 />,
       },
+      // {
+      //   path: "/Step0",
+      //   element: <Step0 />,
+      // },
       {
         path: "/FrmWaterAppliEntry",
         element: <FrmWaterAppliEntry />,
