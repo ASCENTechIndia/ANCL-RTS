@@ -663,9 +663,7 @@ const FrmStep0 = () => {
                 >
                     <Card className="border shadow-sm">
                         <CardHeader className="border-b">
-                            <CardTitle className="text-base font-semibold">
-                                Applicant Details
-                            </CardTitle>
+                            <CardTitle className="text-base font-semibold">Applicant Details</CardTitle>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
                             <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
@@ -821,153 +819,171 @@ const FrmStep0 = () => {
                         </CardContent></Card>
 
                     {isFire && (
-                        <Card className="mb-5 border shadow-sm"><CardHeader className="rounded-t-lg bg-[#083c76] py-3 text-white"><CardTitle className="text-base font-semibold">Fire NOC Details</CardTitle></CardHeader><CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
-                            <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="NOC Purpose" htmlFor="nocPurposeId" required />
+                        <Card className="border shadow-sm">
+                            <CardHeader className="border-b">
+                                <CardTitle className="text-base font-semibold">Fire NOC Details</CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
+                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="NOC Purpose" htmlFor="nocPurposeId" required />
 
-                                <span className="text-center">:</span>
-                                <Select value={formik.values.nocPurposeId} onValueChange={(v) => formik.setFieldValue("nocPurposeId", v)} disabled={loading.noc}>
-                                    <SelectTrigger id="nocPurposeId"><SelectValue placeholder={loading.noc ? "Loading..." : "Select"} /></SelectTrigger>
-                                    <SelectContent>
-                                        {nocPurposes.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </CardContent></Card>
+                                    <span className="text-center">:</span>
+                                    <Select value={formik.values.nocPurposeId} onValueChange={(v) => formik.setFieldValue("nocPurposeId", v)} disabled={loading.noc}>
+                                        <SelectTrigger id="nocPurposeId"><SelectValue placeholder={loading.noc ? "Loading..." : "Select"} /></SelectTrigger>
+                                        <SelectContent>
+                                            {nocPurposes.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </CardContent></Card>
                     )}
 
                     {showSewerage && (
-                        <Card className="mb-5 border shadow-sm"><CardHeader className="rounded-t-lg bg-[#083c76] py-3 text-white"><CardTitle className="text-base font-semibold">Water / Sewerage Details</CardTitle></CardHeader><CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
-                            <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="Water Sewerage Type" htmlFor="waterSewerageTypeId" required />
+                        <Card className="border shadow-sm">
+                            <CardHeader className="border-b">
+                                <CardTitle className="text-base font-semibold">Water / Sewerage Details</CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
+                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="Water Sewerage Type" htmlFor="waterSewerageTypeId" required />
 
-                                <span className="text-center">:</span>
-                                <Select value={formik.values.waterSewerageTypeId} onValueChange={(v) => formik.setFieldValue("waterSewerageTypeId", v)} disabled={loading.sewerage}>
-                                    <SelectTrigger id="waterSewerageTypeId"><SelectValue placeholder={loading.sewerage ? "Loading..." : "Select"} /></SelectTrigger>
-                                    <SelectContent>
-                                        {waterSewerageTypes.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </CardContent></Card>
+                                    <span className="text-center">:</span>
+                                    <Select value={formik.values.waterSewerageTypeId} onValueChange={(v) => formik.setFieldValue("waterSewerageTypeId", v)} disabled={loading.sewerage}>
+                                        <SelectTrigger id="waterSewerageTypeId"><SelectValue placeholder={loading.sewerage ? "Loading..." : "Select"} /></SelectTrigger>
+                                        <SelectContent>
+                                            {waterSewerageTypes.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </CardContent></Card>
                     )}
 
                     {isHoarding && (
-                        <Card className="mb-5 border shadow-sm"><CardHeader className="rounded-t-lg bg-[#083c76] py-3 text-white"><CardTitle className="text-base font-semibold">Hoarding Details</CardTitle></CardHeader><CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
-                            <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="Place of Hoarding" htmlFor="hoardingPlaceId" required />
+                        <Card className="border shadow-sm">
+                            <CardHeader className="border-b">
+                                <CardTitle className="text-base font-semibold">Hoarding Details</CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
+                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="Place of Hoarding" htmlFor="hoardingPlaceId" required />
 
-                                <span className="text-center">:</span>
-                                <Select value={formik.values.hoardingPlaceId} onValueChange={(v) => formik.setFieldValue("hoardingPlaceId", v)} disabled={loading.hoardingPlaces}>
-                                    <SelectTrigger id="hoardingPlaceId"><SelectValue placeholder={loading.hoardingPlaces ? "Loading..." : "Select"} /></SelectTrigger>
-                                    <SelectContent>
-                                        {hoardingPlaces.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="Hoarding Type" htmlFor="hoardingTypeId" required />
+                                    <span className="text-center">:</span>
+                                    <Select value={formik.values.hoardingPlaceId} onValueChange={(v) => formik.setFieldValue("hoardingPlaceId", v)} disabled={loading.hoardingPlaces}>
+                                        <SelectTrigger id="hoardingPlaceId"><SelectValue placeholder={loading.hoardingPlaces ? "Loading..." : "Select"} /></SelectTrigger>
+                                        <SelectContent>
+                                            {hoardingPlaces.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="Hoarding Type" htmlFor="hoardingTypeId" required />
 
-                                <span className="text-center">:</span>
-                                <Select value={formik.values.hoardingTypeId} onValueChange={(v) => formik.setFieldValue("hoardingTypeId", v)} disabled={loading.hoardingTypes}>
-                                    <SelectTrigger id="hoardingTypeId"><SelectValue placeholder={loading.hoardingTypes ? "Loading..." : "Select"} /></SelectTrigger>
-                                    <SelectContent>
-                                        {hoardingTypes.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="Advertisement Details" htmlFor="advertisementDetails" required />
+                                    <span className="text-center">:</span>
+                                    <Select value={formik.values.hoardingTypeId} onValueChange={(v) => formik.setFieldValue("hoardingTypeId", v)} disabled={loading.hoardingTypes}>
+                                        <SelectTrigger id="hoardingTypeId"><SelectValue placeholder={loading.hoardingTypes ? "Loading..." : "Select"} /></SelectTrigger>
+                                        <SelectContent>
+                                            {hoardingTypes.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="Advertisement Details" htmlFor="advertisementDetails" required />
 
-                                <span className="text-center">:</span>
-                                <Input id="advertisementDetails" name="advertisementDetails" type="text" value={formik.values.advertisementDetails ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                            </div>
-                            <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="Hoarding Size" htmlFor="hoardingSize" required />
+                                    <span className="text-center">:</span>
+                                    <Input id="advertisementDetails" name="advertisementDetails" type="text" value={formik.values.advertisementDetails ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                </div>
+                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="Hoarding Size" htmlFor="hoardingSize" required />
 
-                                <span className="text-center">:</span>
-                                <Input id="hoardingSize" name="hoardingSize" type="text" value={formik.values.hoardingSize ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                            </div>
-                        </CardContent></Card>
+                                    <span className="text-center">:</span>
+                                    <Input id="hoardingSize" name="hoardingSize" type="text" value={formik.values.hoardingSize ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                </div>
+                            </CardContent></Card>
                     )}
 
                     {isImc && [7, 8].includes(serviceId) && (
-                        <Card className="mb-5 border shadow-sm"><CardHeader className="rounded-t-lg bg-[#083c76] py-3 text-white"><CardTitle className="text-base font-semibold">{serviceId === 7 ? "Issuance of Zone Certificate" : "Bhag Nakasha"}</CardTitle></CardHeader><CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
-                            <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="Village" htmlFor="villageId" required />
-
-                                <span className="text-center">:</span>
-                                <Select value={formik.values.villageId} onValueChange={(value) => { formik.setFieldValue("villageId", value); formik.setFieldValue("citySurveyNo", ""); formik.setFieldValue("gatNo", ""); formik.setFieldValue("plotNo", ""); }} disabled={loading.villages}>
-                                    <SelectTrigger id="villageId"><SelectValue placeholder={loading.villages ? "Loading..." : "Select"} /></SelectTrigger>
-                                    <SelectContent>
-                                        {villages.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            {["1", "2", "3"].includes(String(formik.values.villageId)) ? (
-                                <>
-                                    <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                        <Label text="City Survey Number" htmlFor="citySurveyNo" required />
-
-                                        <span className="text-center">:</span>
-                                        <Input id="citySurveyNo" name="citySurveyNo" type="text" value={formik.values.citySurveyNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                                    </div>
-                                    <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                        <Label text="Gat No / Survey No" htmlFor="gatNo" required />
-
-                                        <span className="text-center">:</span>
-                                        <Input id="gatNo" name="gatNo" type="text" value={formik.values.gatNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                                    </div>
-                                </>
-                            ) : (
+                        <Card className="border shadow-sm">
+                            <CardHeader className="border-b">
+                                <CardTitle className="text-base font-semibold">
+                                    {serviceId === 7 ? "Issuance of Zone Certificate" : "Bhag Nakasha"}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
                                 <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                    <Label text="Final Plot No / Plot No" htmlFor="plotNo" required />
+                                    <Label text="Village" htmlFor="villageId" required />
 
                                     <span className="text-center">:</span>
-                                    <Input id="plotNo" name="plotNo" type="text" value={formik.values.plotNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    <Select value={formik.values.villageId} onValueChange={(value) => { formik.setFieldValue("villageId", value); formik.setFieldValue("citySurveyNo", ""); formik.setFieldValue("gatNo", ""); formik.setFieldValue("plotNo", ""); }} disabled={loading.villages}>
+                                        <SelectTrigger id="villageId"><SelectValue placeholder={loading.villages ? "Loading..." : "Select"} /></SelectTrigger>
+                                        <SelectContent>
+                                            {villages.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
-                            )}
-                            {serviceId === 7 && <>
-                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                    <Label text="Part Plan Size" htmlFor="partPlanSize" required />
+                                {["1", "2", "3"].includes(String(formik.values.villageId)) ? (
+                                    <>
+                                        <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                            <Label text="City Survey Number" htmlFor="citySurveyNo" required />
+
+                                            <span className="text-center">:</span>
+                                            <Input id="citySurveyNo" name="citySurveyNo" type="text" value={formik.values.citySurveyNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                        </div>
+                                        <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                            <Label text="Gat No / Survey No" htmlFor="gatNo" required />
+
+                                            <span className="text-center">:</span>
+                                            <Input id="gatNo" name="gatNo" type="text" value={formik.values.gatNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                        <Label text="Final Plot No / Plot No" htmlFor="plotNo" required />
+
+                                        <span className="text-center">:</span>
+                                        <Input id="plotNo" name="plotNo" type="text" value={formik.values.plotNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    </div>
+                                )}
+                                {serviceId === 7 && <>
+                                    <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                        <Label text="Part Plan Size" htmlFor="partPlanSize" required />
+
+                                        <span className="text-center">:</span>
+                                        <Input id="partPlanSize" name="partPlanSize" type="text" value={formik.values.partPlanSize ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    </div>
+                                    <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                        <Label text="TP Scheme" htmlFor="tpScheme" required />
+
+                                        <span className="text-center">:</span>
+                                        <Input id="tpScheme" name="tpScheme" type="text" value={formik.values.tpScheme ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    </div>
+                                </>}
+                                {serviceId === 8 && <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="Size of Part Plan" htmlFor="partPlanSize" required />
 
                                     <span className="text-center">:</span>
                                     <Input id="partPlanSize" name="partPlanSize" type="text" value={formik.values.partPlanSize ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                </div>}
+                                <div className="col-span-full space-y-3">
+                                    <Label text="Type of Part Plan" required />
+                                    <div className="flex flex-wrap gap-6">
+                                        {[
+                                            ["sanctionedDP", "Sanctioned DP"],
+                                            ["ep", "EP"],
+                                            ["draftDP", "Draft DP"],
+                                        ].map(([field, label]) => (
+                                            <div key={field} className="flex items-center gap-2 rounded-md border px-3 py-2">
+                                                <Input
+                                                    id={`plan-${field}`}
+                                                    type="checkbox"
+                                                    checked={formik.values[field] === "1"}
+                                                    onChange={(e) => formik.setFieldValue(field, e.target.checked ? "1" : "0")}
+                                                />
+                                                <Label text={label} htmlFor={`plan-${field}`} className="w-auto sm:w-auto" />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                    <Label text="TP Scheme" htmlFor="tpScheme" required />
-
-                                    <span className="text-center">:</span>
-                                    <Input id="tpScheme" name="tpScheme" type="text" value={formik.values.tpScheme ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                                </div>
-                            </>}
-                            {serviceId === 8 && <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="Size of Part Plan" htmlFor="partPlanSize" required />
-
-                                <span className="text-center">:</span>
-                                <Input id="partPlanSize" name="partPlanSize" type="text" value={formik.values.partPlanSize ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                            </div>}
-                            <div className="col-span-full space-y-3">
-                                <Label text="Type of Part Plan" required />
-                                <div className="flex flex-wrap gap-6">
-                                    {[
-                                        ["sanctionedDP", "Sanctioned DP"],
-                                        ["ep", "EP"],
-                                        ["draftDP", "Draft DP"],
-                                    ].map(([field, label]) => (
-                                        <div key={field} className="flex items-center gap-2 rounded-md border px-3 py-2">
-                                            <Input
-                                                id={`plan-${field}`}
-                                                type="checkbox"
-                                                checked={formik.values[field] === "1"}
-                                                onChange={(e) => formik.setFieldValue(field, e.target.checked ? "1" : "0")}
-                                            />
-                                            <Label text={label} htmlFor={`plan-${field}`} className="w-auto sm:w-auto" />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </CardContent></Card>
+                            </CardContent></Card>
                     )}
 
                     {isBnd && (
@@ -1105,20 +1121,24 @@ const FrmStep0 = () => {
                     )}
 
                     {isImc && (
-                        <Card className="mb-5 border shadow-sm"><CardHeader className="rounded-t-lg bg-[#083c76] py-3 text-white"><CardTitle className="text-base font-semibold">Additional Property / Survey Details</CardTitle></CardHeader><CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
-                            <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="Ward Number" htmlFor="wardNo" />
+                        <Card className="border shadow-sm">
+                            <CardHeader className="border-b">
+                                <CardTitle className="text-base font-semibold">Additional Property / Survey Details</CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
+                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="Ward Number" htmlFor="wardNo" />
 
-                                <span className="text-center">:</span>
-                                <Input id="wardNo" name="wardNo" type="text" value={formik.values.wardNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                            </div>
-                            {![7, 8].includes(serviceId) && <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                <Label text="Property Number" htmlFor="propertyNo" />
+                                    <span className="text-center">:</span>
+                                    <Input id="wardNo" name="wardNo" type="text" value={formik.values.wardNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                </div>
+                                {![7, 8].includes(serviceId) && <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="Property Number" htmlFor="propertyNo" />
 
-                                <span className="text-center">:</span>
-                                <Input id="propertyNo" name="propertyNo" type="text" value={formik.values.propertyNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                            </div>}
-                        </CardContent></Card>
+                                    <span className="text-center">:</span>
+                                    <Input id="propertyNo" name="propertyNo" type="text" value={formik.values.propertyNo ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                </div>}
+                            </CardContent></Card>
                     )}
 
                     <div className="flex flex-wrap justify-center gap-3 mt-5 pb-6">
