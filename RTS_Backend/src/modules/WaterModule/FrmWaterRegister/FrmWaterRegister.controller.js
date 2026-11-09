@@ -274,6 +274,71 @@ const getBlockList = asyncHandler(async (req, res) => {
   return ok(res, result, "Block list fetched successfully");
 });
 
+
+// const getConnectionDetailsController = asyncHandler(
+//     async (req, res) => {
+//         const {consumerNo, userId, ulbId} = req.query;
+
+//         if (!consumerNo) {
+//             throw new AppError("Consumer No is required", 400);
+//         }
+//         if (!userId) {
+//             throw new AppError("User ID is required", 400);
+//         }
+
+//         const result = await service.getConnectionDetailsService({userId, consumerNo, ulbId: Number(ulbId)});
+//         return res.status(200).json({ok: true, message: "Connection details fetched successfully", data: result});
+//     }
+// );
+
+// const getConnectionDetailsController = asyncHandler(async (req, res) => {
+//   const { consumerNo, userId, ulbId } = req.query;
+
+//   if (!consumerNo) throw new AppError("Consumer No is required", 400);
+//   if (!userId)     throw new AppError("User ID is required", 400);
+//   if (!ulbId || Number(ulbId) === 0) throw new AppError("ULB ID is required", 400);
+
+//   try {
+//     const result = await service.getConnectionDetailsService({
+//       userId,
+//       consumerNo,
+//       ulbId: Number(ulbId),
+//     });
+
+//     return res.status(200).json({
+//       ok: true,
+//       message: "Connection details fetched successfully",
+//       data: result,
+//     });
+//   } catch (err) {
+//     if (err.tmcCode) {
+//       return res.status(err.tmcStatus || 400).json({
+//         ok: false,
+//         message: err.message,
+//         tmcCode: err.tmcCode,
+//         data: err.tmcPayload,
+//       });
+//     }
+//     throw err;
+//   }
+// });
+
+const getConnectionDetailsController = asyncHandler(
+    async (req, res) => {
+        const {consumerNo, userId, ulbId} = req.query;
+
+        if (!consumerNo) {
+            throw new AppError("Consumer No is required", 400);
+        }
+        if (!userId) {
+            throw new AppError("User ID is required", 400);
+        }
+
+        const result = await service.getConnectionDetailsService({userId, consumerNo, ulbId});
+        return res.status(200).json({ok: true, message: "Connection details fetched successfully", data: result});
+    }
+);
+
 module.exports = {
   getWardList,
   getServiceList,
@@ -284,4 +349,5 @@ module.exports = {
   saveWaterRegister,
   moduleInsertKarjatWater,
   getBlockList,
+  getConnectionDetailsController,
 };

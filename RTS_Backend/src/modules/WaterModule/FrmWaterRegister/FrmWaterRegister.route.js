@@ -43,4 +43,6 @@ router.post("/insert-karjat-water-register", auth(), controller.moduleInsertKarj
 
 router.post("/get-block-list", auth(), controller.getBlockList);
 
+router.get("/connection-details", auth(), controller.getConnectionDetailsController);
+
 module.exports = router;

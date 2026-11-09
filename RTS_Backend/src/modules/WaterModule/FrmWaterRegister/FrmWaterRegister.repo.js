@@ -450,6 +450,8 @@
 const { executeQueryTMC } = require("../../../db/queryExecutor");
 const oracledb = require("oracledb");
 const { executeProcedureTMC } = require("../../../db/procedureExecutor");
+const { encryptString, decryptString } = require("../../Dashboard/encrypt");
+const axios = require("axios");
 
 // 1. Get Ward List
 async function getWardList(ulbID) {
@@ -808,6 +810,80 @@ const getBlockList = async ({ ulbID, zoneID, wardID }) => {
   return await executeQueryTMC(sql, binds);
 };
 
+const getConnectionDetailsRepo = async ({ userId, consumerNo, ulbId }) => {
+  console.log("Repo: Fetch Connection Details", { userId, consumerNo, ulbId });
+
+  if (!userId) throw new Error("User ID is required");
+  if (!consumerNo) throw new Error("Consumer No is required");
+
+  const sql = `select var_igrulburl_apiurl clienturl  from  water.vw_igrapiurl   where num_igrwater_ulbid=:ulbId and var_igrulburl_code='RTS'`;
+
+  const result = await executeQueryTMC(sql, { ulbId });
+
+  const clientUrl = result?.CLIENTURL ?? process.env.TMC_IGR_URL;
+
+  if (!clientUrl) {
+    throw new Error("TMC_IGR_URL is not configured");
+  }
+
+  const plainRequest = JSON.stringify({
+    jsonData: [
+      {
+        user_id: String(userId),
+        propno: String(consumerNo),
+      },
+    ],
+  });
+
+  console.log("TMC Plain Request:", plainRequest);
+  const encryptedRequest = encryptString(plainRequest, { key: process.env.ORACLE_ENCRYPTION_KEY });
+
+  const requestBody = JSON.stringify({ jsonData: [{ encr_request: encryptedRequest }] });
+
+  console.log("TMC Encrypted Request:", requestBody);
+  let response;
+
+  try {
+    response = await axios.post(clientUrl, requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      timeout: 30000,
+      validateStatus: () => true,
+    });
+  } catch (error) {
+    console.error("TMC Request Error:", error.message);
+    throw new Error("Unable to connect to TMC connection service");
+  }
+
+  console.log("TMC Response Status:", response.status);
+  console.log("TMC Response:", response.data);
+
+  const encryptedResponse = response?.data?.jsonData?.[0]?.encr_request || response?.data?.Response;
+
+  if (!encryptedResponse) {
+    console.error("Invalid TMC response:", response.data);
+    throw new Error(`Invalid TMC response. HTTP ${response.status}`);
+  }
+
+  console.log("Encrypted TMC Response:", encryptedResponse);
+  let decryptedResponse;
+
+  try {
+    decryptedResponse = decryptString(encryptedResponse, { key: process.env.ORACLE_ENCRYPTION_KEY });
+  } catch (error) {
+    console.error("TMC Response Decryption Failed:", error.message);
+    throw new Error("Unable to decrypt TMC connection details");
+  }
+  console.log("TMC Decrypted Response:", decryptedResponse);
+
+  try {
+    return JSON.parse(decryptedResponse);
+  } catch {
+    return decryptedResponse;
+  }
+};
+
 module.exports = {
   getWardList,
   getServiceList,
@@ -817,5 +893,6 @@ module.exports = {
   getWaterRegisterPrefill,
   saveWaterRegisterRepo,
   moduleInsertKarjatWaterRepo,
-  getBlockList
+  getBlockList,
+  getConnectionDetailsRepo
 };
