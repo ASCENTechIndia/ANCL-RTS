@@ -223,6 +223,20 @@ const getWardList = asyncHandler(async (req, res) => {
   return ok(res, result, "Ward list fetched successfully");
 });
 
+const getWardDropdownController = asyncHandler(
+    async (req, res) => {
+        console.log("Ward Dropdown Request:", req.query);
+        const { ulbid } = req.query;
+
+        if (!ulbid) {
+            return fail(res, "ulbid is required");
+        }
+
+        const data = await service.getWardDropdownService({ulbid});
+        return ok( res, data, data.message || "Ward dropdown fetched successfully" );
+    }
+);
+
 // 2. Service List
 const getServiceList = asyncHandler(async (req, res) => {
   const result = await service.getServiceListService(req.body);
@@ -341,6 +355,7 @@ const getConnectionDetailsController = asyncHandler(
 
 module.exports = {
   getWardList,
+  getWardDropdownController,
   getServiceList,
   getDisconnectionTypes,
   getUsageTypes,

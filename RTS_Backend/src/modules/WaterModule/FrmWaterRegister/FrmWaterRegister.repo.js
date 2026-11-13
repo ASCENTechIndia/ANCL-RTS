@@ -550,6 +550,24 @@ async function getConnectionSizes(ulbID) {
   });
 }
 
+const getWardDropdownRepo = async ({ ulbid }) => {
+  console.log("Repo: Fetch Ward Dropdown", { ulbid });
+  const binds = { ulbid };
+
+  const sql = `
+        SELECT DISTINCT wardname, wardid
+        FROM prop.vw_ward_mas
+        WHERE ulbid = :ulbid
+    `;
+
+  const result = await executeQueryTMC(sql, binds);
+
+  if (!result || !result.success) {
+    throw new Error(result?.error || "Failed to fetch ward dropdown");
+  }
+  return result.rows;
+};
+
 async function getWaterRegisterPrefill(AppliNo) {
   const sql = `
         SELECT
@@ -886,6 +904,7 @@ const getConnectionDetailsRepo = async ({ userId, consumerNo, ulbId }) => {
 
 module.exports = {
   getWardList,
+  getWardDropdownRepo,
   getServiceList,
   getDisconnectionTypes,
   getUsageTypes,

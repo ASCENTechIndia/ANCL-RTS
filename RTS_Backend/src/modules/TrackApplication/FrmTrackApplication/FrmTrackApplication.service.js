@@ -98,6 +98,7 @@ const checkPaymentService = async (applino, serviceId) => {
 
   const docServiceIds = flagRows.length > 0 && flagRows[0].L_DOCSERVICEID ? flagRows[0].L_DOCSERVICEID.split(",") : [];
 
+  console.log("docServiceIds", docServiceIds);
   let checkValue = true;
 
   // Same logic as:

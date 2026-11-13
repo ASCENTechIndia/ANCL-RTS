@@ -205,16 +205,16 @@ async function getServiceFields({ serviceId, deptId, ulbId }) {
 
 
 const getBusinessTypeDropdownRepo = async ({ ulbid }) => {
-    console.log("Repo: Fetch Business Type Dropdown", { ulbid });
+    console.log("Repo: Fetch Business Type Dropdown", {  });
 
-    const binds = { ulbid };
+    const binds = {  };
 
     const sql = `
         SELECT
             num_bustyp_id AS BUSTYPID,
             var_bustyp_name AS BUSTYPNAME
         FROM AORTS_NOCBUSINESSTYP_MAS
-        WHERE num_bustyp_ulbid = :ulbid
+   
         ORDER BY var_bustyp_name
     `;
 
@@ -244,6 +244,8 @@ const getRoadTypeDropdownRepo = async ({ ulbid }) => {
     `;
 
     const result = await executeQueryTMC(sql, binds);
+
+    console.log("result", result);
 
     if (!result || !result.success) {
         throw new Error(

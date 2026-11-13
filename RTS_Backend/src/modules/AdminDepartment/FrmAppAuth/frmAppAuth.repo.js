@@ -197,11 +197,11 @@ const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptL
     // PRABHAG FILTER
     // ========================================================
 
-    // if (prabhagList) {
-    //   query += `
-    //     AND zoneid IN (${prabhagList})
-    //   `;
-    // }
+    if (prabhagList) {
+      query += `
+        AND zoneid IN (${prabhagList})
+      `;
+    }
 
     // ========================================================
     // DEPARTMENT FILTER
@@ -226,6 +226,10 @@ const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptL
       //     `;
       //   }
       // }
+
+         query += `
+      FETCH FIRST 20 ROWS ONLY
+    `;
     }
 
     console.log("================================================");
@@ -878,7 +882,7 @@ const applicationAuthRepo = async ({ userId, applicationNo, status, reasonForRej
     const result = await withTxTMC(async (connection) => {
       const query = `
         BEGIN
-          aorts_appliauththane_ins(
+          aorts_appliauth_ins(
             :in_userid,
             :in_applicationno,
             :in_status,

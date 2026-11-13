@@ -8,6 +8,7 @@ import DepartmentSidebar from "@/components/DepartmentSidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import EmployeeNavbar from "@/components/EmployeeNavbar";
 import ProtectedRoute from "@/routes/ProtectedRoute";
+import config from "@/utils/config";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -39,13 +40,13 @@ const AdminLayout = () => {
             try {
                 const response = await axios.get(`${BASE_URL}/api/Dashboard/employee-department-menu`,
                     {
-                        params: { userId: user.userId },
+                        params: { userId: user.userId, ulbId: user?.ulbId, deptId: config?.deptId },
                         headers: { Authorization: `Bearer ${token}` }
                     },
                 );
 
                 const data = response.data?.data?.data || [];
-
+                console.log({data})
                 const parentMenus = data.filter((item) => item.TYPE === "M").map((parent) => {
                     const children = data.filter((item) =>
                         Number(item.NUM_MENUMASTER_PARENTMENUID) === Number(parent.NUM_MENUMASTER_MENUID)).map((child) => ({

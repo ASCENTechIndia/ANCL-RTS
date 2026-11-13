@@ -173,6 +173,16 @@ async function getWardListService(payload) {
   };
 }
 
+const getWardDropdownService = async (payload) => {
+    console.log("Service: Fetch Ward Dropdown", payload);
+    const data = await repo.getWardDropdownRepo(payload);
+
+    if (!data || data.length === 0) {
+        return { success: false, message: "No data Found", data: [] };
+    }
+    return { success: true, count: data.length, data };
+};
+
 // 2. Service List
 async function getServiceListService(payload) {
   const { ulbID, departmentId, mode } = payload;
@@ -563,6 +573,7 @@ const getConnectionDetailsService = async ({userId, consumerNo, ulbId}) => {
 
 module.exports = {
   getWardListService,
+  getWardDropdownService,
   getServiceListService,
   getDisconnectionTypesService,
   getUsageTypesService,

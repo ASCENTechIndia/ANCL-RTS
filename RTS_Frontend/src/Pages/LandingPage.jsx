@@ -198,6 +198,7 @@ const LandingPage = () => {
 
         const department = selectedDepartment.name;
         const serviceId = String(selectedService.id);
+        console.log({ serviceId })
 
         // if (department === "FireBrigade") {
         //     window.location.href = "https://mahavastu.maharashtra.gov.in/";
@@ -219,7 +220,8 @@ const LandingPage = () => {
         //     window.location.href = "https://thanecity.gov.in/tmc/CitizenHome.html";
         //     return;
         // }
-
+        
+        debugger;
         try {
             showLoader("Fetching service details...");
             const response = await axios.get(`${BASE_URL}/api/Dashboard/service-details`,
@@ -239,7 +241,19 @@ const LandingPage = () => {
 
             // const serviceUrl = serviceDetails.serviceUrl ? serviceDetails.serviceUrl.replace(/^~\/?/, "/").replace(/\.aspx(?=\?|$)/i, "") : "";
 
-            const serviceUrl = serviceDetails.serviceUrl ? `/${serviceDetails.serviceUrl.replace(/^~?\/*/, "").replace(/\.aspx(?=\?|$)/i, "")}` : "";
+            let serviceUrl;
+
+            const nocServiceIds = ["840", "841", "842", "843", "844", "845", "846", "847", "848"];
+            console.log({nocServiceIds})
+            if (nocServiceIds.includes(String(serviceId))) {
+                // navigate("/FrmNOCService");
+                serviceUrl = "/FrmNOCService"
+                // return;
+            } else {
+
+            
+
+            serviceUrl = serviceDetails.serviceUrl ? `/${serviceDetails.serviceUrl.replace(/^~?\/*/, "").replace(/\.aspx(?=\?|$)/i, "")}` : "";
             // navigate("/login", {
             //     state: {
             //         ulbId,
@@ -250,6 +264,10 @@ const LandingPage = () => {
             //         serviceUrl,
             //     },
             // });
+
+            }
+
+            console.log("serviceUrl", serviceUrl);
 
             if (!serviceUrl) {
                 if (Swal.isVisible()) {
@@ -288,6 +306,8 @@ const LandingPage = () => {
                 serviceRate: serviceDetails.serviceRate,
                 serviceUrl,
             };
+
+            console.log("navigationState", navigationState);
 
             const currentToken = token || sessionStorage.getItem("accessToken");
 

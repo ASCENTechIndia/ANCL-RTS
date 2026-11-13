@@ -157,35 +157,63 @@ const getCorporationDetailsRepo = async ({ corporationId }) => {
     }
 };
 
-const getemployeeDepartmentMenuRepo = async ({ userId }) => {
-    console.log("Repo: Fetch Employee Department Menu", { userId });
-    const binds = { userId: userId };
+
+const getemployeeDepartmentMenuRepo = async ({ userId, ulbId, deptId }) => {
+    console.log("Repo: Fetch Employee Department Menu", {
+        userId,
+        ulbId,
+        deptId
+    });
+
+    const binds = {
+        userId,
+        ulbId,
+        deptId
+    };
 
     const sql = `
-        select 
+        SELECT
             num_menumaster_menuid,
+            var_menumaster_pagetitle,
             num_menumaster_parentmenuid,
-            var_menumaster_pagetitle, 
-            var_menumaster_pagepath , 
-            'M' Type
-        from aorts_menumaster_def where num_menumaster_parentmenuid=0 
-        union all 
-        select 
-            num_menumaster_menuid, 
-            num_menumaster_parentmenuid,
-            var_menumaster_pagetitle, 
-            var_menumaster_pagepath, 
-            'T' Type 
-        from aorts_menumaster_def a 
-        inner join aorts_menuuser_def c on c.num_menuuser_menuid = a.num_menumaster_menuid 
-        where var_menuuser_userid = :userId
+            var_menumaster_pagepath,
+            'M' AS TYPE,
+            num_menumaster_orderby
+        FROM admins.aoma_menumaster_mas
+        WHERE num_menumaster_parentmenuid = 0
+        AND num_menumaster_deptid = :deptId
+
+        UNION
+
+        SELECT
+            m.num_menumaster_menuid,
+            m.var_menumaster_pagetitle,
+            m.num_menumaster_parentmenuid,
+            m.var_menumaster_pagepath,
+            'T' AS TYPE,
+            m.num_menumaster_orderby
+        FROM admins.aoma_menumaster_mas m
+        INNER JOIN admins.aoma_MenuULB_Config c
+            ON c.num_menucorporation_menuid = m.num_menumaster_menuid
+        INNER JOIN admins.aoma_MenuUser_Config u
+            ON u.num_menuuser_menuid = m.num_menumaster_menuid
+        WHERE u.var_menuuser_activeflag = 'Y'
+        AND u.var_menuuser_userid = :userId
+        AND m.var_menumaster_pagepath IS NOT NULL
+        AND m.num_menumaster_deptid = :deptId
+        AND c.num_menucorporation_ulbid = :ulbId
+
+        ORDER BY num_menumaster_orderby
     `;
 
     const result = await executeQueryTMC(sql, binds);
-
+    console.log({ result: result.rows })
     if (!result || !result.success) {
-        throw new Error(result?.error || "Failed to fetch Employee department menu");
+        throw new Error(
+            result?.error || "Failed to fetch Employee department menu"
+        );
     }
+
     return result.rows;
 };
 
@@ -233,7 +261,7 @@ const getDepartmentMenuRepo = async ({ ulbid }) => {
 const getServicesByDeptIdRepo = async ({ ulbid, deptId }) => {
     console.log("Repo: Fetch Services By Department", { ulbid, deptId });
 
-    const binds = { deptId: Number(deptId) };
+    const binds = { ulbid, deptId: Number(deptId) };
 
     // let sql;
 
@@ -284,19 +312,13 @@ const getServicesByDeptIdRepo = async ({ ulbid, deptId }) => {
     // }
 
     const sql = `
-        SELECT 
-            var_service_eng_name, 
-            num_service_serviceid,
-            var_dept_engname,num_dept_id 
-        FROM aorts.aorts_service_def
-        inner join admins.aoms_dept_mas on num_dept_id = num_service_deptid
-        inner join aorts_servmenu_mas on num_servmenu_servid=num_service_serviceid
-        WHERE 
-            num_service_deptid =:deptId 
-            and var_servmenu_pageurl is not null 
-            AND var_service_active = 'Y' 
-        ORDER BY num_service_serviceid
-
+       SELECT distinct CASE WHEN var_service_displayname 
+        IS NULL THEN var_service_eng_name ELSE var_service_displayname END var_service_eng_name, 
+                 num_service_serviceid,var_dept_engname,num_dept_id FROM aorts.aorts_service_def 
+                inner join admins.aoms_dept_mas on num_dept_id = num_service_deptid 
+                 INNER JOIN aorts_service_config ON num_serv_servid = num_service_serviceid AND num_serv_deptid = num_service_deptid 
+                  WHERE num_service_deptid = :deptId
+                 AND var_service_active = 'Y' and num_serv_ulbid =:ulbid ORDER BY num_service_serviceid
 
     
     `;
@@ -364,7 +386,7 @@ const getInsructionsForServiceRepo = async ({ serviceId }) => {
         }];
     }
 
-    const binds = {serviceId: Number(serviceId)};
+    const binds = { serviceId: Number(serviceId) };
 
     const sql = `
         select
