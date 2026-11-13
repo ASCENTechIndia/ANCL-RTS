@@ -101,6 +101,7 @@ const FrmPropertyAppel = () => {
   const locationState = location.state || {};
   const ulbId = locationState.ulbId || user?.ulbId;
   const userId = locationState.userId || user?.userId;
+  const corpId = locationState.corpId || user?.corpId;
   const serviceId = locationState.serviceId;
   const serviceName = locationState.serviceName || "Property Appeal";
 
@@ -505,7 +506,13 @@ const FrmPropertyAppel = () => {
         text: message,
         confirmButtonColor: "#1e3a8a",
       }).then(() => {
-        navigate("/app/FrmTrackApplication", { state: { applicationNo } });
+        // navigate("/app/FrmTrackApplication", { state: { applicationNo } });
+        if (["5", "44", "45", "46", "48", "49", "51", "52", "58", "61", "133"].includes(String(serviceId))) {
+          navigate("/Step1", { state: { applicationNo, serviceId, ulbId, userId, corpId, serviceName } });
+        }
+        else {
+          navigate("/app/FrmTrackApplication", { state: { applicationNo } });
+        }
       });
     } catch (err) {
       console.error("Submit error:", err);

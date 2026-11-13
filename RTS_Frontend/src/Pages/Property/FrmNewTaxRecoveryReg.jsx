@@ -526,7 +526,12 @@ const FrmNewTaxRecoveryReg = () => {
         text: `${data.message}. Application Number: ${applicationNo}` || "Application submitted successfully",
         confirmButtonColor: "#1e3a8a",
       }).then(() => {
-        navigate("/app/FrmTrackApplication", { state: { applicationNo } });
+        if (["5", "44", "45", "46", "48", "49", "51", "52", "58", "61", "133"].includes(String(serviceId))) {
+          navigate("/Step1", { state: { applicationNo, serviceId, ulbId, userId, corpId, serviceName } });
+        }
+        else {
+          navigate("/app/FrmTrackApplication", { state: { applicationNo } });
+        }
       });
     } catch (err) {
       loader.close();

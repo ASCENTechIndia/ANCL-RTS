@@ -65,7 +65,7 @@ const Step1 = () => {
         setLoading(true);
 
         Swal.fire({
-            title: "Loading documents...",
+            text: "Loading documents...",
             allowOutsideClick: false,
             allowEscapeKey: false,
             didOpen: () => Swal.showLoading(),
@@ -242,7 +242,7 @@ const Step1 = () => {
 
         try {
             Swal.fire({
-                title: "Submitting application...",
+                text: "Submitting application...",
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => Swal.showLoading(),
@@ -292,7 +292,9 @@ const Step1 = () => {
                 icon: "success",
                 text: secondResult?.message || "Application submitted successfully.",
                 confirmButtonColor: "#1e3a8a",
-            });
+            }).then(() => {
+            navigate("/app/FrmTrackApplication", { state: { applicationNo } });
+        });
         } catch (error) {
             console.error("Step1 Submit Error:", error);
             Swal.close();
