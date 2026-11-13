@@ -305,3 +305,28 @@ exports.insertPropertyApplicationDetails = asyncHandler(async (req, res) => {
     },
   });
 });
+
+exports.getDocuments = asyncHandler(async (req, res) => {
+  const payload = {
+    serviceId: req.body.serviceId,
+    ulbId: req.user?.ulbId || req.body.ulbId,
+    nocPurposeId: req.body.nocPurposeId,
+  };
+
+  const required = ["serviceId", "ulbId"];
+
+  for (const key of required) {
+    if (payload[key] === undefined || payload[key] === null || payload[key] === "") {
+      return fail(res, `${key} is required`);
+    }
+  }
+
+  // NOC purpose is mandatory only for Fire services.
+  if (["12", "13"].includes(String(payload.serviceId)) && !payload.nocPurposeId) {
+    return fail(res, "nocPurposeId is required");
+  }
+
+  const result = await service.getDocumentsService(payload);
+
+  return ok(res, result, "Documents fetched successfully");
+});

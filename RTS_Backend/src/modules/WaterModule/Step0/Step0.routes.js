@@ -19,5 +19,6 @@ router.post("/submit-bnd-applicant-info", auth(), controller.submitBndApplicantI
 router.post("/submit-water-applicant-info", auth(), controller.submitWaterApplicantInfo);
 router.post("/submit-imc-application", auth(), controller.submitImcApplication);
 router.post("/insert-property-application-details", auth(), controller.insertPropertyApplicationDetails);
+router.post("/documents", auth(), controller.getDocuments);
 
 module.exports = router;

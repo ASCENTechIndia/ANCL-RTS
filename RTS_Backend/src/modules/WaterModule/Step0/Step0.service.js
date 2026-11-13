@@ -64,6 +64,11 @@ const insertPropertyApplicationDetailsService = async (params) => {
   return await repo.insertPropertyApplicationDetails(params);
 };
 
+async function getDocumentsService(params) {
+  return await repo.getDocuments(params);
+}
+
+
 module.exports = {
   getNocPurposesService,
   getVillagesService,
@@ -80,5 +85,6 @@ module.exports = {
   submitBndApplicantInfoService,
   submitWaterApplicantInfoService,
   submitImcApplicationService,
-  insertPropertyApplicationDetailsService
+  insertPropertyApplicationDetailsService,
+  getDocumentsService
 };

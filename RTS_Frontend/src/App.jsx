@@ -82,6 +82,7 @@ import FrmNocRoadType from "./Pages/Admin/FrmNocRoadType";
 import FrmNocRoadTypeMst from "./Pages/Admin/FrmNocRoadTypeMst";
 import FrmNewTaxRecoveryReg from "./Pages/Property/FrmNewTaxRecoveryReg";
 import FrmStep0 from "./Pages/WaterModule/FrmStep0";
+import Step1 from "./Pages/WaterModule/Step1";
 
 
 function HomePage() {
@@ -140,6 +141,10 @@ const router = createBrowserRouter([
       {
         path: "/FrmAppeal",
         element: <FrmAppeal />,
+      },
+      {
+        path: "/Step1",
+        element: <Step1 />,
       },
       {
         path: "/app/FrmAppliFee",

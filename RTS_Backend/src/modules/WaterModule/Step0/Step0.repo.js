@@ -530,10 +530,78 @@ const insertPropertyApplicationDetails = async (params) => {
   return result;
 };
 
+async function getDocuments({ serviceId, ulbId, nocPurposeId }) {
+    const isFireService = ["12", "13"].includes(String(serviceId));
+
+    let query;
+    const binds = {
+        serviceId: Number(serviceId),
+        ulbId: String(ulbId),
+    };
+
+    if (isFireService) {
+        query = `
+            SELECT
+                v.appdoc_id AS id,
+                v.appdoc_doc AS engname,
+                v.appdoc_doc AS engdocdesc,
+                v.type AS type,
+                v.noc_new AS noc_new,
+                v.noc_renewal AS noc_renewal,
+                'Y' AS active
+            FROM fire.view_firedoc v
+        `;
+
+        // Apply document configuration for specific ULBs.
+        if (["50", "1610"].includes(String(ulbId))) {
+            query += `
+                INNER JOIN fire.aofr_document_config dc
+                    ON dc.num_document_docid = v.appdoc_id
+                    AND dc.num_document_ulbid = v.ulbid
+                    AND dc.num_document_servid = :serviceId
+            `;
+        }
+
+        query += `
+            WHERE v.nocpurpose_id = :nocPurposeId
+              AND v.ulbid = :ulbId
+        `;
+
+        binds.nocPurposeId = String(nocPurposeId);
+
+    } else {
+        query = `
+            SELECT
+                d.num_doc_id AS id,
+                d.var_doc_engname AS engname,
+                d.var_doc_engdocdesc AS engdocdesc,
+                d.var_doc_type AS type,
+                NULL AS noc_new,
+                NULL AS noc_renewal,
+                d.var_doc_active AS active
+            FROM aorts_doc_def d
+
+            INNER JOIN aorts_serv_doc_config sc
+                ON sc.num_serdoc_servid = d.num_doc_serviceid
+                AND sc.num_serdoc_docid = d.num_doc_id
+
+            INNER JOIN vw_services s
+                ON s.num_service_serviceid = d.num_doc_serviceid
+
+            WHERE d.num_doc_serviceid = :serviceId
+              AND sc.num_serdoc_ulbid = :ulbId
+        `;
+    }
+
+    return executeQueryTMC(query, binds);
+}
+
+
 module.exports = {
     getNocPurposes,
     getVillages,
     getZones,
+    getDocuments,
     getUserMobile,
     getHoardingPlaces,
     getHoardingTypes,

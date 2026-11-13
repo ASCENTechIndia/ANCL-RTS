@@ -414,7 +414,10 @@ const FrmStep0 = () => {
                     confirmButtonColor: "#083c76",
                 });
                 if (state.returnTo) navigate(state.returnTo, { state: { appNo, serviceId, ulbId } });
-                else navigate("/app/FrmTrackApplication", { state: { appNo, serviceId, ulbId, userId } });
+                // else navigate("/app/FrmTrackApplication", { state: { appNo, serviceId, ulbId, userId } });
+                else navigate("/Step1", {
+                    state: { ...state, ...values, appNo, applicationNo: appNo, serviceId, ulbId, userId, corpId, serviceName: state.serviceName || state.service, nocPurposeId: values.nocPurposeId || state.nocPurposeId || state._NOCPurposeid,},
+                });
             } catch (error) {
                 console.error("Step0 submit error:", error?.response?.data || error);
                 Swal.fire({ text: error?.response?.data?.data?.message || error?.response?.data?.message || error.message || "Unable to submit application." });
