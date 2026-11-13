@@ -116,53 +116,163 @@ const getUserSectorListRepo = async (userId) => {
 // ============================================================
 // GET APPLICATION AUTHORIZATION LIST
 // ============================================================
-const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptList, sectorList }) => {
+// const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptList, sectorList }) => {
+//   try {
+//     let query = `
+//       SELECT
+//         DEPTID,
+//         SERVICID,
+//         SERVICNAME,
+//         APLINO,
+//         APLIDT,
+//         APLINM,
+//         MOBNO,
+//         AADHARNO,
+//         EMAIL,
+//         ADDRESS,
+//         PROPERTYNO,
+//         ZONENAME,
+//         returnflag
+//       FROM vw_authservdtl
+//       WHERE 1 = 1
+//     `;
+
+//     const binds = {};
+
+//     // ========================================================
+//     // AUTH MODE CONDITIONS
+//     // ========================================================
+
+//     if (String(authMode) === "HODV") {
+//       query = `
+//         SELECT
+//           DEPTID,
+//           SERVICID,
+//           SERVICNAME,
+//           APLINO,
+//           APLIDT,
+//           APLINM,
+//           MOBNO,
+//           AADHARNO,
+//           EMAIL,
+//           ADDRESS,
+//           PROPERTYNO,
+//           ZONENAME,
+//           returnflag
+//         FROM vw_authservdtl
+//         WHERE 1 = 1
+//           AND SERVICID IN (460, 461, 41)
+//           AND hodveriyflag IS NULL
+//       `;
+//     } else if (String(authMode) === "CKV") {
+//       query += `
+//         AND CLERKAUTH IS NULL
+//         AND payflag = 'Y'
+//         AND status = 'CP'
+//       `;
+//     } else if (String(authMode) === "CK") {
+//       query += `
+//         AND CLERKAUTH IS NULL
+//         AND status IN ('NW', 'DL', 'VP')
+//       `;
+
+//       // Original .NET special condition
+//       if (deptList === "26") {
+//         query += `
+//           AND hodclerkid = :userId
+//           AND hodveriyflag = 'A'
+//         `;
+
+//         binds.userId = userId;
+//       }
+//     } else {
+//       query += `
+//         AND CLERKAUTH = 'CA'
+//         AND hoauth IS NULL
+//         AND status IN ('NW', 'DL', 'VP')
+//       `;
+//     }
+
+//     // ========================================================
+//     // PRABHAG FILTER
+//     // ========================================================
+
+//     if (prabhagList) {
+//       query += `
+//         AND zoneid IN (${prabhagList})
+//       `;
+//     }
+
+//     // ========================================================
+//     // DEPARTMENT FILTER
+//     // ========================================================
+
+//     if (deptList) {
+//       query += `
+//         AND DEPTID IN (${deptList})
+//       `;
+
+//       // ======================================================
+//       // SECTOR FILTER
+//       // ======================================================
+
+//       // if (String(authMode) !== "HODV") {
+//       //   if (sectorList) {
+//       //     query += `
+//       //       AND (
+//       //         DEPTID != 23
+//       //         OR sectorid IN (${sectorList})
+//       //       )
+//       //     `;
+//       //   }
+//       // }
+
+//          query += `
+//       FETCH FIRST 20 ROWS ONLY
+//     `;
+//     }
+
+//     console.log("================================================");
+//     console.log("APPLICATION AUTH LIST QUERY");
+//     console.log("================================================");
+//     console.log(query);
+//     console.log("BINDS:", binds);
+//     console.log("================================================");
+
+//     const result = await executeQueryTMC(query, binds);
+
+//     return {
+//       success: true,
+//       rows: result.rows || [],
+//       rowCount: result.rows?.length || 0,
+//     };
+//   } catch (error) {
+//     // console.error("GET APPLICATION AUTH LIST REPO ERROR:", error);
+
+//     return {
+//       success: false,
+//       error: error.message,
+//     };
+//   }
+// };
+
+const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptList, sectorList, flag = null, limit = 20 }) => {
   try {
     let query = `
       SELECT
-        DEPTID,
-        SERVICID,
-        SERVICNAME,
-        APLINO,
-        APLIDT,
-        APLINM,
-        MOBNO,
-        AADHARNO,
-        EMAIL,
-        ADDRESS,
-        PROPERTYNO,
-        ZONENAME,
-        returnflag
+        DEPTID, SERVICID, SERVICNAME, APLINO, APLIDT,
+        APLINM, MOBNO, AADHARNO, EMAIL, ADDRESS,
+        PROPERTYNO, ZONENAME, returnflag
       FROM vw_authservdtl
       WHERE 1 = 1
     `;
 
     const binds = {};
 
-    // ========================================================
-    // AUTH MODE CONDITIONS
-    // ========================================================
-
     if (String(authMode) === "HODV") {
-      query = `
-        SELECT
-          DEPTID,
-          SERVICID,
-          SERVICNAME,
-          APLINO,
-          APLIDT,
-          APLINM,
-          MOBNO,
-          AADHARNO,
-          EMAIL,
-          ADDRESS,
-          PROPERTYNO,
-          ZONENAME,
-          returnflag
-        FROM vw_authservdtl
-        WHERE 1 = 1
-          AND SERVICID IN (460, 461, 41)
-          AND hodveriyflag IS NULL
+      query += `
+        AND SERVICID IN (460, 461, 41)
+        AND hodveriyflag IS NULL
       `;
     } else if (String(authMode) === "CKV") {
       query += `
@@ -176,13 +286,11 @@ const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptL
         AND status IN ('NW', 'DL', 'VP')
       `;
 
-      // Original .NET special condition
-      if (deptList === "26") {
+      if (String(deptList) === "26") {
         query += `
           AND hodclerkid = :userId
           AND hodveriyflag = 'A'
         `;
-
         binds.userId = userId;
       }
     } else {
@@ -193,65 +301,36 @@ const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptL
       `;
     }
 
-    // ========================================================
-    // PRABHAG FILTER
-    // ========================================================
+    if (prabhagList) query += ` AND zoneid IN (${prabhagList})`;
+    if (deptList) query += ` AND DEPTID IN (${deptList})`;
 
-    if (prabhagList) {
-      query += `
-        AND zoneid IN (${prabhagList})
-      `;
+    // START AFTER LAST FETCHED RECORD
+    if (flag) {
+      query += ` AND APLINO > :flag`;
+      binds.flag = flag;
     }
 
-    // ========================================================
-    // DEPARTMENT FILTER
-    // ========================================================
-
-    if (deptList) {
-      query += `
-        AND DEPTID IN (${deptList})
-      `;
-
-      // ======================================================
-      // SECTOR FILTER
-      // ======================================================
-
-      // if (String(authMode) !== "HODV") {
-      //   if (sectorList) {
-      //     query += `
-      //       AND (
-      //         DEPTID != 23
-      //         OR sectorid IN (${sectorList})
-      //       )
-      //     `;
-      //   }
-      // }
-
-         query += `
-      FETCH FIRST 20 ROWS ONLY
+    query += `
+      ORDER BY APLINO
+      FETCH FIRST :limit ROWS ONLY
     `;
-    }
 
-    console.log("================================================");
-    console.log("APPLICATION AUTH LIST QUERY");
-    console.log("================================================");
-    console.log(query);
-    console.log("BINDS:", binds);
-    console.log("================================================");
+    binds.limit = Number(limit);
 
     const result = await executeQueryTMC(query, binds);
+    const rows = result.rows || [];
 
     return {
       success: true,
-      rows: result.rows || [],
-      rowCount: result.rows?.length || 0,
+      rows,
+      rowCount: rows.length,
+      nextFlag: rows.length ? rows[rows.length - 1].APLINO : null,
+      hasMore: rows.length === Number(limit)
     };
   } catch (error) {
-    // console.error("GET APPLICATION AUTH LIST REPO ERROR:", error);
-
     return {
       success: false,
-      error: error.message,
+      error: error.message
     };
   }
 };
@@ -964,7 +1043,7 @@ const applicationAuthRepo = async ({ userId, applicationNo, status, reasonForRej
   }
 };
 
-const saveApplicationVerificationDocumentRepo = async ({ulbid, applino, userid, documents}) => {
+const saveApplicationVerificationDocumentRepo = async ({ ulbid, applino, userid, documents }) => {
   try {
     const result = await withTxTMC(async (connection) => {
       const deleteQuery = `
@@ -974,10 +1053,10 @@ const saveApplicationVerificationDocumentRepo = async ({ulbid, applino, userid, 
           AND var_appVerifdoc_docname = 'CertificateORG'
       `;
 
-      const deleteResult = await connection.execute(deleteQuery, {ulbid: String(ulbid), applino: String(applino)}, {autoCommit: false});
+      const deleteResult = await connection.execute(deleteQuery, { ulbid: String(ulbid), applino: String(applino) }, { autoCommit: false });
       const deletedRows = deleteResult.rowsAffected || 0;
 
-      console.log("Existing CertificateORG documents deleted:",deletedRows);
+      console.log("Existing CertificateORG documents deleted:", deletedRows);
 
       let insertedRows = 0;
 
@@ -992,7 +1071,7 @@ const saveApplicationVerificationDocumentRepo = async ({ulbid, applino, userid, 
             ulbid: String(ulbid),
             applino: String(applino),
             docname: document.docname,
-            docbyte: {val: document.docbyte, type: oracledb.BLOB},
+            docbyte: { val: document.docbyte, type: oracledb.BLOB },
             userid: String(userid),
           },
           {
@@ -1001,10 +1080,10 @@ const saveApplicationVerificationDocumentRepo = async ({ulbid, applino, userid, 
         );
 
         insertedRows += insertResult.rowsAffected || 0;
-        console.log(`Document ${document.originalname} inserted:`,insertResult.rowsAffected);
+        console.log(`Document ${document.originalname} inserted:`, insertResult.rowsAffected);
       }
 
-      return {deletedRows, insertedRows,};
+      return { deletedRows, insertedRows, };
     });
 
     return {
@@ -1013,7 +1092,7 @@ const saveApplicationVerificationDocumentRepo = async ({ulbid, applino, userid, 
       ...result,
     };
   } catch (error) {
-    console.error("SAVE APPLICATION VERIFICATION DOCUMENT REPO ERROR:",error);
+    console.error("SAVE APPLICATION VERIFICATION DOCUMENT REPO ERROR:", error);
     return {
       success: false,
       error: error.message,

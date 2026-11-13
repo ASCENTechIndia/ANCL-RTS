@@ -1,9 +1,9 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import ShadCNTable from "@/components/ui/table";
 import Swal from "sweetalert2";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -16,22 +16,22 @@ const FrmAppAuthorisationList = () => {
   const { user, token } = useAuth();
 
   const locationState = location.state || {};
-
   const queryParams = new URLSearchParams(location.search);
-  const authModeFromUrl = queryParams.get("@");
-
-  const authMode = authModeFromUrl;
+  const authMode = queryParams.get("@");
   const userId = locationState.userId || user?.userId;
   const ulbId = locationState.ulbId || user?.ulbId;
 
   const [loading, setLoading] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [headerText, setHeaderText] = useState("Clerk Authorization List");
+  const [nextFlag, setNextFlag] = useState(null);
+  const [hasMore, setHasMore] = useState(false);
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const LIMIT = 20;
 
   const getHeaders = () => {
     const baseHeaders = [
@@ -69,10 +69,7 @@ const FrmAppAuthorisationList = () => {
     };
 
     if (authMode === "CK") {
-      return {
-        ...baseMapping,
-        "Application Type": "returnflag",
-      };
+      return { ...baseMapping, "Application Type": "returnflag" };
     }
 
     return baseMapping;
@@ -84,7 +81,12 @@ const FrmAppAuthorisationList = () => {
   useEffect(() => {
     document.title = "Application Authorization List";
     setHeaderTextBasedOnMode(authMode);
-    fetchApplicationList();
+    setTableData([]);
+    setFilteredData([]);
+    setSearchText("");
+    setNextFlag(null);
+    setHasMore(false);
+    fetchApplicationList(null, false);
   }, [authMode]);
 
   const setHeaderTextBasedOnMode = (mode) => {
@@ -103,30 +105,70 @@ const FrmAppAuthorisationList = () => {
     }
   };
 
-  const fetchApplicationList = async () => {
-    setLoading(true);
+  // FETCH APPLICATION LIST USING CURSOR FLAG
+  const fetchApplicationList = async (flag = null, append = false) => {
+    if (loading || loadingMore) return;
+
+    append ? setLoadingMore(true) : setLoading(true);
+
     try {
       const response = await axios.post(
         `${BASE_URL}/api/frmAppAuth/application-list`,
         {
-          userId: userId,
-          authMode: authMode,
+          userId,
+          authMode,
+          flag,
+          limit: LIMIT,
         },
         {
           headers: {
             Authorization: `Bearer ${token || localStorage.getItem("token")}`,
           },
-        },
+        }
       );
 
       console.log("Application List Response:", response);
 
-      if (response.data.ok && response.data.data?.data) {
-        const data = response.data.data.data;
-        setTableData(data);
-        setFilteredData(data);
+      if (response.data.ok) {
+        const payload = response.data.data || {};
+        const result = payload.data ?? payload;
 
-        if (data.length === 0) {
+        const data = Array.isArray(result)
+          ? result
+          : result.rows || payload.rows || [];
+
+        const newFlag =
+          payload.nextFlag ??
+          result.nextFlag ??
+          (data.length ? data[data.length - 1].APLINO : null);
+
+        const moreRecords =
+          payload.hasMore ??
+          result.hasMore ??
+          data.length === LIMIT;
+
+        const updatedData = append
+          ? [...tableData, ...data]
+          : data;
+
+        setTableData(updatedData);
+        setNextFlag(newFlag);
+        setHasMore(Boolean(moreRecords && newFlag));
+
+        // APPLY EXISTING SEARCH ON UPDATED RECORDS
+        if (searchText.trim()) {
+          const words = searchText.toLowerCase().split(/\s+/);
+          setFilteredData(
+            updatedData.filter((row) => {
+              const rowString = Object.values(row).join(" ").toLowerCase();
+              return words.every((word) => rowString.includes(word));
+            })
+          );
+        } else {
+          setFilteredData(updatedData);
+        }
+
+        if (!append && data.length === 0) {
           Swal.fire({
             text: "Record Not Found",
             confirmButtonColor: "#1e3a8a",
@@ -143,21 +185,30 @@ const FrmAppAuthorisationList = () => {
       });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  // LOAD NEXT RECORDS
+  const handleLoadMore = () => {
+    if (nextFlag && hasMore && !loadingMore) {
+      fetchApplicationList(nextFlag, true);
     }
   };
 
   const filterGrid = (searchValue) => {
     setSearchText(searchValue);
 
-    if (!searchValue || searchValue.trim() === "") {
+    if (!searchValue.trim()) {
       setFilteredData(tableData);
       return;
     }
 
-    const words = searchValue.toLowerCase().split(" ");
+    const words = searchValue.toLowerCase().split(/\s+/);
+
     const filtered = tableData.filter((row) => {
       const rowString = Object.values(row).join(" ").toLowerCase();
-      return words.every((word) => rowString.indexOf(word) >= 0);
+      return words.every((word) => rowString.includes(word));
     });
 
     setFilteredData(filtered);
@@ -167,22 +218,20 @@ const FrmAppAuthorisationList = () => {
     console.log("Selected Row:", row);
 
     const selectedData = {
-        servicid: row.SERVICID,
-        applino: row.APLINO,
-        serviceName: row.SERVICNAME,
-        departId: row.DEPTID,
+      servicid: row.SERVICID,
+      applino: row.APLINO,
+      serviceName: row.SERVICNAME,
+      departId: row.DEPTID,
     };
 
-    const currentAuthMode = authMode;
-
     navigate("/app/FrmAppAuthorisationMst", {
-        state: {
-            selectedData: selectedData,
-            mode: "2",
-            authMode: currentAuthMode,
-        },
+      state: {
+        selectedData,
+        mode: "2",
+        authMode,
+      },
     });
-   };
+  };
 
   const tableRows = filteredData.map((row) => {
     const formattedRow = {};
@@ -263,6 +312,18 @@ const FrmAppAuthorisationList = () => {
           ) : (
             <div className="text-center py-8 text-gray-500">
               No records found
+            </div>
+          )}
+
+          {hasMore && (
+            <div className="flex justify-center pt-2">
+              <Button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="bg-blue-900 hover:bg-blue-800 text-white"
+              >
+                {loadingMore ? "Loading..." : "Load More"}
+              </Button>
             </div>
           )}
         </CardContent>
