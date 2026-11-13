@@ -382,7 +382,7 @@ const getPaymentFlagRepo = async () => {
   `;
 
   const result = await executeQueryTMC(query);
-
+console.log(result)
   return result.rows || [];
 };
 
@@ -400,7 +400,7 @@ const checkPaymentRepo = async (applino) => {
   const result = await executeQueryTMC(query, {
     applino,
   });
-
+console.log(result)
   return result.rows || [];
 };
 

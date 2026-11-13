@@ -37,13 +37,13 @@ exports.getCorporationDetailsController = asyncHandler(
 exports.getEmployeeDepartmentMenuController = asyncHandler(
     async (req, res) => {
         console.log("Employee Department Menu Request:", req.query);
-        const { userId } = req.query;
+        const { userId, ulbId, deptId } = req.query;
 
         if (!userId) {
-            return fail(res, "ulbid is required");
+            return fail(res, "userId is required");
         }
 
-        const data = await service.getEmployeeDepartmentMenuService({ userId });
+        const data = await service.getEmployeeDepartmentMenuService({ userId, ulbId, deptId });
 
         if (!data.success) {
             return fail(res, data.message);

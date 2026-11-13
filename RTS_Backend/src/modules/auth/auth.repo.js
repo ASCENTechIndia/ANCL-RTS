@@ -1,5 +1,6 @@
 const oracledb = require("oracledb");
 const { getConnectionTMC } = require("../../config/db");
+const { encryptPassword } = require("../../libs/encryption");
 
 async function registerUser({ userId, orgId, name, email, mobile, dob, password, confirmPassword, ipAddress, source, propNo }) {
     const conn = await getConnectionTMC();
@@ -432,6 +433,8 @@ async function getCitizenDetailsByMobile({ mobile }) {
 async function employeeLoginRepo({ corpId = 10001, userId, password }) {
   let connection;
 
+  const encrytptPassword = encryptPassword(password)
+  console.log({encrytptPassword})
   try {
     connection = await getConnectionTMC();
     const result = await connection.execute(
@@ -450,7 +453,7 @@ async function employeeLoginRepo({ corpId = 10001, userId, password }) {
       {
         In_CorpId: { dir: oracledb.BIND_IN, val: Number(corpId), type: oracledb.NUMBER },
         in_UserID: { dir: oracledb.BIND_IN, val: String(userId).trim(), type: oracledb.STRING },
-        in_password: { dir: oracledb.BIND_IN, val: String(password), type: oracledb.STRING },
+        in_password: { dir: oracledb.BIND_IN, val: String(encrytptPassword), type: oracledb.STRING },
         out_errcode: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
         out_errmsg: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 1000 },
         out_StrInfo: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 4000 },

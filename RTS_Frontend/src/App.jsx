@@ -270,11 +270,11 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/FrmAppAuthorisationList",
+        path: "/APP/FrmAppAuthorisationList",
         element: <FrmAppAuthorisationList />,
       },
       {
-        path: "/FrmAppAuthorisationMst",
+        path: "/APP/FrmAppAuthorisationMst",
         element: <FrmAppAuthorisationMst />,
       },
       {

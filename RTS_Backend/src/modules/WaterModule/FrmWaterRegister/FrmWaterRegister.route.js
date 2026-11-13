@@ -4,7 +4,6 @@
 // const auth = require("../../../middlewares/auth.middleware");
 // const upload = require("../../../middlewares/upload.middleware");
 
-// router.get("/ward-dropdown", auth(), controller.getWardDropdownController);
 // router.get("/service-dropdown", auth(), controller.getServiceDropdownController);
 // router.get("/disconnection-dropdown", auth(), controller.getDisconnectionDropdownController);
 // router.get("/usage-type-dropdown", auth(), controller.getUsageTypeDropdownController);
@@ -26,6 +25,8 @@ const upload = require("../../../middlewares/upload.middleware");
 const controller = require("./FrmWaterRegister.controller");
 
 router.post("/get-ward-list", auth(), controller.getWardList);
+router.get("/ward-dropdown", auth(), controller.getWardDropdownController);
+
 
 router.post("/get-service-list", auth(), controller.getServiceList);
 

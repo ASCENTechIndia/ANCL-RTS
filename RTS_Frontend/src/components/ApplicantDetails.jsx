@@ -40,44 +40,120 @@ const ApplicantDetails = () => {
     },
   };
 
+  // useEffect(() => {
+  //   if (!ulbId) return;
+
+  //   const fetchDropdowns = async () => {
+  //     try {
+  //       const [zoneResponse, businessTypeResponse] = await Promise.allSettled([
+  //         axios.get(
+  //           `${BASE_URL}/api/FrmWaterRegister/ward-dropdown?ulbid=${ulbId}`,
+  //           axiosConfig
+  //         ),
+  //         axios.get(
+  //           `${BASE_URL}/api/FrmToursTravels/business-type-dropdown?ulbid=${ulbId}`,
+  //           axiosConfig
+  //         ),
+  //       ]);
+
+  //       console.log("zoneResponse",zoneResponse.value.data.data.data)
+  //       console.log("businessTypeResponse",businessTypeResponse.value.data.data.data)
+
+  //       if (
+  //         zoneResponse?.data?.ok &&
+  //         zoneResponse?.data?.data?.data
+  //       ) {
+  //         setZoneList(zoneResponse.value.data.data.data);
+  //       }
+
+  //       if (
+  //         businessTypeResponse?.data?.ok &&
+  //         businessTypeResponse?.data?.data?.data
+  //       ) {
+  //         setBusinessTypeList(
+  //           businessTypeResponse.value.data.data.data
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching dropdowns:", error);
+  //     }
+  //   };
+
+  //   fetchDropdowns();
+  // }, [ulbId]);
+
+
   useEffect(() => {
     if (!ulbId) return;
 
     const fetchDropdowns = async () => {
       try {
-        const [zoneResponse, businessTypeResponse] = await Promise.all([
+        const [zoneResult, businessTypeResult] = await Promise.allSettled([
           axios.get(
-            `${BASE_URL}/api/FrmWaterRegister/ward-dropdown?ulbid=${ulbId}`,
-            axiosConfig
+            `${BASE_URL}/api/FrmWaterRegister/ward-dropdown`,
+            {
+              params: { ulbid: ulbId },
+              headers: {
+                Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+              },
+            }
           ),
+
           axios.get(
-            `${BASE_URL}/api/FrmToursTravels/business-type-dropdown?ulbid=${ulbId}`,
-            axiosConfig
+            `${BASE_URL}/api/FrmToursTravels/business-type-dropdown`,
+            {
+              params: { ulbid: ulbId },
+              headers: {
+                Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+              },
+            }
           ),
         ]);
 
-        if (
-          zoneResponse?.data?.ok &&
-          zoneResponse?.data?.data?.data
-        ) {
-          setZoneList(zoneResponse.data.data.data);
+        // ZONE DROPDOWN
+        if (zoneResult.status === "fulfilled") {
+          const zoneData = zoneResult.value.data?.data?.data || [];
+
+          console.log("Zone API Data:", zoneData);
+
+          setZoneList(Array.isArray(zoneData) ? zoneData : []);
+        } else {
+          console.error("Zone API Error:", zoneResult.reason);
+          setZoneList([]);
         }
 
-        if (
-          businessTypeResponse?.data?.ok &&
-          businessTypeResponse?.data?.data?.data
-        ) {
+        // BUSINESS TYPE DROPDOWN
+        if (businessTypeResult.status === "fulfilled") {
+          const businessData =
+            businessTypeResult.value.data?.data?.data || [];
+
+          console.log("Business Type API Data:", businessData);
+
           setBusinessTypeList(
-            businessTypeResponse.data.data.data
+            Array.isArray(businessData) ? businessData : []
           );
+        } else {
+          console.error(
+            "Business Type API Error:",
+            businessTypeResult.reason
+          );
+          setBusinessTypeList([]);
         }
+
       } catch (error) {
         console.error("Error fetching dropdowns:", error);
       }
     };
 
     fetchDropdowns();
-  }, [ulbId]);
+
+  }, [ulbId, token]);
+
+
+  useEffect(() => {
+    console.log("zoneList", zoneList)
+    console.log("businessTypeList", businessTypeList)
+  }, [zoneList, businessTypeList])
 
   return (
     <Card className="border shadow-sm">
@@ -282,11 +358,32 @@ const ApplicantDetails = () => {
               <span>:</span>
             </div>
 
-            <Select
+            {/* <Select
               value={values.businessType || ""}
               onValueChange={(value) =>
                 setFieldValue("businessType", value)
               }
+            >
+              <SelectTrigger className="w-full h-9">
+                <SelectValue placeholder="व्यवसायचा प्रकार निवडा" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {businessTypeList.map((item) =>{ 
+                console.log("item", item);
+                return (
+                  <SelectItem
+                    key={item.BUSTYPID}
+                    value={String(item.BUSTYPID)}
+                  >
+                    {item.BUSTYPNAME}
+                  </SelectItem>
+                )})}
+              </SelectContent>
+            </Select> */}
+            <Select
+              value={String(values.businessType || "")}
+              onValueChange={(value) => setFieldValue("businessType", value)}
             >
               <SelectTrigger className="w-full h-9">
                 <SelectValue placeholder="व्यवसायचा प्रकार निवडा" />
@@ -326,11 +423,30 @@ const ApplicantDetails = () => {
               <span>:</span>
             </div>
 
-            <Select
+            {/* <Select
               value={values.zoneId || ""}
               onValueChange={(value) =>
                 setFieldValue("zoneId", value)
               }
+            >
+              <SelectTrigger className="w-full h-9">
+                <SelectValue placeholder="-- Select Zone --" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {zoneList.map((zone) => (
+                  <SelectItem
+                    key={zone.WARDID}
+                    value={String(zone.WARDID)}
+                  >
+                    {zone.WARDNAME}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select> */}
+            <Select
+              value={String(values.zoneId || "")}
+              onValueChange={(value) => setFieldValue("zoneId", value)}
             >
               <SelectTrigger className="w-full h-9">
                 <SelectValue placeholder="-- Select Zone --" />

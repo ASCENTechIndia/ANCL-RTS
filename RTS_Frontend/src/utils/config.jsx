@@ -1,6 +1,6 @@
 const config = {
   source: "RW",
-  deptId: "11", 
+  deptId: "442", 
 };
 
 export default config;
