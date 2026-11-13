@@ -20,22 +20,9 @@ const Step1 = () => {
 
     const ulbId = Number(location.state?.ulbId ?? user?.ulbId);
     const serviceId = Number(location.state?.serviceId ?? user?.serviceId);
-    const nocPurposeId =
-        location.state?.nocPurposeId ??
-        location.state?._NOCPurposeid ??
-        location.state?.fireNocPurposeId ??
-        user?.nocPurposeId;
-
-    const serviceName =
-        location.state?.serviceName ??
-        location.state?.service ??
-        user?.serviceName ??
-        "";
-
-    const applicationNo =
-        location.state?.applicationNo ??
-        location.state?.appNo ??
-        "";
+    const nocPurposeId = location.state?.nocPurposeId ?? location.state?._NOCPurposeid ?? location.state?.fireNocPurposeId ?? user?.nocPurposeId;
+    const serviceName = location.state?.serviceName ?? location.state?.service ?? user?.serviceName;
+    const applicationNo = location.state?.applicationNo ?? location.state?.appNo;
 
     const isFireService = [12, 13].includes(serviceId);
     const isExistingApplication = Boolean(applicationNo);
@@ -211,31 +198,110 @@ const Step1 = () => {
     };
 
     const handleSubmit = async (values) => {
-        const mandatoryDocuments = documents.filter(
-            (document) => document.active === "Y"
-        );
+        const corpId = user?.corpId ?? user?.corpid ?? user?.CorpId;
+        const userId = user?.userUniqueId ?? user?.userId ?? user?.userid ?? user?.UserUniqueId;
 
-        const missingDocuments = mandatoryDocuments.filter(
-            (document) => !documentFiles[document.id]
-        );
-
-        if (missingDocuments.length > 0) {
-            Swal.fire({
-                icon: "warning",
-                text: "Please upload all mandatory documents.",
-                confirmButtonColor: "#1e3a8a",
-            });
+        if (!corpId || !userId) {
+            Swal.fire({ icon: "error", text: "Corp ID or User ID is missing." });
             return;
         }
 
-        console.log("Step1 Values:", values);
-        console.log("Step1 Document Files:", documentFiles);
+        if (!values.noOfCopies || Number(values.noOfCopies) <= 0) {
+            Swal.fire({ icon: "warning", text: "No. of certificate copies cannot be blank or zero." });
+            return;
+        }
 
-        Swal.fire({
-            icon: "info",
-            text: "Step1 submit API is not connected yet.",
-            confirmButtonColor: "#1e3a8a",
-        });
+        if (serviceId === 1 && !values.marriageDate) {
+            Swal.fire({ icon: "warning", text: "Marriage Date cannot be blank." });
+            return;
+        }
+
+        const missingDocuments = documents.filter(
+            (doc) => doc.active === "Y" && !documentFiles[doc.id]
+        );
+
+        if (missingDocuments.length) {
+            Swal.fire({ icon: "warning", text: "Please upload all mandatory documents." });
+            return;
+        }
+
+        const marriageDate = values.marriageDate ? `${values.marriageDate.getFullYear()}-${String(values.marriageDate.getMonth() + 1).padStart(2, "0")}-${String(values.marriageDate.getDate()).padStart(2, "0")}` : null;
+
+        const procedurePayload = {
+            ulbId,
+            corpid: Number(corpId),
+            serviceid: serviceId,
+            zoneid: 0,
+            userid: Number(userId),
+            noofcopy: Number(values.noOfCopies || 1),
+            marriageDate,
+            appno: applicationNo || "0",
+        };
+
+        const headers = { Authorization: `Bearer ${token}` };
+
+        try {
+            Swal.fire({
+                title: "Submitting application...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => Swal.showLoading(),
+            });
+
+            // 1. Call procedure with mode 1
+            const firstResponse = await axios.post(`${baseUrl}/api/Step1/application-ins`, { ...procedurePayload, mode: 1 },
+                { headers }
+            );
+
+            const firstResult = firstResponse?.data?.data ?? firstResponse?.data;
+            const generatedAppNo =
+                firstResult?.applicationNo ?? firstResult?.outBinds?.out_ErrMsg;
+
+            if (!generatedAppNo) {
+                throw new Error("Application number was not returned by the procedure.");
+            }
+
+            // 2. Upload selected documents
+            for (const doc of documents) {
+                const file = documentFiles[doc.id];
+                if (!file) continue;
+
+                const formData = new FormData();
+                formData.append("corpId", String(corpId));
+                formData.append("serviceId", String(serviceId));
+                formData.append("appNo", String(generatedAppNo));
+                formData.append("docType", doc.type);
+                formData.append("documentId", String(doc.id));
+                formData.append("ulbId", String(ulbId));
+                formData.append("userId", String(userId));
+                formData.append("document", file);
+
+                await axios.post(`${baseUrl}/api/Step1/upload-document`, formData, { headers });
+            }
+
+            // 3. same procedure with mode 2
+            const secondResponse = await axios.post(`${baseUrl}/api/Step1/application-ins`,
+                { ...procedurePayload, appno: generatedAppNo, mode: 2 },
+                { headers }
+            );
+
+            const secondResult = secondResponse?.data?.data ?? secondResponse?.data;
+
+            Swal.close();
+            await Swal.fire({
+                icon: "success",
+                text: secondResult?.message || "Application submitted successfully.",
+                confirmButtonColor: "#1e3a8a",
+            });
+        } catch (error) {
+            console.error("Step1 Submit Error:", error);
+            Swal.close();
+            Swal.fire({
+                icon: "error",
+                text: error?.response?.data?.message || error.message || "Unable to submit application.",
+                confirmButtonColor: "#1e3a8a",
+            });
+        }
     };
 
     return (
