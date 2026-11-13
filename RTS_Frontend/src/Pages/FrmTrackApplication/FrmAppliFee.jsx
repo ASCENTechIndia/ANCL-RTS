@@ -8,13 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import config from "@/utils/config";
 
 const FrmAppliFee = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user, token } = useAuth();
     const baseUrl = import.meta.env.VITE_BASE_URL;
-    console.log({location, user})
+    console.log({ location, user })
     const appNo = location.state?.appNo || "TMCPTXAC2502250002";
     const serviceId = Number(location.state?.serviceId);
     const ulbId = Number(location.state?.ulbId ?? user?.ulbId);
@@ -22,8 +23,8 @@ const FrmAppliFee = () => {
     const userUniqueId = Number(location.state?.userUniqueId ?? user?.userUniqueId);
     const trackId = location.state?.trackId ?? user?.trackId ?? "12345";
     const userIdMahaOnline = location.state?.userIdMahaOnline ?? user?.mahaOnlineUserId ?? "MAHA123";
-    const username =  user?.email;
-    console.log({username})
+    const username = user?.username;
+    console.log({ username })
     const userFullName = location.state?.userFullName;
     const serviceName = location.state?.serviceName;
 
@@ -304,84 +305,100 @@ const FrmAppliFee = () => {
     };
 
     const handlePayment = async () => {
-    const transactionId = await createPaymentSession();
+        const transactionId = await createPaymentSession();
 
-    if (!transactionId) {
-        return;
-    }
+        if (!transactionId) {
+            return;
+        }
 
-    const paymentUrl = import.meta.env.VITE_PAYMENT_POST_URL;
-    const companyCode = import.meta.env.VITE_PAYMENT_COMPANY_CODE;
-    const frontendUrl = import.meta.env.VITE_FRONTEND_URL;
-    console.log({paymentUrl, companyCode, frontendUrl, transactionId})
-    if (!paymentUrl) {
-        await Swal.fire({
-            icon: "error",
-            text: "Payment gateway URL is not configured."
+        const paymentUrl = import.meta.env.VITE_PAYMENT_POST_URL;
+        const companyCode = import.meta.env.VITE_PAYMENT_COMPANY_CODE;
+        const frontendUrl = import.meta.env.VITE_FRONTEND_URL;
+        console.log({ paymentUrl, companyCode, frontendUrl, transactionId })
+        if (!paymentUrl) {
+            await Swal.fire({
+                icon: "error",
+                text: "Payment gateway URL is not configured."
+            });
+            return;
+        }
+        if (!frontendUrl) {
+            await Swal.fire({
+                icon: "error",
+                text: "Frontend URL is not configured."
+            });
+            return;
+        }
+
+        if (!companyCode) {
+            await Swal.fire({
+                icon: "error",
+                text: "Payment company code is not configured."
+            });
+            return;
+        }
+
+        // const returnUrl = `${frontendUrl}/app/FrmAfterTransactionTMC`;
+        const returnUrl = `${baseUrl}/api/payment-response`;
+
+        const address = "";
+        const city = "";
+        const state = "";
+        const pincode = "";
+        const country = "IND";
+        const delivery_name = "";
+        const AscDept = config?.deptId;
+        const delivery_addr = "";
+        const delivery_city = "";
+        const delivery_state = "";
+        const delivery_zip = "";
+        const delivery_country = "";
+        const delivery_tel = "";
+        const merchant_param1 = "";
+        const merchant_param2 = "";
+        const merchant_param3 = "";
+        const merchant_param4 = "";
+        const merchant_param5 = "";
+        const promo_code = "";
+
+        const paymentEmail = email;
+        const paymentMobile = mobileNo;
+
+        const msg = [ulbId, transactionId, amount, returnUrl, username, address, city, state, pincode, country, paymentMobile, username, delivery_name, delivery_addr, delivery_city, delivery_state, delivery_zip, delivery_country, delivery_tel, merchant_param1, merchant_param2, merchant_param3, merchant_param4, merchant_param5, promo_code, AscDept ].join("|");
+        // const msg = [companyCode, transactionId, amount, returnUrl, username , address, city, state, pincode, paymentEmail, paymentMobile].join("|");
+
+        console.log("Payment Gateway Request", { paymentUrl, transactionId, returnUrl, msg });
+
+        const confirmed = await Swal.fire({
+            // icon: "success",
+            // text: `Transaction No. : ${transactionId}`,
+            text: `Redirecting for Payment`,
+            confirmButtonText: "Continue",
+            // timer: 1500,
+            allowOutsideClick: false
         });
-        return;
-    }
-    if (!frontendUrl) {
-        await Swal.fire({
-            icon: "error",
-            text: "Frontend URL is not configured."
-        });
-        return;
-    }
 
-    if (!companyCode) {
-        await Swal.fire({
-            icon: "error",
-            text: "Payment company code is not configured."
-        });
-        return;
-    }
+        if (!confirmed.isConfirmed) {
+            return;
+        }
 
-    // const returnUrl = `${frontendUrl}/app/FrmAfterTransactionTMC`;
-    const returnUrl = `${baseUrl}/api/payment-response`;
+        const form = document.createElement("form");
 
-    const address = "";
-    const city = "";
-    const state = "";
-    const pincode = "";
+        form.method = "POST";
+        form.action = paymentUrl;
+        form.style.display = "none";
 
-    const paymentEmail = email;
-    const paymentMobile = mobileNo;
+        const input = document.createElement("input");
 
-    const msg = [companyCode, transactionId, amount, returnUrl, username , address, city, state, pincode, paymentEmail, paymentMobile].join("|");
+        input.type = "hidden";
+        input.name = "msg";
+        input.value = msg;
 
-    console.log("Payment Gateway Request", {paymentUrl, transactionId, returnUrl, msg});
+        form.appendChild(input);
+        document.body.appendChild(form);
 
-    const confirmed = await Swal.fire({
-        // icon: "success",
-        // text: `Transaction No. : ${transactionId}`,
-        text: `Redirecting for Payment`,
-        confirmButtonText: "Continue",
-        // timer: 1500,
-        allowOutsideClick: false
-    });
-
-    if (!confirmed.isConfirmed) {
-        return;
-    }
-
-    const form = document.createElement("form");
-
-    form.method = "POST";
-    form.action = paymentUrl;
-    form.style.display = "none";
-
-    const input = document.createElement("input");
-
-    input.type = "hidden";
-    input.name = "msg";
-    input.value = msg;
-
-    form.appendChild(input);
-    document.body.appendChild(form);
-
-    form.submit();
-};
+        form.submit();
+    };
 
     const handleAaplePayment = async () => {
         if (!appNo) {

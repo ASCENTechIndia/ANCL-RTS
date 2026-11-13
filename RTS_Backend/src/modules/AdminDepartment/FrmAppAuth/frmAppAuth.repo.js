@@ -265,6 +265,7 @@ const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptL
         PROPERTYNO, ZONENAME, returnflag
       FROM vw_authservdtl
       WHERE 1 = 1
+      AND DEPTID NOT IN (7, 24)
     `;
 
     const binds = {};
@@ -311,7 +312,7 @@ const getApplicationAuthListRepo = async ({ userId, authMode, prabhagList, deptL
     }
 
     query += `
-      ORDER BY APLINO
+      ORDER BY  aplidt desc
       FETCH FIRST :limit ROWS ONLY
     `;
 
