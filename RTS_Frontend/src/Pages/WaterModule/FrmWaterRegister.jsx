@@ -1018,7 +1018,7 @@ const FrmWaterRegister = () => {
   const serviceName = locationState.serviceName ?? sessionStorage.getItem("ServEngName");
   const appNo       = locationState.appNo       ?? sessionStorage.getItem("AppNo");
   const mode        = locationState.mode        ?? Number(sessionStorage.getItem("Mode") || 0);
-  const corpId      = locationState.corpId      ?? sessionStorage.getItem("CorpId");
+  const corpId      = locationState.corpId  ?? user?.corpId  ?? sessionStorage.getItem("CorpId");
 
   const isViewMode = mode === 4;
 
@@ -1256,6 +1256,7 @@ const FrmWaterRegister = () => {
   };
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    debugger;
     if (!validateFields(values)) return;
     setLoading(true);
 
@@ -1320,8 +1321,8 @@ const FrmWaterRegister = () => {
 
       const applicationNo = extractAppNo(saveData?.message);
 
-      const KARJAT_ULBS       = config.karjatModuleUlbs || [];
-      const KARJAT_SERVICEIDS = config.karjatModuleServiceIds || [];
+      const KARJAT_ULBS       = ["1890", "1150"];
+      const KARJAT_SERVICEIDS =  ["19", "21", "22", "91", "196"];
       const isKarjat =
         KARJAT_ULBS.map(String).includes(String(ulbId)) &&
         KARJAT_SERVICEIDS.map(String).includes(String(values.serviceType)) &&
