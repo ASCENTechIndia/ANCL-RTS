@@ -735,7 +735,10 @@ const FrmPlumberLicense = () => {
             });
 
             // setDocuments((previous) => previous.map((item) => ({ ...item, file: null })));
-            navigate("/app/FrmTrackApplication")
+            // navigate("/app/FrmTrackApplication")
+            navigate("/Step1", {
+            state: { ...location.state, ...values, appNo, applicationNo: appNo, serviceId, ulbId, userId, corpId, serviceName},
+          });
         } catch (error) {
             Swal.close();
             console.error("Plumber License Submit Error:", error);

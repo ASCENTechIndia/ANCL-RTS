@@ -179,13 +179,13 @@
 //         });
 
 
-        // try {
-        //     const response = await axios.get(`${baseUrl}/api/FrmWaterRegister/connection-details`,
-        //         {
-        //             params: { consumerNo: value, userId },
-        //             headers: { Authorization: `Bearer ${token}` }
-        //         }
-        //     );
+// try {
+//     const response = await axios.get(`${baseUrl}/api/FrmWaterRegister/connection-details`,
+//         {
+//             params: { consumerNo: value, userId },
+//             headers: { Authorization: `Bearer ${token}` }
+//         }
+//     );
 
 //             const details = response?.data?.data?.connectionOwners;
 
@@ -984,10 +984,10 @@ const initialValues = {
 };
 
 const SERVICE_FIELD_MAP = {
-  "19":  { disconType: false, reason: false, reasonMar: false, usageType: true, tariffRate: true, newConSize: true,  remark: true, remarkMar: true },
-  "21":  { disconType: false, reason: false, reasonMar: false, usageType: true, tariffRate: true, newConSize: true,  remark: true, remarkMar: true },
-  "22":  { disconType: false, reason: false, reasonMar: false, usageType: true, tariffRate: true, newConSize: true,  remark: true, remarkMar: true },
-  "196": { disconType: true,  reason: true,  reasonMar: true,  usageType: false, tariffRate: false, newConSize: false, remark: true, remarkMar: true },
+  "19": { disconType: false, reason: false, reasonMar: false, usageType: true, tariffRate: true, newConSize: true, remark: true, remarkMar: true },
+  "21": { disconType: false, reason: false, reasonMar: false, usageType: true, tariffRate: true, newConSize: true, remark: true, remarkMar: true },
+  "22": { disconType: false, reason: false, reasonMar: false, usageType: true, tariffRate: true, newConSize: true, remark: true, remarkMar: true },
+  "196": { disconType: true, reason: true, reasonMar: true, usageType: false, tariffRate: false, newConSize: false, remark: true, remarkMar: true },
 };
 
 const DEFAULT_FIELD_VISIBILITY = {
@@ -1011,14 +1011,14 @@ const FrmWaterRegister = () => {
 
   const locationState = location.state || {};
 
-  const ulbId       = locationState.ulbId       ?? user?.ulbId       ?? sessionStorage.getItem("ulbID");
-  const userId      = locationState.userId      ?? user?.userId      ?? sessionStorage.getItem("UserUniqueId");
-  const deptId      = locationState.deptId      ?? sessionStorage.getItem("DepartmentId");
-  const serviceId   = locationState.serviceId   ?? sessionStorage.getItem("ServiceId");
+  const ulbId = locationState.ulbId ?? user?.ulbId ?? sessionStorage.getItem("ulbID");
+  const userId = locationState.userId ?? user?.userId ?? sessionStorage.getItem("UserUniqueId");
+  const deptId = locationState.deptId ?? sessionStorage.getItem("DepartmentId");
+  const serviceId = locationState.serviceId ?? sessionStorage.getItem("ServiceId");
   const serviceName = locationState.serviceName ?? sessionStorage.getItem("ServEngName");
-  const appNo       = locationState.appNo       ?? sessionStorage.getItem("AppNo");
-  const mode        = locationState.mode        ?? Number(sessionStorage.getItem("Mode") || 0);
-  const corpId      = locationState.corpId  ?? user?.corpId  ?? sessionStorage.getItem("CorpId");
+  const appNo = locationState.appNo ?? sessionStorage.getItem("AppNo");
+  const mode = locationState.mode ?? Number(sessionStorage.getItem("Mode") || 0);
+  const corpId = locationState.corpId ?? user?.corpId ?? sessionStorage.getItem("CorpId");
 
   const isViewMode = mode === 4;
 
@@ -1035,21 +1035,21 @@ const FrmWaterRegister = () => {
     "Content-Type": "application/json",
   }), [token]);
 
-  const post = (path, body)   => axios.post(`${API}${path}`, body, { headers: authHeaders });
-  const get  = (path, params) => axios.get(`${API}${path}`, { params, headers: authHeaders });
+  const post = (path, body) => axios.post(`${API}${path}`, body, { headers: authHeaders });
+  const get = (path, params) => axios.get(`${API}${path}`, { params, headers: authHeaders });
   const unwrap = (res) => res?.data?.data?.data ?? res?.data?.data ?? [];
 
-  const [loading, setLoading]     = useState(false);
+  const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [pageTitle, setPageTitle] = useState(serviceName || "Water Registration");
-  const [servCode, setServCode]   = useState("");
+  const [servCode, setServCode] = useState("");
 
-  const [zoneIdList, setZoneIdList]           = useState([]);
+  const [zoneIdList, setZoneIdList] = useState([]);
   const [serviceTypeList, setServiceTypeList] = useState([]);
-  const [disconTypeList, setDisconTypeList]   = useState([]);
-  const [usageTypeList, setUsageTypeList]     = useState([]);
-  const [existUsageList, setExistUsageList]   = useState([]);
-  const [newConSizeList, setNewConSizeList]   = useState([]);
+  const [disconTypeList, setDisconTypeList] = useState([]);
+  const [usageTypeList, setUsageTypeList] = useState([]);
+  const [existUsageList, setExistUsageList] = useState([]);
+  const [newConSizeList, setNewConSizeList] = useState([]);
   const [currConSizeList, setCurrConSizeList] = useState([]);
 
   useEffect(() => {
@@ -1072,11 +1072,11 @@ const FrmWaterRegister = () => {
         post("/get-connection-sizes", { ulbID: Number(ulbId) }),
       ]);
 
-      const zones  = unwrap(zonesRes);
-      const svc    = unwrap(servicesRes);
+      const zones = unwrap(zonesRes);
+      const svc = unwrap(servicesRes);
       const discon = unwrap(disconRes);
-      const usage  = unwrap(usageRes);
-      const sizes  = unwrap(sizesRes);
+      const usage = unwrap(usageRes);
+      const sizes = unwrap(sizesRes);
 
       setZoneIdList(zones);
       setServiceTypeList(svc);
@@ -1142,7 +1142,7 @@ const FrmWaterRegister = () => {
 
       const payload = response?.data?.data;
       const details = payload?.connectionOwners;
-      const errors  = payload?.errors;
+      const errors = payload?.errors;
 
       if (!details) {
         Swal.fire({
@@ -1155,9 +1155,9 @@ const FrmWaterRegister = () => {
         return;
       }
 
-      const owner   = details.owner      || "";
-      const address = (details.address   || "").trim();
-      const usage   = details.usage_type || "";
+      const owner = details.owner || "";
+      const address = (details.address || "").trim();
+      const usage = details.usage_type || "";
 
       const usageMatch = usageTypeList.find(
         (item) =>
@@ -1177,20 +1177,20 @@ const FrmWaterRegister = () => {
             .trim().toLowerCase() === String(details.zone_name || "").trim().toLowerCase()
       );
 
-      setFieldValue("consumerNo",      details.connno || value);
-      setFieldValue("lblWard",         details.ward_name     || "");
-      setFieldValue("lblZone",         details.zone_name     || "");
-      setFieldValue("lblBlock",        details.block_name    || "");
-      setFieldValue("lblPTN",          details.conn_ptnno    || "");
-      setFieldValue("lblConAddress",   address);
-      setFieldValue("lblOwnerName",    owner);
-      setFieldValue("lblUsageType",    usage);
+      setFieldValue("consumerNo", details.connno || value);
+      setFieldValue("lblWard", details.ward_name || "");
+      setFieldValue("lblZone", details.zone_name || "");
+      setFieldValue("lblBlock", details.block_name || "");
+      setFieldValue("lblPTN", details.conn_ptnno || "");
+      setFieldValue("lblConAddress", address);
+      setFieldValue("lblOwnerName", owner);
+      setFieldValue("lblUsageType", usage);
       setFieldValue("lblExisttraRate", details.rate != null ? String(details.rate) : "");
-      setFieldValue("lblCurConsize",   details.connsize_size != null ? String(details.connsize_size) : "");
+      setFieldValue("lblCurConsize", details.connsize_size != null ? String(details.connsize_size) : "");
 
       setFieldValue("consumerAddr", address);
-      setFieldValue("ownName",      owner);
-      setFieldValue("tarriff",      details.rate != null ? String(details.rate) : "");
+      setFieldValue("ownName", owner);
+      setFieldValue("tarriff", details.rate != null ? String(details.rate) : "");
       setFieldValue(
         "existUsage",
         usageMatch ? String(col(usageMatch, "NUM_USAGETYPE_ID", "num_usagetype_id")) : ""
@@ -1229,28 +1229,28 @@ const FrmWaterRegister = () => {
     const show = (msg) => { Swal.fire({ text: msg, confirmButtonColor: "#1e3a8a" }); return false; };
 
     if (!values.zoneId || values.zoneId === "0") return show("Select valid Zone from the list");
-    if (!values.serviceType)                     return show("Select valid Service from the list");
+    if (!values.serviceType) return show("Select valid Service from the list");
 
     if (isManualEntryUlb) {
       if (!values.consumerAddr?.trim()) return show("Please Enter Consumer Address");
-      if (!values.ownName?.trim())      return show("Please Enter Owner Name");
-      if (!values.propNo?.trim())       return show("Please Enter Property No");
-      if (!values.tarriff?.trim())      return show("Please Enter Tarriff Rate");
+      if (!values.ownName?.trim()) return show("Please Enter Owner Name");
+      if (!values.propNo?.trim()) return show("Please Enter Property No");
+      if (!values.tarriff?.trim()) return show("Please Enter Tarriff Rate");
       if (!values.currConnsize || values.currConnsize === "0") return show("Select valid Connection Size");
-      if (!values.existUsage  || values.existUsage  === "0")   return show("Select valid Usage Type");
+      if (!values.existUsage || values.existUsage === "0") return show("Select valid Usage Type");
     } else {
       if (!values.consumerNo?.trim()) return show("Please Enter Consumer No");
     }
 
-    if (!values.firstName?.trim())    return show("First Name can not be blank");
-    if (!values.middleName?.trim())   return show("Middle Name can not be blank");
-    if (!values.lastName?.trim())     return show("Last Name can not be blank");
-    if (!values.firstNameMr?.trim())  return show("First Name Marathi can not be blank");
+    if (!values.firstName?.trim()) return show("First Name can not be blank");
+    if (!values.middleName?.trim()) return show("Middle Name can not be blank");
+    if (!values.lastName?.trim()) return show("Last Name can not be blank");
+    if (!values.firstNameMr?.trim()) return show("First Name Marathi can not be blank");
     if (!values.middleNameMr?.trim()) return show("Middle Name Marathi can not be blank");
-    if (!values.lastNameMr?.trim())   return show("Last Name Marathi can not be blank");
-    if (!values.address?.trim())      return show("Address can not be blank");
-    if (!values.addressMr?.trim())    return show("Address Marathi can not be blank");
-    if (!values.remark?.trim())       return show("Please Enter Remark");
+    if (!values.lastNameMr?.trim()) return show("Last Name Marathi can not be blank");
+    if (!values.address?.trim()) return show("Address can not be blank");
+    if (!values.addressMr?.trim()) return show("Address Marathi can not be blank");
+    if (!values.remark?.trim()) return show("Please Enter Remark");
 
     return true;
   };
@@ -1271,10 +1271,10 @@ const FrmWaterRegister = () => {
     try {
       const inStr = isManualEntryUlb
         ? [
-            values.ward ?? "", values.zone ?? "", values.block ?? "",
-            values.consumerAddr, values.ownName, values.propNo,
-            values.tarriff, values.currConnsize, values.existUsage,
-          ].join("$")
+          values.ward ?? "", values.zone ?? "", values.block ?? "",
+          values.consumerAddr, values.ownName, values.propNo,
+          values.tarriff, values.currConnsize, values.existUsage,
+        ].join("$")
         : "";
 
       const savePayload = {
@@ -1294,16 +1294,16 @@ const FrmWaterRegister = () => {
         ownerName: isManualEntryUlb ? values.ownName?.trim() : values.lblOwnerName,
         usageType: isManualEntryUlb ? "" : values.lblUsageType,
         inStr,
-        firstName:  values.firstName?.trim(),
+        firstName: values.firstName?.trim(),
         middleName: values.middleName?.trim(),
-        lastName:   values.lastName?.trim(),
+        lastName: values.lastName?.trim(),
         appAddress: values.address?.trim(),
-        firstNameMr:  values.firstNameMr?.trim(),
+        firstNameMr: values.firstNameMr?.trim(),
         middleNameMr: values.middleNameMr?.trim(),
-        lastNameMr:   values.lastNameMr?.trim(),
-        addressMr:    values.addressMr?.trim(),
-        remarkMar:    values.remarkMar?.trim() || "",
-        reasonMar:    values.reasonMar?.trim() || "",
+        lastNameMr: values.lastNameMr?.trim(),
+        addressMr: values.addressMr?.trim(),
+        remarkMar: values.remarkMar?.trim() || "",
+        reasonMar: values.reasonMar?.trim() || "",
       };
 
       const saveRes = await post("/save-water-register", savePayload);
@@ -1321,8 +1321,8 @@ const FrmWaterRegister = () => {
 
       const applicationNo = extractAppNo(saveData?.message);
 
-      const KARJAT_ULBS       = ["1890", "1150"];
-      const KARJAT_SERVICEIDS =  ["19", "21", "22", "91", "196"];
+      const KARJAT_ULBS = ["1890", "1150"];
+      const KARJAT_SERVICEIDS = ["19", "21", "22", "91", "196"];
       const isKarjat =
         KARJAT_ULBS.map(String).includes(String(ulbId)) &&
         KARJAT_SERVICEIDS.map(String).includes(String(values.serviceType)) &&
@@ -1337,14 +1337,14 @@ const FrmWaterRegister = () => {
             serviceId: String(values.serviceType),
             appNo: applicationNo,
             userId,
-            firstName:  values.firstName?.trim(),
-            firstNameMr:  values.firstNameMr?.trim(),
+            firstName: values.firstName?.trim(),
+            firstNameMr: values.firstNameMr?.trim(),
             middleName: values.middleName?.trim(),
             middleNameMr: values.middleNameMr?.trim(),
-            lastName:   values.lastName?.trim(),
-            lastNameMr:   values.lastNameMr?.trim(),
+            lastName: values.lastName?.trim(),
+            lastNameMr: values.lastNameMr?.trim(),
             appAddress: values.address?.trim(),
-            addressMr:  values.addressMr?.trim(),
+            addressMr: values.addressMr?.trim(),
             zoneId: Number(values.zoneId),
             consumerNo: values.consumerNo?.trim() || "",
             appSource: config.source,
@@ -1355,7 +1355,7 @@ const FrmWaterRegister = () => {
             connSize: values.newConSize ? Number(values.newConSize) : null,
             remark: values.remark?.trim() || "",
             ownerName: isManualEntryUlb ? values.ownName?.trim() : values.lblOwnerName,
-            address:   isManualEntryUlb ? values.consumerAddr     : values.lblConAddress,
+            address: isManualEntryUlb ? values.consumerAddr : values.lblConAddress,
             remarkMar: values.remarkMar?.trim() || "",
             reasonMar: values.reasonMar?.trim() || "",
           });
@@ -1375,9 +1375,12 @@ const FrmWaterRegister = () => {
         confirmButtonColor: "#1e3a8a",
       }).then((r) => {
         if (r.isConfirmed && karjatOk !== false) {
-          navigate("/app/FrmTrackApplication", {
-            state: { applicationNo, serviceName: pageTitle, ulbId },
+          navigate("/Step1", {
+            state: { ...locationState, ...values, appNo, applicationNo, serviceId, ulbId, userId, corpId, serviceName},
           });
+          // navigate("/app/FrmTrackApplication", {
+          //   state: { applicationNo, serviceName: pageTitle, ulbId },
+          // });
         }
       });
     } catch (err) {
@@ -1437,13 +1440,13 @@ const FrmWaterRegister = () => {
           const d = window.__prefillData;
           window.__prefillData = null;
           setFieldValue("serviceType", String(d.serviceId ?? serviceId ?? ""));
-          setFieldValue("consumerNo",  d.consumerNo ?? "");
-          setFieldValue("disconType",  String(d.disconnectionId ?? ""));
-          setFieldValue("reason",      d.reason ?? "");
-          setFieldValue("usageType",   String(d.usageId ?? ""));
-          setFieldValue("tariffRate",  d.tariffRate ?? "");
-          setFieldValue("newConSize",  String(d.connectionSizeId ?? ""));
-          setFieldValue("remark",      d.remark ?? "");
+          setFieldValue("consumerNo", d.consumerNo ?? "");
+          setFieldValue("disconType", String(d.disconnectionId ?? ""));
+          setFieldValue("reason", d.reason ?? "");
+          setFieldValue("usageType", String(d.usageId ?? ""));
+          setFieldValue("tariffRate", d.tariffRate ?? "");
+          setFieldValue("newConSize", String(d.connectionSizeId ?? ""));
+          setFieldValue("remark", d.remark ?? "");
         }
 
         const ro = isViewMode;
@@ -1474,10 +1477,10 @@ const FrmWaterRegister = () => {
                         <SelectContent>
                           {zoneIdList.length > 0
                             ? zoneIdList.map((z) => {
-                                const id = z.WARDID ?? z.wardid ?? z.wardId;
-                                const nm = z.WARDNAME ?? z.wardname ?? z.wardName;
-                                return <SelectItem key={id} value={String(id)}>{nm}</SelectItem>;
-                              })
+                              const id = z.WARDID ?? z.wardid ?? z.wardId;
+                              const nm = z.WARDNAME ?? z.wardname ?? z.wardName;
+                              return <SelectItem key={id} value={String(id)}>{nm}</SelectItem>;
+                            })
                             : <SelectItem value="0">No Zone available</SelectItem>}
                         </SelectContent>
                       </Select>
@@ -1497,10 +1500,10 @@ const FrmWaterRegister = () => {
                         <SelectContent>
                           {serviceTypeList.length > 0
                             ? serviceTypeList.map((s) => {
-                                const id = col(s, "NUM_SERVICE_SERVICEID", "num_service_serviceid");
-                                const nm = col(s, "DISPLAYNAME", "displayname");
-                                return <SelectItem key={id} value={String(id)}>{nm}</SelectItem>;
-                              })
+                              const id = col(s, "NUM_SERVICE_SERVICEID", "num_service_serviceid");
+                              const nm = col(s, "DISPLAYNAME", "displayname");
+                              return <SelectItem key={id} value={String(id)}>{nm}</SelectItem>;
+                            })
                             : <SelectItem value="0">No services available</SelectItem>}
                         </SelectContent>
                       </Select>
@@ -1580,15 +1583,15 @@ const FrmWaterRegister = () => {
                   {/* Read-only connection details */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                      ["Ward",             "lblWard"],
-                      ["Zone",             "lblZone"],
-                      ["Block",            "lblBlock"],
-                      ["PTN",              "lblPTN"],
+                      ["Ward", "lblWard"],
+                      ["Zone", "lblZone"],
+                      ["Block", "lblBlock"],
+                      ["PTN", "lblPTN"],
                       ["Consumer Address", "lblConAddress"],
-                      ["Owner Name",       "lblOwnerName"],
+                      ["Owner Name", "lblOwnerName"],
                       ["Existing Tariff Rate", "lblExisttraRate"],
-                      ["Current Conn Size","lblCurConsize"],
-                      ["Usage Type",       "lblUsageType"],
+                      ["Current Conn Size", "lblCurConsize"],
+                      ["Usage Type", "lblUsageType"],
                     ].map(([label, key]) => (
                       <div key={key} className="flex flex-col sm:flex-row sm:items-center gap-2">
                         <div className="sm:w-36 w-full shrink-0 whitespace-nowrap"><Label text={label} /></div>
