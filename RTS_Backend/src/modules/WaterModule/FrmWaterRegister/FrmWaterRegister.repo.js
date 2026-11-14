@@ -838,12 +838,12 @@ const getConnectionDetailsRepo = async ({ userId, consumerNo, ulbId }) => {
 
   const result = await executeQueryTMC(sql, { ulbId });
 
-  const clientUrl = result?.CLIENTURL ?? process.env.TMC_IGR_URL;
+  const clientUrl = result?.rows[0]?.CLIENTURL;
 
   if (!clientUrl) {
     throw new Error("TMC_IGR_URL is not configured");
   }
-
+  
   const plainRequest = JSON.stringify({
     jsonData: [
       {
