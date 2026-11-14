@@ -59,17 +59,20 @@ const generatePaymentAcknowledgement = asyncHandler(async (req, res) => {
   const corporationResponse = await getCorporationDetailsService({
     corporationId: Number(filters.ulbId),
   });
-
   const corporationData = corporationResponse?.data || {};
 
   const corporation = corporationData?.corporation || {};
-
   const corporationName = corporation?.VAR_CORPORATION_NAME || "";
+  let ulbLogo = "";
 
+  if (corporationData?.logo) {
+    ulbLogo = `data:image/png;base64,${corporationData.logo}`;
+  }
 
   const pdf = await AfterTransactionReportHelper({
     row,
     corporationName,
+    logo: ulbLogo || path.join(process.cwd(), "public", "tmclogo.jpg"),
   });
   // ----------------------------------------------------------
   // 5. VALIDATE PDF

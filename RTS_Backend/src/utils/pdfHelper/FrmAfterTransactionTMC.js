@@ -83,7 +83,7 @@ const formatDate = (value) => {
 // PAYMENT ACKNOWLEDGEMENT PDF HELPER
 // ============================================================
 
-const AfterTransactionReportHelper = async ({ row, corporationName = "" }) => {
+const AfterTransactionReportHelper = async ({ row, corporationName = "", logo }) => {
   try {
     if (!row) {
       throw new Error("Payment acknowledgement data not found.");
@@ -106,7 +106,7 @@ const AfterTransactionReportHelper = async ({ row, corporationName = "" }) => {
 
     const ulbLogoPath = path.resolve(__dirname, "../../../public/tmclogo.jpg");
 
-    const leftLogo = toDataUrl(ulbLogoPath);
+    const leftLogo = toDataUrl(logo) ?? toDataUrl(ulbLogoPath);
 
     // --------------------------------------------------------
     // APLESEVA LOGO

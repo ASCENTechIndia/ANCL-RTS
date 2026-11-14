@@ -1,357 +1,356 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
 
-    <title>Payment Acknowledgement Slip</title>
+<head>
+  <meta charset="UTF-8" />
 
-    <style>
-      @page {
-        size: A4 portrait;
-        margin: 0;
-      }
+  <title>Payment Acknowledgement Slip</title>
 
-      * {
-        box-sizing: border-box;
-      }
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
 
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        width: 210mm;
-        min-height: 297mm;
-        background: #ffffff;
-      }
+    * {
+      box-sizing: border-box;
+    }
 
-      body {
-        font-family: Arial, "Nirmala UI", "Mangal", sans-serif;
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+    }
 
-        color: #000000;
-        font-size: 12px;
-      }
+    body {
+      font-family: Arial, "Nirmala UI", "Mangal", sans-serif;
 
-      .page {
-        width: 210mm;
-        min-height: 297mm;
+      color: #000000;
+      font-size: 12px;
+    }
 
-        padding: 11mm;
+    .page {
+      width: 210mm;
+      min-height: 297mm;
 
-        position: relative;
-      }
+      padding: 11mm;
 
-      /* =====================================================
+      position: relative;
+    }
+
+    /* =====================================================
        HEADER
     ===================================================== */
 
-      .header {
-        width: 100%;
-        height: 43mm;
+    .header {
+      width: 100%;
+      height: 43mm;
 
-        border: 1px solid #222;
+      border: 1px solid #222;
 
-        position: relative;
+      position: relative;
 
-        margin-bottom: 7mm;
-      }
+      margin-bottom: 7mm;
+    }
 
-      .left-logo {
-        position: absolute;
+    .left-logo {
+      position: absolute;
 
-        left: 5mm;
-        top: 6mm;
+      left: 5mm;
+      top: 6mm;
 
-        width: 27mm;
-        height: 30mm;
+      width: 27mm;
+      height: 30mm;
 
-        object-fit: contain;
-      }
+      object-fit: contain;
+    }
 
-      .right-logo {
-        position: absolute;
+    .right-logo {
+      position: absolute;
 
-        right: 5mm;
-        top: 6mm;
+      right: 5mm;
+      top: 6mm;
 
-        width: 29mm;
-        height: 30mm;
+      width: 29mm;
+      height: 30mm;
 
-        object-fit: contain;
-      }
+      object-fit: contain;
+    }
 
-      .header-center {
-        position: absolute;
+    .header-center {
+      position: absolute;
 
-        left: 35mm;
-        right: 35mm;
+      left: 35mm;
+      right: 35mm;
 
-        top: 7mm;
+      top: 7mm;
 
-        text-align: center;
-      }
+      text-align: center;
+    }
 
-      .corporation-name {
-        font-family: "Nirmala UI", "Mangal", Arial, sans-serif;
+    .corporation-name {
+      font-family: "Nirmala UI", "Mangal", Arial, sans-serif;
 
-        font-size: 22px;
+      font-size: 22px;
 
-        font-weight: bold;
+      font-weight: bold;
 
-        line-height: 1.4;
+      line-height: 1.4;
 
-        white-space: nowrap;
-      }
+      white-space: nowrap;
+    }
 
-      .report-title {
-        margin-top: 9mm;
+    .report-title {
+      margin-top: 9mm;
 
-        font-size: 19px;
+      font-size: 19px;
 
-        font-weight: bold;
+      font-weight: bold;
 
-        white-space: nowrap;
-      }
+      white-space: nowrap;
+    }
 
-      /* =====================================================
+    /* =====================================================
        MAIN DETAILS TABLE
     ===================================================== */
 
-      .details-table {
-        width: 100%;
+    .details-table {
+      width: 100%;
 
-        border-collapse: collapse;
+      border-collapse: collapse;
 
-        table-layout: fixed;
+      table-layout: fixed;
 
-        margin-bottom: 9mm;
-      }
+      margin-bottom: 9mm;
+    }
 
-      .details-table td {
-        border: 1px solid #222;
+    .details-table td {
+      border: 1px solid #222;
 
-        padding: 3.2mm 3mm;
+      padding: 3.2mm 3mm;
 
-        vertical-align: middle;
+      vertical-align: middle;
 
-        height: 9mm;
+      height: 9mm;
 
-        font-size: 12px;
-      }
+      font-size: 12px;
+    }
 
-      .label {
-        width: 19%;
+    .label {
+      width: 19%;
 
-        font-weight: normal;
+      font-weight: normal;
 
-        white-space: nowrap;
-      }
+      white-space: nowrap;
+    }
 
-      .value {
-        width: 81%;
-      }
+    .value {
+      width: 81%;
+    }
 
-      .app-label {
-        width: 19%;
-      }
+    .app-label {
+      width: 19%;
+    }
 
-      .app-value {
-        width: 31%;
-      }
+    .app-value {
+      width: 31%;
+    }
 
-      .copy-label {
-        width: 19%;
-      }
+    .copy-label {
+      width: 19%;
+    }
 
-      .copy-value {
-        width: 31%;
-      }
+    .copy-value {
+      width: 31%;
+    }
 
-      .email-label {
-        width: 19%;
-      }
+    .email-label {
+      width: 19%;
+    }
 
-      .email-value {
-        width: 31%;
-      }
+    .email-value {
+      width: 31%;
+    }
 
-      .purpose-label {
-        width: 19%;
+    .purpose-label {
+      width: 19%;
 
-        text-align: center;
-      }
+      text-align: center;
+    }
 
-      .purpose-value {
-        width: 31%;
-      }
+    .purpose-value {
+      width: 31%;
+    }
 
-      /* =====================================================
+    /* =====================================================
        RECEIPT TABLE
     ===================================================== */
 
-      .receipt-table {
-        width: 100%;
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
 
-        border-collapse: collapse;
+    .receipt-table th,
+    .receipt-table td {
+      border: 1px solid #222;
+      padding: 3.2mm 2.5mm;
+      vertical-align: middle;
+      font-size: 12px;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
 
-        table-layout: fixed;
-      }
+    .receipt-table th {
+      font-weight: bold;
+      text-align: left;
+      height: 10mm;
+    }
 
-      .receipt-table th,
-      .receipt-table td {
-        border: 1px solid #222;
+    .receipt-table td {
+      height: 12mm;
+    }
 
-        padding: 3.2mm 2.5mm;
+    .col-app {
+      width: 27%;
+    }
 
-        vertical-align: middle;
+    .col-amount {
+      width: 12%;
+    }
 
-        font-size: 12px;
-      }
+    .col-receipt {
+      width: 20%;
+    }
 
-      .receipt-table th {
-        font-weight: bold;
+    .col-ref {
+      width: 22%;
+    }
 
-        text-align: left;
+    .col-date {
+      width: 19%;
+    }
 
-        height: 10mm;
-      }
-
-      .receipt-table td {
-        height: 12mm;
-      }
-
-      .col-app {
-        width: 27%;
-      }
-
-      .col-amount {
-        width: 12%;
-      }
-
-      .col-receipt {
-        width: 20%;
-      }
-
-      .col-ref {
-        width: 22%;
-      }
-
-      .col-date {
-        width: 19%;
-      }
-
-      /* =====================================================
+    /* =====================================================
        PRINT
     ===================================================== */
 
-      @media print {
-        html,
-        body {
-          width: 210mm;
-          height: 297mm;
-        }
+    @media print {
 
-        .page {
-          page-break-after: always;
-        }
+      html,
+      body {
+        width: 210mm;
+        height: 297mm;
       }
-    </style>
-  </head>
 
-  <body>
-    <div class="page">
-      <!-- ===================================================
+      .page {
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <!-- ===================================================
          HEADER
     =================================================== -->
 
-      <div class="header">
-        {{#if leftLogo}}
-        <img src="{{leftLogo}}" class="left-logo" />
-        {{/if}} {{#if rightLogo}}
-        <img src="{{rightLogo}}" class="right-logo" />
-        {{/if}}
+    <div class="header">
+      {{#if leftLogo}}
+      <img src="{{leftLogo}}" class="left-logo" />
+      {{/if}} {{#if rightLogo}}
+      <img src="{{rightLogo}}" class="right-logo" />
+      {{/if}}
 
-        <div class="header-center">
-          <div class="corporation-name">{{corporationName}}</div>
+      <div class="header-center">
+        <div class="corporation-name">{{corporationName}}</div>
 
-          <div class="report-title">Payment Acknowledgement Slip</div>
-        </div>
+        <div class="report-title">Payment Acknowledgement Slip</div>
       </div>
+    </div>
 
-      <!-- ===================================================
+    <!-- ===================================================
          APPLICATION DETAILS
     =================================================== -->
 
-      <table class="details-table">
-        <!-- ROW 1 -->
+    <table class="details-table">
+      <!-- ROW 1 -->
 
-        <tr>
-          <td class="app-label">Application No</td>
+      <tr>
+        <td class="app-label">Application No</td>
 
-          <td class="app-value">{{APPNO}}</td>
+        <td class="app-value">{{APPNO}}</td>
 
-          <td class="copy-label">No. Of Certificate</td>
+        <td class="copy-label">No. Of Certificate</td>
 
-          <td class="copy-value">{{NOOFCOPY}}</td>
-        </tr>
+        <td class="copy-value">{{NOOFCOPY}}</td>
+      </tr>
 
-        <!-- ROW 2 -->
+      <!-- ROW 2 -->
 
-        <tr>
-          <td class="label">Service</td>
+      <tr>
+        <td class="label">Service</td>
 
-          <td class="value" colspan="3">{{SERVICENAME}}</td>
-        </tr>
+        <td class="value" colspan="3">{{SERVICENAME}}</td>
+      </tr>
 
-        <!-- ROW 3 -->
+      <!-- ROW 3 -->
 
-        <tr>
-          <td class="label">Applicant Name</td>
+      <tr>
+        <td class="label">Applicant Name</td>
 
-          <td class="value" colspan="3">{{APPLINAME}}</td>
-        </tr>
+        <td class="value" colspan="3">{{APPLINAME}}</td>
+      </tr>
 
-        <!-- ROW 4 -->
+      <!-- ROW 4 -->
 
-        <tr>
-          <td class="label">Address</td>
+      <tr>
+        <td class="label">Address</td>
 
-          <td class="value" colspan="3">{{ADDRESS}}</td>
-        </tr>
-      </table>
+        <td class="value" colspan="3">{{ADDRESS}}</td>
+      </tr>
+    </table>
 
-      <!-- ===================================================
+    <!-- ===================================================
          RECEIPT DETAILS
     =================================================== -->
 
-      <table class="receipt-table">
-        <thead>
-          <tr>
-            <th class="col-app">Application No.</th>
+    <table class="receipt-table">
+      <thead>
+        <tr>
+          <th class="col-app">Application No.</th>
 
-            <th class="col-amount">Amount</th>
+          <th class="col-amount">Amount</th>
 
-            <th class="col-receipt">Receipt No.</th>
+          <th class="col-receipt">Receipt No.</th>
 
-            <th class="col-ref">Ref. Receipt No.</th>
+          <th class="col-ref">Ref. Receipt No.</th>
 
-            <th class="col-date">Receipt Date</th>
-          </tr>
-        </thead>
+          <th class="col-date">Receipt Date</th>
+        </tr>
+      </thead>
 
-        <tbody>
-          <tr>
-            <td>{{APPNO}}</td>
+      <tbody>
+        <tr>
+          <td>{{APPNO}}</td>
 
-            <td>{{AMOUNT}}</td>
+          <td>{{AMOUNT}}</td>
 
-            <td>{{RECIEPTNO}}</td>
+          <td>{{RECIEPTNO}}</td>
 
-            <td>{{RECIEPTREFNO}}</td>
+          <td>{{RECIEPTREFNO}}</td>
 
-            <td>{{RECIEPTDATE}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </body>
+          <td>{{RECIEPTDATE}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+
 </html>
