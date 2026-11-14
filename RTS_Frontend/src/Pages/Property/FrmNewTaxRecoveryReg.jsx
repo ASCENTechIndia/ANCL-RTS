@@ -126,7 +126,7 @@ const FrmNewTaxRecoveryReg = () => {
   const isBndService = ["14", "15"].includes(String(serviceId));
   const isNocService = String(serviceId) === "12";
   const isWaterService = String(serviceId) === "16";
-  const isPropSearchHidden = ["133", "49"].includes(String(serviceId));
+  const isPropSearchHidden = [""].includes(String(serviceId));
   const isKarjatUlb = ["1890", "1150"].includes(String(ulbId));
 
   useEffect(() => {
