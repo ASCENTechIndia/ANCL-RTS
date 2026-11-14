@@ -61,6 +61,14 @@ const getTradeCategoryService = async (licenseType) => {
   return await repo.getTradeCategoryRepo(licenseType);
 };
 
+const getTradeCategoryDropdownService = async (ulbId) => {
+  if (!ulbId) {
+    throw new Error("ulbId is required.");
+  }
+
+  return await repo.getTradeCategoryDropdownRepo(ulbId);
+};
+
 // ============================================================
 // GET TRADE DETAILS
 // ============================================================
@@ -214,20 +222,36 @@ const updateDirectorImagesService = async (data) => {
 // ============================================================
 const documentInsertService = async (data) => {
   if (!data.appno) {
-    return {
-      success: false,
-      errorMsg: "Application number is required",
-    };
+    return { success: false, errorMsg: "Application number is required" };
   }
 
   if (!data.file) {
+    return { success: false, errorMsg: "Document file is required" };
+  }
+
+  const appidNum = Number(data.appid ?? 0);
+  if (!Number.isFinite(appidNum) || appidNum <= 0) {
     return {
       success: false,
-      errorMsg: "Document file is required",
+      errorMsg: "Valid appid (Application ID) is required for document insert",
     };
   }
 
-  return await repo.documentInsertRepo(data);
+  const docType = String(data.docType || "S").toUpperCase().slice(0, 1) || "S";
+
+  // If client didn't send fileType, derive from the uploaded file's name.
+  let fileType = String(data.fileType || "").trim();
+  if (!fileType && data.file.originalname) {
+    const parts = data.file.originalname.split(".");
+    fileType = parts.length > 1 ? "." + parts.pop().toLowerCase() : "";
+  }
+
+  return await repo.documentInsertRepo({
+    ...data,
+    appid: appidNum,
+    docType,
+    fileType,
+  });
 };
 
 // ============================================================
@@ -385,9 +409,6 @@ const getZoneByWardService = async (wardId, ulbId) => {
   return await repo.getZoneByWardRepo(wardId, ulbId);
 };
 
-// ============================================================
-// GET EXISTING LICENSE DETAILS SERVICE (NEW)
-// ============================================================
 const getExistingLicenseDetailsService = async (oldLicencNo, ulbId) => {
   if (!oldLicencNo) throw new Error("Old License Number is required.");
   if (!ulbId) throw new Error("ULB ID is required.");
@@ -437,14 +458,49 @@ const getExistingLicenseDetailsService = async (oldLicencNo, ulbId) => {
   };
 };
 
-// ============================================================
-// CHECK LICENSE CANCELLED SERVICE (NEW)
-// ============================================================
 const checkLicenseCancelledService = async (oldLicencNo) => {
   if (!oldLicencNo) throw new Error("License Number is required.");
   const result = await repo.checkLicenseCancelledRepo(oldLicencNo);
   const count = Number(result[0]?.ID || 0);
   return count > 0;
+};
+
+const getYearsService = async () => {
+  return await repo.getYearsRepo();
+};
+
+const getTradeTypeByCategoryService = async (tradeCategoryId, ulbId) => {
+  if (!tradeCategoryId) throw new Error("Trade Category ID is required.");
+  if (!ulbId) throw new Error("ULB ID is required.");
+  return await repo.getTradeTypeByCategoryRepo(tradeCategoryId, ulbId);
+};
+
+const getRateByTradeTypeService = async (tradeTypeId, tradeCategoryId, ulbId) => {
+  if (!tradeTypeId) throw new Error("Trade Type ID is required.");
+  if (!tradeCategoryId) throw new Error("Trade Category ID is required.");
+  if (!ulbId) throw new Error("ULB ID is required.");
+  return await repo.getRateByTradeTypeRepo(tradeTypeId, tradeCategoryId, ulbId);
+};
+
+const getTradTypesRatesService = async (tradeTypes, fromDate, ulbId) => {
+  if (!tradeTypes?.length) throw new Error("Trade Types are required.");
+  if (!fromDate) throw new Error("From Date is required.");
+  if (!ulbId) throw new Error("ULB ID is required.");
+  return await repo.getTradTypesRatesRepo(tradeTypes, fromDate, ulbId);
+};
+
+const getDocumentDetailsMarketService = async (ulbId) => {
+  if (!ulbId) {
+    throw new Error("ULB ID is required.");
+  }
+  return await repo.getDocumentDetailsMarketRepo(ulbId);
+};
+
+const deleteExistingDocsService = async (data) => {
+  if (!data.appid && !data.appno) {
+    throw new Error("Application ID or Application No is required.");
+  }
+  return await repo.deleteExistingDocsRepo(data);
 };
 
 module.exports = {
@@ -456,6 +512,7 @@ module.exports = {
   getZoneByWardService, // NEW
   getLicenseTypeService,
   getTradeCategoryService,
+  getTradeCategoryDropdownService,
   getTradeDetailsService,
   getDocumentDetailsService,
   getSelfDeclareDataService,
@@ -466,4 +523,10 @@ module.exports = {
   updateDirectorImagesService,
   documentInsertService,
   getTradeCategoryByJwalanService,
+  getYearsService,
+  getTradeTypeByCategoryService,
+  getRateByTradeTypeService,
+  getTradTypesRatesService,
+  getDocumentDetailsMarketService,
+  deleteExistingDocsService,
 };
