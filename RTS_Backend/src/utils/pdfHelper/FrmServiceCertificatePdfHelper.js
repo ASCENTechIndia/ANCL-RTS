@@ -154,6 +154,16 @@ const FrmServiceCertificatePdfHelper = async ({ rows, corporationName, ulbLogo, 
       templateFile = "FrmMandapStallLicense.html";
       break;
 
+       case "847":
+      templateFile = "FrmMandapStallLicense.html";
+      break;
+
+
+       case "848":
+      templateFile = "FrmMandapStallLicense.html";
+      break;
+
+
     default:
       throw new Error(`PDF template not configured for Service ID ${serviceId}`);
   }
