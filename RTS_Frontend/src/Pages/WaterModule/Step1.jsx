@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Formik, Form } from "formik";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ const Step1 = () => {
     const location = useLocation();
     const { user, token } = useAuth();
     const baseUrl = import.meta.env.VITE_BASE_URL;
+       const navigate = useNavigate();
 
     const ulbId = Number(location.state?.ulbId ?? user?.ulbId);
     const serviceId = Number(location.state?.serviceId ?? user?.serviceId);
