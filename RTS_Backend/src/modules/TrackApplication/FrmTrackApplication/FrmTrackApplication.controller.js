@@ -612,7 +612,7 @@ const generateCertificateReport = asyncHandler(async (req, res) => {
 
   let pdf;
 
-  if (["515", "516", "517", "518", "519", "520", "521"].includes(filters.serviceId)) {
+  if (["840", "841", "842", "843", "844", "845", "846"].includes(filters.serviceId)) {
     pdf = await FrmServiceCertificatePdfHelper({
       rows: reportData,
       corporationName: corporationName || "",
