@@ -34,8 +34,7 @@ const getPaymentAcknowledgementRepo = async (data) => {
         ON num_service_serviceid = num_application_serviceid
 
       INNER JOIN aorts_applicant_infodet
-        ON num_appl_corpid = num_application_corpid
-        AND num_appl_serviceid = num_application_serviceid
+        ON num_appl_serviceid = num_application_serviceid
         AND var_appl_appno = var_application_appno
 
       WHERE num_application_serviceid = :serviceId

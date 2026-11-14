@@ -193,7 +193,7 @@ const FrmAppliFee = () => {
     const noOfCopy = application?.NOOFCOPY ?? property?.NUM_APPLICATION_NOOFCOPY ?? 0;
     const applicantName = applicant?.APPLICANTNAME || property?.VAR_PROPTRANS_NEWOWNNAME || assessment?.VAR_PROPASSESS_APPLINAME || "-";
     const mobileNo = applicant?.VAR_APPL_MOBNO || property?.NUM_PROPTRANS_APPMOBILE || assessment?.NUM_PROPASSESS_APPLIMOB || userDetails?.MOBILENO || mahaUser?.MOBILENO || "-";
-    const email = applicant?.VAR_APPL_EMAIL || property?.VAR_PROPTRANS_APPEMAIL || assessment?.VAR_PROPASSESS_APPLIEMAIL || userDetails?.EMAILID || "-";
+    const email = applicant?.VAR_APPL_EMAIL || property?.VAR_PROPTRANS_APPEMAIL || assessment?.VAR_PROPASSESS_APPLIEMAIL || userDetails?.EMAILID || user?.email || "-";
     const address = applicant?.VAR_APPL_ADDRESS || property?.VAR_PROPTRANS_APPADDRESS || assessment?.VAR_PROPASSESS_ADDRESS || "-";
     const propertyNo = property?.VAR_PROPASSESS_PROPNO || property?.VAR_PROPTRANS_PROPNO || assessment?.VAR_PROPASSESS_PROPNO || "-";
     const propertyType = property?.VAR_PROPTRANS_PROPTYPE || assessment?.VAR_PROPASSESS_STRUCTURE || "-";
@@ -255,7 +255,7 @@ const FrmAppliFee = () => {
                 ulbId,
                 corpId,
                 userUniqueId,
-                username,
+                username: user?.email,
                 userFullName,
                 trackId,
                 userIdMahaOnline,
@@ -361,10 +361,12 @@ const FrmAppliFee = () => {
         const merchant_param5 = "";
         const promo_code = "";
 
-        const paymentEmail = email;
+        const paymentEmail = user?.email;
+
+        console.log({paymentEmail})
         const paymentMobile = mobileNo;
 
-        const msg = [ulbId, transactionId, amount, returnUrl, username, address, city, state, pincode, country, paymentMobile, username, delivery_name, delivery_addr, delivery_city, delivery_state, delivery_zip, delivery_country, delivery_tel, merchant_param1, merchant_param2, merchant_param3, merchant_param4, merchant_param5, promo_code, AscDept ].join("|");
+        const msg = [ulbId, transactionId, amount, returnUrl, username, address, city, state, pincode, country, paymentMobile, paymentEmail, delivery_name, delivery_addr, delivery_city, delivery_state, delivery_zip, delivery_country, delivery_tel, merchant_param1, merchant_param2, merchant_param3, merchant_param4, merchant_param5, promo_code, AscDept ].join("|");
         // const msg = [companyCode, transactionId, amount, returnUrl, username , address, city, state, pincode, paymentEmail, paymentMobile].join("|");
 
         console.log("Payment Gateway Request", { paymentUrl, transactionId, returnUrl, msg });

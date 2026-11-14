@@ -113,44 +113,44 @@ const FrmServiceCertificatePdfHelper = async ({ rows, corporationName, ulbLogo, 
 
   switch (String(serviceId)) {
 
-    case "515":
+    case "840":
       templateFile = "FrmClinicalMedical.html";
       break;
 
     // 516 - Tours and Travels
 
-    case "516":
+    case "841":
       templateFile = "FrmTourAndTravels.html";
       break;
 
     // 517 - Electricity Meter / Cable Installation
     //      and Excavation
 
-    case "517":
+    case "842":
       templateFile = "FrmElectricalMeterDigging.html";
       break;
 
     // 518 - Meat Shop
 
-    case "518":
+    case "843":
       templateFile = "FrmMeatShopLicense.html";
       break;
 
     // 519 - Hospital License
 
-    case "519":
+    case "844":
       templateFile = "FrmHospitalLicense.html";
       break;
 
     // 520 - Fast Food License
 
-    case "520":
+    case "845":
       templateFile = "FrmFastFoodLicense.html";
       break;
 
     // 521 - Mandap / Stall License
 
-    case "521":
+    case "846":
       templateFile = "FrmMandapStallLicense.html";
       break;
 

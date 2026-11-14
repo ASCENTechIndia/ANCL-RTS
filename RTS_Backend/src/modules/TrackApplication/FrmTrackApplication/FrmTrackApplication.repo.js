@@ -726,7 +726,7 @@ const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
     query += " where APPNO = '" + appNo + "' and ULBID = '" + ulbId + "' ";
   }
 
-  else if (["515", "516", "517", "518", "519", "520", "521"].includes(serviceId)) {
+  else if (["840", "841", "842", "843", "844", "845", "846"].includes(serviceId)) {
     query = " SELECT var_nocappli_applno AS APPLNO, dat_application_recieptdate AS RECEIPTDATE, ";
     query += " var_appliaction_recieptno AS RECEIPTNO, var_nocappli_certno AS CERTIFICATENO, ";
     query += " var_nocappli_fname || ' ' || var_nocappli_mname || ' ' || var_nocappli_lname AS APPLINAME, ";
