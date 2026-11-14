@@ -208,7 +208,7 @@ const router = createBrowserRouter([
       //   element: <FrmSecondAppeal />,
       // },
       {
-        path: "/FrmMarriageRgstn",
+        path: "/FrmMarriageAppReg",
         element: <FrmMarriageRgstn />,
       },
       {
