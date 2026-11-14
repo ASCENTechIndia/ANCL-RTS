@@ -56,11 +56,12 @@ const FrmRoadCutting = () => {
   const isFirstRender = useRef(true);
 
   const locationState = location.state || {};
-  
+
   const ulbId = locationState.ulbId || user?.ulbId;
   const userId = locationState.userId || user?.userId;
   const serviceId = locationState.serviceId || sessionStorage.getItem("ServiceId");
   const serviceName = locationState.serviceName || sessionStorage.getItem("ServEngName");
+  const corpId = locationState.corpId ?? locationState.corporationId ?? user?.corpId ?? user?.corpID ?? "";
 
   const [loading, setLoading] = useState(false);
   const [pageTitle, setPageTitle] = useState(serviceName || "Road Cutting Application");
@@ -94,7 +95,7 @@ const FrmRoadCutting = () => {
     const title = serviceName || "Road Cutting Application";
     setPageTitle(title);
     document.title = title;
-    
+
     if (ulbId && isFirstRender.current) {
       isFirstRender.current = false;
       fetchAllData();
@@ -120,7 +121,7 @@ const FrmRoadCutting = () => {
         `${BASE_URL}/api/FrmRoadCutting/wardlist`,
         {
           params: { ulbid: Number(ulbId) },
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token || localStorage.getItem("token")}`,
             'Content-Type': 'application/json',
           },
@@ -149,7 +150,7 @@ const FrmRoadCutting = () => {
         `${BASE_URL}/api/FrmRoadCutting/prabhag-samiti-list`,
         {
           params: { ulbid: Number(ulbId) },
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token || localStorage.getItem("token")}`,
             'Content-Type': 'application/json',
           },
@@ -176,7 +177,7 @@ const FrmRoadCutting = () => {
         `${BASE_URL}/api/FrmRoadCutting/road-types`,
         {
           params: { ulbid: Number(ulbId) },
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token || localStorage.getItem("token")}`,
             'Content-Type': 'application/json',
           },
@@ -203,7 +204,7 @@ const FrmRoadCutting = () => {
         `${BASE_URL}/api/FrmRoadCutting/road-cutting-types`,
         {
           params: { ulbid: Number(ulbId) },
-          headers: { 
+          headers: {
             Authorization: `Bearer ${token || localStorage.getItem("token")}`,
             'Content-Type': 'application/json',
           },
@@ -487,131 +488,134 @@ const FrmRoadCutting = () => {
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
-  setLoading(true);
-  
-  try {
-    if (!validateFields(values)) {
-      setLoading(false);
-      setSubmitting(false);
-      return;
-    }
+    setLoading(true);
 
-    const loader = Swal.fire({
-      title: "",
-      text: "Submitting Application...",
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      didOpen: () => Swal.showLoading(),
-    });
-
-    const savePayload = {
-      userId: String(userId),
-      serviceId: String(serviceId || "RC001"),
-      roadCuttingId: "0",
-      ulbId: Number(ulbId),
-      appliFName: values.firstName?.trim() || "",
-      appliMName: values.middleName?.trim() || "",
-      appliLName: values.lastName?.trim() || "",
-      mobile: values.mobileNo?.trim() || "",
-      email: values.emailId?.trim() || "",
-      aadharNo: values.aadharNo?.trim() || "",
-      propNo: values.propertyNo?.trim() || "",
-      resNo: values.residentialNo?.trim() || "",
-      roadType: Number(values.roadType),
-      roadLength: Number(values.roadLength),
-      roadWidth: Number(values.roadWidth),
-      roadLengthWidth: Number(values.roadArea) || (Number(values.roadLength) * Number(values.roadWidth)),
-      excavationSize: Number(values.excavationSize),
-      // excavationStart: Number(values.vcStartPoint) || Number(values.startPoint) || "0",
-      // excavationEnd: Number(values.vcEndPoint) || Number(values.endPoint) || "0",
-      excavationStart: values.startPoint ? Number(values.startPoint) : null,
-      excavationEnd:   values.endPoint   ? Number(values.endPoint)   : null,
-      vcStartPoint:    values.vcStartPoint ? String(values.vcStartPoint) : null,
-      vcEndPoint:      values.vcEndPoint   ? String(values.vcEndPoint)   : null,
-      latitude: Number(values.latitude),
-      longitude: Number(values.longitude),
-      zoneId: Number(values.zoneId),
-      source: config.source,
-      ...(showPrabhag && { prabhagId: Number(values.prabhag) }),
-      ...(showRoadCutType && { roadCutTypeId: Number(values.roadCutType) }),
-      ...(showRoadCutReason && { roadCutReason: values.roadCutReason?.trim() || "" }),
-    };
-
-    const response = await axios.post(
-      `${BASE_URL}/api/FrmRoadCutting/saveRoadCutting`,
-      savePayload,
-      {
-        headers: { 
-          Authorization: `Bearer ${token || localStorage.getItem("token")}`,
-          'Content-Type': 'application/json',
-        },
+    try {
+      if (!validateFields(values)) {
+        setLoading(false);
+        setSubmitting(false);
+        return;
       }
-    );
 
-    loader.close();
-
-    const responseData = response.data;
-    const isSuccess = responseData?.ok === true && responseData?.data?.errCode === 9999;
-    
-    if (isSuccess) {
-      const applicationNo = responseData.data?.applicationNo || "RC" + Date.now();
-      const successMessage = responseData.data?.message || responseData.message || "Application submitted successfully";
-      
-      Swal.fire({
-        text: `${successMessage}, Your Application No is ${applicationNo}`,
-        confirmButtonText: "OK",
-        confirmButtonColor: '#1e3a8a',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/app/FrmTrackApplication", { 
-            state: { 
-              applicationNo: applicationNo,
-              serviceName: pageTitle,
-              ulbId: ulbId
-            } 
-          });
-        }
+      const loader = Swal.fire({
+        title: "",
+        text: "Submitting Application...",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading(),
       });
-    } else {
-      const errorMessage = responseData?.data?.message || 
-                          responseData?.message || 
-                          responseData?.data?.errMsg || 
-                          "Application submission failed";
-      
+
+      const savePayload = {
+        userId: String(userId),
+        serviceId: String(serviceId || "RC001"),
+        roadCuttingId: "0",
+        ulbId: Number(ulbId),
+        appliFName: values.firstName?.trim() || "",
+        appliMName: values.middleName?.trim() || "",
+        appliLName: values.lastName?.trim() || "",
+        mobile: values.mobileNo?.trim() || "",
+        email: values.emailId?.trim() || "",
+        aadharNo: values.aadharNo?.trim() || "",
+        propNo: values.propertyNo?.trim() || "",
+        resNo: values.residentialNo?.trim() || "",
+        roadType: Number(values.roadType),
+        roadLength: Number(values.roadLength),
+        roadWidth: Number(values.roadWidth),
+        roadLengthWidth: Number(values.roadArea) || (Number(values.roadLength) * Number(values.roadWidth)),
+        excavationSize: Number(values.excavationSize),
+        // excavationStart: Number(values.vcStartPoint) || Number(values.startPoint) || "0",
+        // excavationEnd: Number(values.vcEndPoint) || Number(values.endPoint) || "0",
+        excavationStart: values.startPoint ? Number(values.startPoint) : null,
+        excavationEnd: values.endPoint ? Number(values.endPoint) : null,
+        vcStartPoint: values.vcStartPoint ? String(values.vcStartPoint) : null,
+        vcEndPoint: values.vcEndPoint ? String(values.vcEndPoint) : null,
+        latitude: Number(values.latitude),
+        longitude: Number(values.longitude),
+        zoneId: Number(values.zoneId),
+        source: config.source,
+        ...(showPrabhag && { prabhagId: Number(values.prabhag) }),
+        ...(showRoadCutType && { roadCutTypeId: Number(values.roadCutType) }),
+        ...(showRoadCutReason && { roadCutReason: values.roadCutReason?.trim() || "" }),
+      };
+      debugger;
+      const response = await axios.post(
+        `${BASE_URL}/api/FrmRoadCutting/saveRoadCutting`,
+        savePayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      loader.close();
+
+      const responseData = response.data;
+      const isSuccess = responseData?.ok === true && responseData?.data?.errCode === 9999;
+
+      if (isSuccess) {
+        const applicationNo = responseData.data?.applicationNo || "RC" + Date.now();
+        const successMessage = responseData.data?.message || responseData.message || "Application submitted successfully";
+
+        Swal.fire({
+          text: `${successMessage}, Your Application No is ${applicationNo}`,
+          confirmButtonText: "OK",
+          confirmButtonColor: '#1e3a8a',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/Step1", {
+              state: { ...locationState, ...values, applicationNo, serviceId, ulbId, userId, corpId, serviceName }
+            });
+            // navigate("/app/FrmTrackApplication", { 
+            //   state: { 
+            //     applicationNo: applicationNo,
+            //     serviceName: pageTitle,
+            //     ulbId: ulbId
+            //   } 
+            // });
+          }
+        });
+      } else {
+        const errorMessage = responseData?.data?.message ||
+          responseData?.message ||
+          responseData?.data?.errMsg ||
+          "Application submission failed";
+
+        Swal.fire({
+          title: "Error",
+          text: errorMessage,
+          confirmButtonText: "OK",
+          confirmButtonColor: '#1e3a8a',
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting application:", error);
+
+      let errorMessage = "Error submitting application. Please try again.";
+
+      if (error.response) {
+        errorMessage = error.response.data?.message ||
+          error.response.data?.data?.errMsg ||
+          error.response.data?.data?.message ||
+          error.response.data?.error ||
+          errorMessage;
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check your connection.";
+      } else {
+        errorMessage = error.message;
+      }
+
       Swal.fire({
-        title: "Error",
         text: errorMessage,
         confirmButtonText: "OK",
         confirmButtonColor: '#1e3a8a',
       });
+    } finally {
+      setLoading(false);
+      setSubmitting(false);
     }
-  } catch (error) {
-    console.error("Error submitting application:", error);
-    
-    let errorMessage = "Error submitting application. Please try again.";
-    
-    if (error.response) {
-      errorMessage = error.response.data?.message || 
-                     error.response.data?.data?.errMsg ||
-                     error.response.data?.data?.message ||
-                     error.response.data?.error || 
-                     errorMessage;
-    } else if (error.request) {
-      errorMessage = "No response from server. Please check your connection.";
-    } else {
-      errorMessage = error.message;
-    }
-    
-    Swal.fire({
-      text: errorMessage,
-      confirmButtonText: "OK",
-      confirmButtonColor: '#1e3a8a',
-    });
-  } finally {
-    setLoading(false);
-    setSubmitting(false);
-  }
-};
+  };
 
   const handleReset = (resetForm) => {
     Swal.fire({
@@ -669,8 +673,8 @@ const FrmRoadCutting = () => {
                       <SelectContent>
                         {Array.isArray(zoneList) && zoneList.length > 0 ? (
                           zoneList.map((zone) => (
-                            <SelectItem 
-                              key={zone.wardId || zone.WARDID || Math.random()} 
+                            <SelectItem
+                              key={zone.wardId || zone.WARDID || Math.random()}
                               value={String(zone.wardId || zone.WARDID)}
                             >
                               {zone.wardName || zone.WARDNAME || "Unknown"}
@@ -698,8 +702,8 @@ const FrmRoadCutting = () => {
                         <SelectContent>
                           {Array.isArray(prabhagList) && prabhagList.length > 0 ? (
                             prabhagList.map((prabhag) => (
-                              <SelectItem 
-                                key={prabhag.prabhagId || Math.random()} 
+                              <SelectItem
+                                key={prabhag.prabhagId || Math.random()}
                                 value={String(prabhag.prabhagId)}
                               >
                                 {prabhag.prabhagName || "Unknown"}
@@ -842,8 +846,8 @@ const FrmRoadCutting = () => {
                       <SelectContent>
                         {Array.isArray(roadTypeList) && roadTypeList.length > 0 ? (
                           roadTypeList.map((type) => (
-                            <SelectItem 
-                              key={type.roadTypeId || Math.random()} 
+                            <SelectItem
+                              key={type.roadTypeId || Math.random()}
                               value={String(type.roadTypeId)}
                             >
                               {type.roadTypeName || "Unknown"}
@@ -1083,8 +1087,8 @@ const FrmRoadCutting = () => {
                       <SelectContent>
                         {Array.isArray(roadCutTypeList) && roadCutTypeList.length > 0 ? (
                           roadCutTypeList.map((type) => (
-                            <SelectItem 
-                              key={type.roadCuttingTypeId || Math.random()} 
+                            <SelectItem
+                              key={type.roadCuttingTypeId || Math.random()}
                               value={String(type.roadCuttingTypeId)}
                             >
                               {type.roadCuttingTypeName || "Unknown"}
