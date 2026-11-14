@@ -1,6 +1,7 @@
 const service = require("./FrmMarketEntry.service");
 const asyncHandler = require("../../../libs/asyncHandler");
 const { ok, fail } = require("../../../libs/response");
+const { AppError } = require("../../../libs/errors");
 
 // ============================================================
 // GET BUSINESS PLACE
@@ -127,16 +128,44 @@ const getLicenseType = async (req, res, next) => {
 // ============================================================
 const getTradeCategory = async (req, res, next) => {
   try {
-    const { licenseType } = req.body;
+    const { licenseType, ulbId } = req.body;
 
-    if (!licenseType) {
+    if (!licenseType && !ulbId) {
       return res.status(400).json({
         ok: false,
-        message: "License Type is required",
+        message: "License Type or ULB ID is required",
       });
     }
 
-    const data = await service.getTradeCategoryService(licenseType);
+    const data = licenseType
+      ? await service.getTradeCategoryService(licenseType)
+      : await service.getTradeCategoryDropdownService(ulbId);
+
+    return res.status(200).json({
+      ok: true,
+      message: "Trade Category fetched successfully",
+      data,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ============================================================
+// GET TRADE CATEGORY DROPDOWN (ulbId-only path)
+// ============================================================
+const getTradeCategoryDropdown = async (req, res, next) => {
+  try {
+    const { ulbId } = req.body;
+
+    if (!ulbId) {
+      return res.status(400).json({
+        ok: false,
+        message: "ULB ID is required",
+      });
+    }
+
+    const data = await service.getTradeCategoryDropdownService(ulbId);
 
     return res.status(200).json({
       ok: true,
@@ -453,22 +482,7 @@ const applicationEntry = async (req, res, next) => {
     // MODE 2 VALIDATION - Jwalan & Illegal
     // --------------------------------------------------------
     const modeNumber = Number(mode);
-    
-    if (modeNumber === 2) {
-      if (!req.body.jwalan) {
-        return res.status(400).json({
-          ok: false,
-          message: "Jwalan is required for Renewal",
-        });
-      }
-
-      if (!req.body.illegal || Number(req.body.illegal) === 0) {
-        return res.status(400).json({
-          ok: false,
-          message: "Illegal Property is required for Renewal",
-        });
-      }
-    }
+  
 
     // --------------------------------------------------------
     // SERVICE CALL
@@ -524,7 +538,7 @@ const applicationEntry = async (req, res, next) => {
       marketPropNo: marketPropNo || "",
     });
 
-    // --------------------------------------------------------
+        // --------------------------------------------------------
     // SUCCESS
     // --------------------------------------------------------
     if (Number(result.errorCode) === 9999) {
@@ -533,7 +547,8 @@ const applicationEntry = async (req, res, next) => {
         message: result.errorMsg,
         status: "SUCCESS",
         data: {
-          appId: result.appId,
+          appId: result.appid,
+          appid: result.appid,
           appliNo: result.appliNo,
         },
       });
@@ -548,7 +563,8 @@ const applicationEntry = async (req, res, next) => {
       status: "FAILED",
       data: {
         errorCode: result.errorCode,
-        appId: result.appId,
+        appId: result.appid,
+        appid: result.appid,
         appliNo: result.appliNo,
       },
     });
@@ -592,13 +608,22 @@ const documentInsert = asyncHandler(async (req, res) => {
     throw new AppError("Document file is required", 400);
   }
 
+  const appidNum = Number(req.body.appid ?? 0);
+  if (!Number.isFinite(appidNum) || appidNum <= 0) {
+    throw new AppError("Valid appid is required for document insert", 400);
+  }
+
   const result = await service.documentInsertService({
     ...req.body,
+    appid: appidNum,
     file: req.file,
   });
 
   if (!result.success) {
-    throw new AppError(result.errorMsg || result.error || "Failed to insert document", 400);
+    throw new AppError(
+      result.errorMsg || result.error || "Failed to insert document",
+      400,
+    );
   }
 
   return ok(res, result, "Document inserted successfully");
@@ -805,6 +830,8 @@ const getExistingLicenseDetails = asyncHandler(async (req, res) => {
 
   const result = await service.getExistingLicenseDetailsService(oldLicencNo, ulbId);
 
+  console.log("result: ", result);
+
   if (!result.found) {
     return res.status(404).json({
       ok: false,
@@ -842,6 +869,117 @@ const checkLicenseCancelled = asyncHandler(async (req, res) => {
   });
 });
 
+const getYears = async (req, res, next) => {
+  try {
+    const data = await service.getYearsService();
+    return res.status(200).json({
+      ok: true,
+      message: "Years fetched successfully",
+      data,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getTradeTypeByCategory = async (req, res, next) => {
+  try {
+    const { tradeCategoryId, ulbId } = req.body;
+    if (!tradeCategoryId) {
+      return res.status(400).json({ ok: false, message: "Trade Category ID is required" });
+    }
+    if (!ulbId) {
+      return res.status(400).json({ ok: false, message: "ULB ID is required" });
+    }
+    const data = await service.getTradeTypeByCategoryService(tradeCategoryId, ulbId);
+    return res.status(200).json({
+      ok: true,
+      message: "Trade Type fetched successfully",
+      data,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getRateByTradeType = async (req, res, next) => {
+  try {
+    const { tradeTypeId, tradeCategoryId, ulbId } = req.body;
+    if (!tradeTypeId) return res.status(400).json({ ok: false, message: "Trade Type ID is required" });
+    if (!tradeCategoryId) return res.status(400).json({ ok: false, message: "Trade Category ID is required" });
+    if (!ulbId) return res.status(400).json({ ok: false, message: "ULB ID is required" });
+    const data = await service.getRateByTradeTypeService(
+      tradeTypeId,
+      tradeCategoryId,
+      ulbId,
+    );
+    return res.status(200).json({
+      ok: true,
+      message: "Rate fetched successfully",
+      data,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getTradTypesRates = async (req, res, next) => {
+  try {
+    const { tradeTypes, fromDate, ulbId } = req.body;
+    if (!Array.isArray(tradeTypes) || tradeTypes.length === 0) {
+      return res.status(400).json({ ok: false, message: "Trade Types are required" });
+    }
+    if (!fromDate) return res.status(400).json({ ok: false, message: "From Date is required" });
+    if (!ulbId) return res.status(400).json({ ok: false, message: "ULB ID is required" });
+    const data = await service.getTradTypesRatesService(tradeTypes, fromDate, ulbId);
+    return res.status(200).json({
+      ok: true,
+      message: "Trade type rates fetched successfully",
+      data,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getDocumentDetailsMarket = async (req, res, next) => {
+  try {
+    const { ulbId } = req.body;
+
+    if (!ulbId) {
+      return res.status(400).json({
+        ok: false,
+        message: "ULB ID is required",
+      });
+    }
+
+    const data = await service.getDocumentDetailsMarketService(ulbId);
+
+    return res.status(200).json({
+      ok: true,
+      message: "Document Details fetched successfully",
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteExistingDocs = asyncHandler(async (req, res) => {
+  const { appid, appno } = req.body;
+
+  if (!appid && !appno) {
+    throw new AppError("Application ID or Application No is required.", 400);
+  }
+
+  const result = await service.deleteExistingDocsService({ appid, appno });
+
+  if (!result.success) {
+    throw new AppError(result.error || "Failed to delete existing documents", 500);
+  }
+
+  return ok(res, result, "Existing documents deleted successfully");
+});
 
 module.exports = {
   getBusinessPlace,
@@ -852,6 +990,7 @@ module.exports = {
   getZoneByWard, // NEW
   getLicenseType,
   getTradeCategory,
+  getTradeCategoryDropdown,
   getTradeDetails,
   getDocumentDetails,
   getSelfDeclareData,
@@ -862,4 +1001,10 @@ module.exports = {
   updateDirectorImages,
   documentInsert,
   getTradeCategoryByJwalan,
+  getYears,
+  getTradeTypeByCategory,
+  getRateByTradeType,
+  getTradTypesRates,
+  getDocumentDetailsMarket,
+  deleteExistingDocs,
 };

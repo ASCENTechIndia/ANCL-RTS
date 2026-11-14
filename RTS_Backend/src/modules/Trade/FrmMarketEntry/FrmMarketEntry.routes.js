@@ -27,6 +27,7 @@ router.post("/getlicensetype", auth(), controller.getLicenseType);
 
 // GET TRADE CATEGORY
 router.post("/gettradecategory",  controller.getTradeCategory);
+router.post("/gettradecatdropdown",  controller.getTradeCategoryDropdown);
 
 // GET TRADE DETAILS
 router.post("/gettradedetails", auth(), controller.getTradeDetails);
@@ -57,5 +58,12 @@ router.post("/documentinsert",auth(), upload.single("document"), controller.docu
 
 // GET TRADE CATEGORY BY JWALAN
 router.post("/gettradecategorybyjwalanshil", auth(), controller.getTradeCategoryByJwalan);
+
+router.post("/getyears", auth(), controller.getYears);
+router.post("/gettradetypebycategory", auth(), controller.getTradeTypeByCategory);
+router.post("/getratebytratype", auth(), controller.getRateByTradeType);
+router.post("/gettradetypesrates", auth(), controller.getTradTypesRates);
+router.post("/getdocumentdetailsmarket", auth(), controller.getDocumentDetailsMarket);
+router.post("/deleteexistingdocs", auth(), controller.deleteExistingDocs);
 
 module.exports = router;

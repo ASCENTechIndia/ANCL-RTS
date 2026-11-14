@@ -3,7 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Formik, Form } from "formik";
 import { useAuth } from "@/context/AuthContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +56,8 @@ const initialValues = {
 
   fromDate: "",
   toDate: "",
+  financialFromYear: "",
+  financialToYear: "",
 
   usedArea: "0",
   amount: "0",
@@ -100,6 +102,7 @@ const initialValues = {
 
 const FrmMarketEntry = () => {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
   const locationState = location.state || {};
 
@@ -115,12 +118,42 @@ const FrmMarketEntry = () => {
 
   const searchParams = new URLSearchParams(window.location.search);
 
-  const mode = Number(
-    searchParams.get("mode") ??
-      searchParams.get("@") ??
-      locationState.mode ??
-      1,
+  // const mode = Number(
+  //   searchParams.get("mode") ??
+  //     searchParams.get("@") ??
+  //     locationState.mode ??
+  //     1,
+  // );
+
+  const explicitMode = Number(
+    searchParams.get("mode") ?? searchParams.get("@") ?? locationState.mode ?? 0,
   );
+
+  // const mode =
+  //   explicitMode === 2
+  //     ? 2 
+  //     : explicitMode === 1
+  //       ? 1 
+  //       : 1;   
+
+  const serviceCodeFromUrl = String(searchParams.get("@") ?? "").trim();
+
+  const [licenseMode, setLicenseMode] = useState(
+    serviceCodeFromUrl === "7" ? "N" : "R",
+  );
+
+  const [showModeRadio, setShowModeRadio] = useState(
+    serviceCodeFromUrl === "",
+  );
+
+  useEffect(() => {
+    if (serviceCodeFromUrl === "") return;
+    setShowModeRadio(false);
+  }, [serviceCodeFromUrl]);
+
+  const showOldLicenseInput = licenseMode === "R";
+
+  const mode = licenseMode === "R" ? 2 : 1;
 
   // const applicationId = locationState.applicationId ??
   //   locationState.appId ??
@@ -147,6 +180,10 @@ const FrmMarketEntry = () => {
   const [licenseTypeOptions, setLicenseTypeOptions] = useState([]);
   const [applicationId, setApplicationId] = useState("");
   const [applicationNo, setApplicationNo] = useState("");
+  const [yearOptions, setYearOptions] = useState([]);
+  const [tradeTypeByCategoryOptions, setTradeTypeByCategoryOptions] = useState([]);
+  const [tradeCheckboxRows, setTradeCheckboxRows] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const authToken =
     token ||
@@ -309,21 +346,16 @@ const FrmMarketEntry = () => {
 
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/FrmMarketEntry/gettradecategory`,
-        {
-          licenseType: tradeBusinessType,
-          jalanShil: effectiveJalanShil,
-        },
+        `${BASE_URL}/api/FrmMarketEntry/gettradecatdropdown`,
+        { ulbId },
         { headers: { Authorization: authToken ? `Bearer ${authToken}` : "" } },
       );
-
-      console.log("Trade Category Response: ", response);
 
       const data = response.data?.data || [];
       setTradeCategoryOptions(
         data.map((item) => ({
-          value: String(item.NUM_CATEGORY_CATGRYID),
-          label: item.VAR_TRADECATEGORY_NAME || "",
+          value: String(item.NUM_TRADECATEGORY_ID ?? item.num_tradecategory_id ?? ""),
+          label: String(item.VAR_TRADECATEGORY_NAME ?? item.var_tradecategory_name ?? ""),
         })),
       );
       return data;
@@ -349,29 +381,64 @@ const FrmMarketEntry = () => {
           label: item.TRADENAME || "",
         })),
       );
+      setTradeCheckboxRows(
+        data.map((item) => ({
+          tradeId: String(item.TRADEID),
+          tradeName: item.TRADENAME || "",
+          selected: false,
+        })),
+      );
     } catch (error) {
       console.error("Trade Details Error:", error);
       setTradeTypeOptions([]);
     }
   };
 
+  // const getDocumentDetails = async () => {
+  //   if (!ulbId || !serviceId) return;
+  //   try {
+  //     const response = await axios.post(
+  //       `${BASE_URL}/api/FrmMarketEntry/getdocumentdetails`,
+  //       { serviceId, ulbId },
+  //       { headers: { Authorization: authToken ? `Bearer ${authToken}` : "" } },
+  //     );
+  //     const data = response.data?.data || [];
+  //     setDocumentRows(
+  //       data.map((item, index) => ({
+  //         id: String(item.DOCID ?? ""),
+  //         srNo: index + 1,
+  //         docId: String(item.DOCID ?? ""),
+  //         documentName: item.DOCTYPENAME ?? "",
+  //         documentType: item.DOCTYPE ?? "",
+  //         active: item.ACTIVE ?? "N",
+  //         file: null,
+  //         fileName: "",
+  //         remark: "",
+  //       })),
+  //     );
+  //   } catch (error) {
+  //     console.error("Document Details Error:", error);
+  //     setDocumentRows([]);
+  //   }
+  // };
+
   const getDocumentDetails = async () => {
-    if (!ulbId || !serviceId) return;
+    if (!ulbId) return; 
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/FrmMarketEntry/getdocumentdetails`,
-        { serviceId, ulbId },
+        `${BASE_URL}/api/FrmMarketEntry/getdocumentdetailsmarket`,
+        { ulbId },
         { headers: { Authorization: authToken ? `Bearer ${authToken}` : "" } },
       );
       const data = response.data?.data || [];
       setDocumentRows(
         data.map((item, index) => ({
-          id: String(item.DOCID ?? ""),
+          id: String(item.DOCID ?? item.docid ?? ""),
           srNo: index + 1,
-          docId: String(item.DOCID ?? ""),
-          documentName: item.DOCTYPENAME ?? "",
-          documentType: item.DOCTYPE ?? "",
-          active: item.ACTIVE ?? "N",
+          docId: String(item.DOCID ?? item.docid ?? ""),
+          documentName: item.DOCTYPENAME ?? item.doctypename ?? "",
+          documentType: "",
+          active: "Y", 
           file: null,
           fileName: "",
           remark: "",
@@ -452,6 +519,71 @@ const FrmMarketEntry = () => {
     }
   };
 
+  const getYears = async (setFieldValue) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/FrmMarketEntry/getyears`,
+        {},
+        { headers: { Authorization: authToken ? `Bearer ${authToken}` : "" } },
+      );
+      const data = response.data?.data || [];
+      const opts = data.map((item) => ({
+        value: String(item.YRS ?? item.yrs ?? ""),
+        label: String(item.YEARS ?? item.years ?? ""),
+      }));
+      setYearOptions(opts);
+
+      if (opts.length > 0 && setFieldValue) {
+        const currentYear = new Date().getFullYear();
+        const currentFrmYear = opts.find(y => y.value === String(currentYear));
+        if (currentFrmYear) setFieldValue("financialFromYear", currentFrmYear.value);
+        
+        const nextYear = opts.find(y => y.value === String(currentYear + 1));
+        if (nextYear) setFieldValue("financialToYear", nextYear.value);
+      }
+    } catch (error) {
+      console.error("Years Error:", error);
+      setYearOptions([]);
+    }
+  };
+
+  const getTradeTypeByCategory = async (tradeCategoryId) => {
+    if (!tradeCategoryId || !ulbId) return;
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/FrmMarketEntry/gettradetypebycategory`,
+        { tradeCategoryId, ulbId },
+        { headers: { Authorization: authToken ? `Bearer ${authToken}` : "" } },
+      );
+      const data = response.data?.data || [];
+      setTradeTypeByCategoryOptions(
+        data.map((item) => ({
+          value: String(item.TRADETYPEID ?? item.tradetypeid ?? ""),
+          label: String(item.TRADETYPE ?? item.tradetype ?? ""),
+        })),
+      );
+    } catch (error) {
+      console.error("Trade Type By Category Error:", error);
+      setTradeTypeByCategoryOptions([]);
+    }
+  };
+
+  const getRateByTradeType = async (tradeTypeId, tradeCategoryId) => {
+    if (!tradeTypeId || !tradeCategoryId || !ulbId) return "";
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/FrmMarketEntry/getratebytratype`,
+        { tradeTypeId, tradeCategoryId, ulbId },
+        { headers: { Authorization: authToken ? `Bearer ${authToken}` : "" } },
+      );
+      const rows = response.data?.data || [];
+      return rows[0]?.NUM_RATE_RATE ?? rows[0]?.num_rate_rate ?? "";
+    } catch (error) {
+      console.error("Rate By Trade Type Error:", error);
+      return "";
+    }
+  };
+
   useEffect(() => {
     if (!ulbId || !serviceId) {
       console.warn("Missing ULB or Service ID", { ulbId, serviceId });
@@ -479,27 +611,30 @@ const FrmMarketEntry = () => {
           getTradeDetails(),
           getDocumentDetails(),
           getSelfDeclare(),
+          getYears(),
         ]);
 
         // if (mode === 1) {
-          await loadTradeCategory("62", "Y");
+          // await loadTradeCategory("62", "Y");
         // }
-s
-        if (mode === 2 && applicationId) {
-          const appData = await getApplicationDetails(applicationId);
-          if (appData?.application) {
-            const app = appData.application;
-            setApplicationId(String(app.NUM_APPLI_ID || ""));
-            setApplicationNo(String(app.VAR_APPLI_APPLINO || ""));
-          }
-        }
+
+        await loadTradeCategory("T", "Y");
+
+        // if (mode === 2 && applicationId) {
+        //   const appData = await getApplicationDetails(applicationId);
+        //   if (appData?.application) {
+        //     const app = appData.application;
+        //     setApplicationId(String(app.NUM_APPLI_ID || ""));
+        //     setApplicationNo(String(app.VAR_APPLI_APPLINO || ""));
+        //   }
+        // }
       } finally {
         Swal.close();
       }
     };
 
     loadData();
-  }, [ulbId, serviceId, mode, applicationId]);
+  }, [ulbId, serviceId, mode]);
 
   const handleWardChange = async (wardId, setFieldValue) => {
     setFieldValue("wardNo", wardId);
@@ -513,10 +648,11 @@ s
     await loadTradeCategory(values.tradeBusinessType || "T", value);
   };
 
-  const handleTradeCategoryChange = (value, setFieldValue) => {
+  const handleTradeCategoryChange = async (value, setFieldValue) => {
     setFieldValue("tradeCategory", value);
     setFieldValue("tradeType", "");
     setFieldValue("rate", "");
+    await getTradeTypeByCategory(value);
   };
 
   const handleTradeBusinessTypeChange = async (
@@ -556,35 +692,45 @@ s
     const category = tradeCategoryOptions.find(
       (item) => String(item.value) === String(values.tradeCategory),
     );
-    const tradeType = tradeTypeOptions.find(
+
+    const tradeType = tradeTypeByCategoryOptions.find(
       (item) => String(item.value) === String(values.tradeType),
     );
 
     const rate = values.rate || "0";
 
-    setTradeTypeRateRows((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        tradeTypeId: values.tradeType,
-        tradeType: tradeType?.label || "",
-        tradeCategoryId: values.tradeCategory,
-        tradeCategory: category?.label || "",
-        rate,
-      },
-    ]);
+    const newRow = {
+      id: Date.now(),
+      tradeTypeId: values.tradeType,
+      tradeType: tradeType?.label || "",
+      tradeCategoryId: values.tradeCategory,
+      tradeCategory: category?.label || "",
+      rate,
+    };
 
-    const totalAmount =
-      tradeTypeRateRows.reduce((sum, item) => sum + Number(item.rate || 0), 0) +
-      Number(rate);
+    const nextRows = [...tradeTypeRateRows, newRow];
+    setTradeTypeRateRows(nextRows);
+
+    const totalAmount = nextRows.reduce(
+      (sum, item) => sum + Number(item.rate || 0),
+      0,
+    );
     setFieldValue("amount", String(totalAmount));
 
     setFieldValue("tradeType", "");
     setFieldValue("rate", "");
   };
 
-  const removeTradeType = (id) => {
-    setTradeTypeRateRows((prev) => prev.filter((item) => item.id !== id));
+  const removeTradeType = (id, setFieldValue) => {
+    setTradeTypeRateRows((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      const totalAmount = next.reduce(
+        (sum, item) => sum + Number(item.rate || 0),
+        0,
+      );
+      setFieldValue("amount", String(totalAmount));
+      return next;
+    });
   };
 
   const addDirector = (values, setFieldValue) => {
@@ -642,12 +788,26 @@ s
     setDirectorRows((prev) => prev.filter((item) => item.id !== id));
   };
 
+  // const handleDocumentFile = (id, file) => {
+  //   if (!file) return;
+  //   setDocumentRows((prev) =>
+  //     prev.map((item) =>
+  //       String(item.id) === String(id)
+  //         ? { ...item, file, fileName: file.name }
+  //         : item,
+  //     ),
+  //   );
+  // };
+
   const handleDocumentFile = (id, file) => {
     if (!file) return;
+    const extension = file.name.includes(".")
+      ? "." + file.name.split(".").pop().toLowerCase()
+      : "";
     setDocumentRows((prev) =>
       prev.map((item) =>
         String(item.id) === String(id)
-          ? { ...item, file, fileName: file.name }
+          ? { ...item, file, fileName: file.name, documentType: extension }
           : item,
       ),
     );
@@ -681,6 +841,8 @@ s
       .join("#");
   };
 
+  let tradeTypeRows = [];
+
   const handleSearchLicense = async (values, setFieldValue) => {
     const oldLicenseNo = values.oldLicenseNo?.trim();
 
@@ -692,6 +854,7 @@ s
       return;
     }
 
+    setIsSearching(true); 
     try {
       Swal.fire({
         title: "Searching...",
@@ -744,16 +907,30 @@ s
       );
       setFieldValue("email", application.VAR_APPLI_EMAIL || "");
       setFieldValue("shopAddress", application.VAR_APPLI_ADDRESS || "");
-      setFieldValue("wardNo", application.NUM_APPLI_WARDID?.toString() || "");
-      setFieldValue("zoneNo", application.NUM_APPLI_ZONEID?.toString() || "");
+      // setFieldValue("wardNo", application.NUM_APPLI_WARDID?.toString() || "");
+      // setFieldValue("zoneNo", application.NUM_APPLI_ZONEID?.toString() || "");
+      const wardId = application.NUM_APPLI_WARDID?.toString() || "";
+      const zoneId = application.NUM_APPLI_ZONEID?.toString() || "";
+
+      setZoneOptions([]);
+      setFieldValue("zoneNo", "");
+      setFieldValue("wardNo", wardId);
+
+      if (wardId) {
+        await getZoneByWard(wardId);
+        await new Promise((r) => setTimeout(r, 0));
+        setFieldValue("zoneNo", zoneId);
+      }
 
       if (application.DAT_APPLI_FROMDT) {
         const fromDate = new Date(application.DAT_APPLI_FROMDT);
         setFieldValue("fromDate", formatDateForFormik(fromDate));
+        setFieldValue("financialFromYear", String(fromDate.getFullYear()));
       }
       if (application.DAT_APPLI_TODT) {
         const toDate = new Date(application.DAT_APPLI_TODT);
         setFieldValue("toDate", formatDateForFormik(toDate));
+        setFieldValue("financialToYear", String(toDate.getFullYear()));
       }
 
       setFieldValue("usedArea", application.NUM_APPLI_AREA?.toString() || "0");
@@ -797,19 +974,56 @@ s
       setFieldValue("amount", String(totalAmount));
 
       if (tradeTypeDetails.length > 0) {
-        const tradeTypeRows = tradeTypeDetails.map((item, index) => ({
-          id: Date.now() + index,
-          tradeTypeId: String(
-            item.TRADETYPEID || item.NUM_APPLITRADETYPE_TRDTYPID || "",
-          ),
-          tradeType: item.TRADETYPE || "",
-          rate: String(item.RATE || 0),
-          tradeCategoryId: String(
-            item.NUM_CATEGORY_CATGRYID || item.CATEGORYID || "",
-          ),
-          tradeCategory: item.TRADECATEGORY || "",
-        }));
+        tradeTypeRows = tradeTypeDetails.map((item, index) => {
+          const catId =
+            String(
+              item.NUM_APPLITRADETYPE_CATGRYID ??
+              item.NUM_CATEGORY_CATGRYID ??
+              item.CATEGORYID ??
+              ""
+            );
+          return {
+            id: Date.now() + index,
+            tradeTypeId: String(item.TRADETYPEID || item.NUM_APPLITRADETYPE_TRDTYPID || ""),
+            tradeType: item.TRADETYPE || "",
+            rate: String(item.RATE || 0),
+            tradeCategoryId: catId || String(values.tradeCategory || ""),
+            tradeCategory: item.TRADECATEGORY || "",
+          };
+        });
         setTradeTypeRateRows(tradeTypeRows);
+      }
+
+      if (tradeTypeRows.length > 0 && tradeTypeRows[0].tradeCategoryId) {
+        await getTradeTypeByCategory(tradeTypeRows[0].tradeCategoryId);
+      }
+
+      if (Array.isArray(result.tradeDetails) && result.tradeDetails.length > 0) {
+        const selectedIds = result.tradeDetails
+          .map((t) => String(t.NUM_APPLITRADE_TRADEID ?? "").trim())
+          .filter(Boolean);
+
+        setTradeCheckboxRows((prev) => {
+          const prevIds = new Set(prev.map((r) => String(r.tradeId)));
+          const merged = prev.map((r) => ({
+            ...r,
+            selected: selectedIds.includes(String(r.tradeId)),
+          }));
+
+          const missing = selectedIds
+            .filter((id) => !prevIds.has(id))
+            .map((id) => ({ tradeId: id, tradeName: id, selected: true }));
+
+          if (missing.length > 0) {
+            setTimeout(() => {
+              document
+                .querySelector("[data-trade-checkbox-table] tbody tr:last-child")
+                ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            }, 100);
+          }
+
+          return [...merged, ...missing];
+        });
       }
 
       if (directorDetails.length > 0) {
@@ -830,19 +1044,70 @@ s
       }
 
       if (documentDetails.length > 0) {
-        setDocumentRows((prev) =>
-          prev.map((item) => {
-            const existing = documentDetails.find(
-              (d) => String(d.DOCID) === String(item.docId),
-            );
-            if (existing && existing.filebyte) {
+        setDocumentRows((prev) => {
+          const byPrimary = new Map(
+            documentDetails.map((d) => [String(d.PRIMARYDOCID), d]),
+          );
+          const byDocId = new Map(
+            documentDetails.map((d) => [String(d.DOCID), d]),
+          );
+
+          const used = new Set();
+
+          const updated = prev.map((item, index) => {
+            const key = String(index + 1);
+            const byPos = byPrimary.get(key);
+            const byId = byDocId.get(String(item.docId));
+            const existing = byPos || byId;
+            if (!existing) return item;
+
+            used.add(String(existing.PRIMARYDOCID));
+            used.add(String(existing.DOCID));
+
+            const fileType = existing.FILETYPE || existing.FileType || "";
+            return {
+              ...item,
+              fileName: fileType,
+              filebyte: existing.filebyte || item.filebyte,
+              remark: existing.REMARK ?? existing.remark ?? item.remark,
+              documentType: fileType || item.documentType,
+            };
+          });
+
+          const extras = documentDetails
+            .filter(
+              (d) =>
+                !used.has(String(d.PRIMARYDOCID)) && !used.has(String(d.DOCID)),
+            )
+            .map((d, i) => {
+              const fileType = d.FILETYPE || d.FileType || "";
               return {
-                ...item,
-                fileName: existing.FileType || "",
+                id: `existing-${d.PRIMARYDOCID ?? d.DOCID}-${i}`,
+                srNo: updated.length + i + 1,
+                docId: String(d.DOCID ?? ""),
+                primaryDocId: String(d.PRIMARYDOCID ?? ""),
+                documentName: d.DOCTYPENAME ?? "",
+                documentType: fileType,
+                active: "N", 
+                file: null,
+                fileName: fileType,
+                filebyte: d.filebyte || null,
+                remark: d.REMARK ?? "",
               };
-            }
-            return item;
-          }),
+            });
+
+          return [...updated, ...extras];
+        });
+
+        console.log(
+          "doc binding result:",
+          documentRows.map((d, i) => ({
+            pos: i + 1,
+            docId: d.docId,
+            name: d.documentName,
+            fileName: d.fileName,
+            hasFile: Boolean(d.filebyte),
+          })),
         );
       }
 
@@ -860,10 +1125,12 @@ s
         icon: "error",
         text: "Error fetching license details. Please try again.",
       });
+    } finally {
+      setIsSearching(false);
     }
   };
 
-  const submitApplication = async (values, { setSubmitting, resetForm }) => {
+  const submitApplication = async (values, { setSubmitting, resetForm, setFieldValue }) => {
     try {
       if (values.email && !validateEmail(values.email)) {
         Swal.fire({
@@ -874,6 +1141,27 @@ s
         setActiveTab("primary");
         return;
       }
+
+      if (!values.financialFromYear) {
+        Swal.fire({ text: "Please select Financial From Year" });
+        setActiveTab("primary");
+        return;
+      }
+      if (!values.financialToYear) {
+        Swal.fire({ text: "Please select To Year" });
+        setActiveTab("primary");
+        return;
+      }
+      if (Number(values.financialFromYear) > Number(values.financialToYear)) {
+        Swal.fire({ text: "From Year must be less than or equal to To Year" });
+        setActiveTab("primary");
+        return;
+      }
+
+      const frmYear = Number(values.financialFromYear);
+      const toYear = Number(values.financialToYear);
+      const computedFromDate = `${frmYear}-04-01`;
+      const computedToDate   = `${toYear}-03-31`;
 
       if (!values.shopNameEnglish?.trim()) {
         Swal.fire({ text: "Please Enter Shop Name English" });
@@ -924,21 +1212,12 @@ s
       }
 
       if (mode === 2) {
-        if (!values.jalanShil) {
-          Swal.fire({ text: "Please Select Jwalan Padhartha" });
-          setActiveTab("primary");
-          return;
-        }
-
-        if (!values.illegalType) {
-          Swal.fire({ text: "Please Select Illegal Property" });
-          setActiveTab("primary");
-          return;
-        }
-
         if (documentRows.length > 0) {
           const missingDocuments = documentRows.filter(
-            (item) => item.active === "Y" && !item.file,
+            (item) =>
+              item.active === "Y" &&
+              !item.file && 
+              !item.filebyte,
           );
 
           if (missingDocuments.length > 0) {
@@ -948,15 +1227,10 @@ s
               icon: "warning",
               title: "Documents Required",
               html: `
-        <div style="text-align: left;">
-          <p>Please upload all required documents.</p>
-          <ul style="margin-top: 10px;">
-            ${missingDocuments
-              .map((doc) => `<li>${doc.documentName}</li>`)
-              .join("")}
-          </ul>
-        </div>
-      `,
+              <div style="text-align: left;">
+                <p>Please upload all required documents.</p>
+              </div>
+            `,
             });
 
             return;
@@ -979,20 +1253,30 @@ s
         return;
       }
 
+      if (tradeCheckboxRows.filter((r) => r.selected).length === 0) {
+        Swal.fire({ text: "Please select at least one Trade" });
+        setActiveTab("primary");
+        return;
+      }
+
       const directorString = buildDirectorString();
       const tradeTypeString = buildTradeTypeString();
 
       const buildTradeString = () => {
-        const tradeIds = [
-          ...new Set(tradeTypeRateRows.map((item) => item.tradeCategoryId)),
-        ];
-        return tradeIds.filter((id) => id).join("#");
+        return tradeCheckboxRows
+          .filter((r) => r.selected)
+          .map((r) => r.tradeId)
+          .join("#");
       };
 
       const totalAmount = tradeTypeRateRows.reduce(
         (total, item) => total + Number(item.rate || 0),
         0,
       );
+
+      if (String(totalAmount) !== String(values.amount || "0")) {
+        setFieldValue("amount", String(totalAmount));
+      }
 
       const ipAddress = await getIPAddress();
 
@@ -1004,7 +1288,8 @@ s
 
         appid: Number(applicationId || 0),
         appliNo: applicationNo || "0",
-        mode: Number(mode),
+        // mode: Number(mode),
+        mode: 1,
 
         oldLicencNo: mode === 2 ? values.oldLicenseNo?.trim() || null : null,
 
@@ -1033,8 +1318,10 @@ s
         placeOwnerName: values.applicantName?.trim() || "",
         placeOwnerAddress: values.applicantAddress?.trim() || "",
 
-        fromDate: values.fromDate || null,
-        toDate: values.toDate || null,
+        // fromDate: values.fromDate || null,
+        // toDate: values.toDate || null,
+        fromDate: computedFromDate,
+        toDate:   computedToDate,
 
         amount: Number(totalAmount || 0),
         applitradeStr: buildTradeString(),
@@ -1043,8 +1330,10 @@ s
 
         licType: String(mode === 2 ? "R" : "N"),
         licenseTypeId: values.licenseType ? Number(values.licenseType) : 0,
-        propNo: values.propNo || "",
-        marketPropNo: "",
+        // propNo: values.propNo || "",
+        // marketPropNo: "",
+        propNo: values.propNo && String(values.propNo).trim() !== "" ? values.propNo.trim() : null,
+        marketPropNo: null,
 
         source: config.source || "WEB",
         ipAddress: ipAddress || "127.0.0.1",
@@ -1085,7 +1374,23 @@ s
       const backendMessage =
         response.data?.message || "Application entry failed.";
       const errorCode = Number(responseData?.errorCode ?? 0);
-      const newAppId = responseData?.appId ?? responseData?.appid ?? 0;
+      // const newAppId = responseData?.appId ?? responseData?.appid ?? 0;
+      const newAppId =
+        responseData?.appId ??
+        responseData?.appid ??
+        responseData?.applicationId ??
+        0;
+
+      console.log("Parsed newAppId from applicationentry:", newAppId);
+
+      if (!Number(newAppId)) {
+        await Swal.fire({
+          icon: "error",
+          title: "Application Entry Failed",
+          text: "Application ID was not returned by the server. Document upload cannot proceed.",
+        });
+        return;
+      }
       const appNo = responseData?.appliNo || responseData?.appNo || "";
 
       const isSuccess =
@@ -1105,41 +1410,41 @@ s
         throw new Error(backendMessage || "Invalid Application No returned.");
       }
 
-      const selectedDocuments = documentRows.filter(
-        (item) => item?.file && item.active === "Y",
-      );
+      // const selectedDocuments = documentRows.filter(
+      //   (item) => item?.file && item.active === "Y",
+      // );
 
-      if (selectedDocuments.length > 0) {
-        Swal.fire({
-          title: "Uploading...",
-          text: "Uploading documents",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          showConfirmButton: false,
-          didOpen: () => Swal.showLoading(),
-        });
+      // if (selectedDocuments.length > 0) {
+      //   Swal.fire({
+      //     title: "Uploading...",
+      //     text: "Uploading documents",
+      //     allowOutsideClick: false,
+      //     allowEscapeKey: false,
+      //     showConfirmButton: false,
+      //     didOpen: () => Swal.showLoading(),
+      //   });
 
-        for (const doc of selectedDocuments) {
-          const formData = new FormData();
-          formData.append("corpId", String(corpId || 10001));
-          formData.append("serviceId", String(serviceId));
-          formData.append("appno", String(appNo));
-          formData.append("doctype", String(doc.documentType || ""));
-          formData.append("documentid", String(doc.docId || ""));
-          formData.append("document", doc.file);
+      //   for (const doc of selectedDocuments) {
+      //     const formData = new FormData();
+      //     formData.append("corpId", String(corpId || 10001));
+      //     formData.append("serviceId", String(serviceId));
+      //     formData.append("appno", String(appNo));
+      //     formData.append("doctype", String(doc.documentType || ""));
+      //     formData.append("documentid", String(doc.docId || ""));
+      //     formData.append("document", doc.file);
 
-          await axios.post(
-            `${BASE_URL}/api/FrmMarketEntry/documentinsert`,
-            formData,
-            {
-              headers: {
-                Authorization: authToken ? `Bearer ${authToken}` : "",
-                "Content-Type": "multipart/form-data",
-              },
-            },
-          );
-        }
-      }
+      //     await axios.post(
+      //       `${BASE_URL}/api/FrmMarketEntry/documentinsert`,
+      //       formData,
+      //       {
+      //         headers: {
+      //           Authorization: authToken ? `Bearer ${authToken}` : "",
+      //           "Content-Type": "multipart/form-data",
+      //         },
+      //       },
+      //     );
+      //   }
+      // }
 
       const directorsWithImages = directorRows.filter((item) => item?.image);
 
@@ -1173,6 +1478,84 @@ s
         );
       }
 
+      const selectedDocuments = documentRows.filter(
+        (item) => item?.file && item.active === "Y",
+      );
+
+      if (selectedDocuments.length > 0) {
+        const hadExistingDocs = documentRows.some(
+          (d) => !d.file && d.fileName && d.fileName !== "",
+        );
+
+        if (mode === 2 && applicationId && hadExistingDocs) {
+          Swal.fire({
+            title: "Preparing...",
+            text: "Removing old documents",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading(),
+          });
+
+          await axios.post(
+            `${BASE_URL}/api/FrmMarketEntry/deleteexistingdocs`,
+            { appid: Number(applicationId), appno: String(appNo) },
+            { headers: { Authorization: authToken ? `Bearer ${authToken}` : "" } },
+          );
+        }
+
+        Swal.fire({
+          title: "Uploading...",
+          text: "Uploading documents",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: () => Swal.showLoading(),
+        });
+
+        for (const doc of selectedDocuments) {
+          const rowIndex = documentRows.findIndex((d) => d.id === doc.id);
+          const primaryDocId = rowIndex + 1;
+
+          const formData = new FormData();
+          formData.append("corpId", String(corpId || 10001));
+          formData.append("serviceId", String(serviceId));
+          formData.append("appno", String(appNo));
+          formData.append("appid", String(newAppId));
+          formData.append("primaryDocId", String(primaryDocId));
+
+          formData.append("docType", "S");
+
+          formData.append("fileType", String(doc.documentType || ""));
+
+          formData.append("documentid", String(doc.docId || ""));
+          formData.append("document", doc.file);
+
+          try {
+            await axios.post(
+              `${BASE_URL}/api/FrmMarketEntry/documentinsert`,
+              formData,
+              {
+                headers: {
+                  Authorization: authToken ? `Bearer ${authToken}` : "",
+                  "Content-Type": "multipart/form-data",
+                },
+              },
+            );
+          } catch (err) {
+            const msg =
+              err?.response?.data?.message ||
+              err?.message ||
+              "Document upload failed.";
+            await Swal.fire({
+              icon: "error",
+              title: "Document Upload Failed",
+              text: `${doc.documentName || "Document"}: ${msg}`,
+            });
+            return;
+          }
+        }
+      }
+
       Swal.close();
 
       await Swal.fire({
@@ -1181,10 +1564,20 @@ s
         text: backendMessage || "Application submitted successfully.",
       });
 
-      resetForm();
-      setTradeTypeRateRows([]);
-      setDirectorRows([]);
-      setActiveTab("primary");
+      // resetForm();
+      // setTradeTypeRateRows([]);
+      // setDirectorRows([]);
+      // setTradeCheckboxRows((prev) => prev.map((r) => ({ ...r, selected: false })));
+      // setFieldValue("amount", "0");
+      // setLicenseMode(serviceCodeFromUrl === "7" ? "N" : "R");
+      // setShowModeRadio(serviceCodeFromUrl === "");
+      // setApplicationId("");
+      // setApplicationNo("");
+      // setActiveTab("primary");
+      
+      navigate("/app/FrmTrackApplication", {
+        state: { applicationNo: appNo },
+      });
     } catch (error) {
       Swal.close();
       console.error("Application Entry Error:", error);
@@ -1339,7 +1732,83 @@ s
 
                 <TabsContent value="primary" className="m-0 px-5 py-6">
                   <div className="space-y-7">
-                    {mode === 2 && (
+                    {showModeRadio && (
+                      <section className="pb-4">
+                        <div className="grid grid-cols-1 xl:grid-cols-2">
+                          <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2 xl:col-span-1">
+                            <Label text="Type" required className="!w-full text-sm font-medium" />
+                            <span>:</span>
+                            <div className="flex items-center gap-6">
+                              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                                <Input
+                                  type="radio"
+                                  checked={licenseMode === "N"}
+                                  onChange={() => {
+                                    setLicenseMode("N");
+                                    // RdbSectionType_SelectedIndexChanged: DivSearch.Visible = false
+                                    setFieldValue("oldLicenseNo", "");
+                                    setApplicationId("");
+                                    setApplicationNo("");
+                                    // RdbSectionType.Visible = false
+                                    setShowModeRadio(false);
+                                  }}
+                                  className="h-4 w-4"
+                                />
+                                New
+                              </label>
+                              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                                <Input
+                                  type="radio"
+                                  checked={licenseMode === "R"}
+                                  onChange={() => {
+                                    setLicenseMode("R");
+                                    setShowModeRadio(false);
+                                  }}
+                                  className="h-4 w-4"
+                                />
+                                Renewal
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+                    )}
+
+                    {showOldLicenseInput && (
+                      <section className="pb-4">
+                        <div className="grid grid-cols-1 xl:grid-cols-2">
+                          <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2 xl:col-span-1">
+                            <Label
+                              text="Old License No"
+                              className="!w-full text-sm font-medium"
+                            />
+                            <span>:</span>
+                            <div className="flex w-full gap-2">
+                              <Input
+                                value={values.oldLicenseNo}
+                                maxLength={100}
+                                onChange={(e) =>
+                                  setFieldValue("oldLicenseNo", e.target.value)
+                                }
+                                className="h-10 flex-1"
+                                placeholder="Enter Old License Number"
+                              />
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={() => handleSearchLicense(values, setFieldValue)}
+                                disabled={isSearching}
+                                className="h-10 whitespace-nowrap"
+                              >
+                                {isSearching ? "Searching..." : "Search"}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+                    )}
+
+                    {/* {mode === 2 && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 xl:grid-cols-3">
                           <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2 xl:col-span-1">
@@ -1415,7 +1884,7 @@ s
                           </div>
                         </div>
                       </div>
-                    )}
+                    )} */}
 
                     <section
                       className={
@@ -1541,10 +2010,10 @@ s
                     </section>
 
                     <section className="border-t border-gray-200 pt-6">
-                      <div className="grid grid-cols-1 gap-x-10 gap-y-4 lg:grid-cols-2 xl:grid-cols-3">
+                      <div className="grid grid-cols-1 gap-x-10 gap-y-4 lg:grid-cols-2">
                         <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
                           <Label
-                            text="प्रभाग समिती."
+                            text ="वार्ड क्र."
                             required
                             className="!w-full pt-2 text-sm font-medium"
                           />
@@ -1569,56 +2038,92 @@ s
                         </div>
 
                         <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
-                          <Label
-                            text="दिनांका पासून"
-                            className="!w-full pt-2 text-sm font-medium"
-                          />
+                            <Label
+                              text="झोन क्र."
+                              required
+                              className="!w-full pt-2 text-sm font-medium"
+                            />
+                            <span className="pt-2 text-center">:</span>
+                            <Select
+                              value={values.zoneNo}
+                              onValueChange={(value) =>
+                                setFieldValue("zoneNo", value)
+                              }
+                            >
+                              <SelectTrigger className="h-10 w-full">
+                                <SelectValue placeholder="-- Select Option --" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {zoneOptions.map((item) => (
+                                  <SelectItem
+                                    key={item.value}
+                                    value={item.value}
+                                  >
+                                    {item.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
+                          <Label text="Financial From Year" required className="!w-full pt-2 text-sm font-medium" />
                           <span className="pt-2 text-center">:</span>
-                          <DatePicker
-                            value={parseDateForPicker(values.fromDate)}
-                            onChange={(date) =>
-                              setFieldValue(
-                                "fromDate",
-                                formatDateForFormik(date),
-                              )
-                            }
-                            className="h-10 w-full"
-                          />
+                          <Select
+                            value={values.financialFromYear}
+                            onValueChange={(v) => setFieldValue("financialFromYear", v)}
+                          >
+                            <SelectTrigger className="h-10 w-full">
+                              <SelectValue placeholder="-- Select Year --" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {yearOptions.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                  {item.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
+                          <Label text="To Year" required className="!w-full pt-2 text-sm font-medium" />
+                          <span className="pt-2 text-center">:</span>
+                          <Select
+                            value={values.financialToYear}
+                            onValueChange={(v) => setFieldValue("financialToYear", v)}
+                          >
+                            <SelectTrigger className="h-10 w-full">
+                              <SelectValue placeholder="-- Select Year --" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {yearOptions.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                  {item.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
 
                         <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
                           <Label
-                            text="दिनांका पर्यंत"
-                            className="!w-full pt-2 text-sm font-medium"
-                          />
-                          <span className="pt-2 text-center">:</span>
-                          <DatePicker
-                            value={parseDateForPicker(values.toDate)}
-                            onChange={(date) =>
-                              setFieldValue("toDate", formatDateForFormik(date))
-                            }
-                            className="h-10 w-full"
-                          />
-                        </div>
-
-                        <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
-                          <Label
-                            text="Area in Sq.ft"
+                            text="रक्कम"
                             required
                             className="!w-full pt-2 text-sm font-medium"
                           />
                           <span className="pt-2 text-center">:</span>
                           <Input
-                            type="number"
-                            value={values.usedArea}
-                            onChange={(e) =>
-                              setFieldValue("usedArea", e.target.value)
-                            }
-                            className="h-10 w-full"
+                            type="text"
+                            value={values.amount}
+                            readOnly
+                            disabled
+                            className="h-10 w-full bg-gray-100 cursor-not-allowed"
+                            placeholder="Auto-calculated"
                           />
                         </div>
 
-                        {mode === 2 && (
+                        {/* {mode === 2 && (
                           <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
                             <Label
                               text="ज्वलनशील पदार्थांचा / इंधनाचा वापर व साठवणूक करीत आहे?"
@@ -1700,7 +2205,7 @@ s
                               className="h-10 w-full"
                             />
                           </div>
-                        )}
+                        )} */}
 
                         <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
                           <Label
@@ -1742,15 +2247,17 @@ s
                           <Select
                             value={values.tradeType}
                             disabled={!values.tradeCategory}
-                            onValueChange={(value) =>
-                              setFieldValue("tradeType", value)
-                            }
+                            onValueChange={async (value) => {
+                              setFieldValue("tradeType", value);
+                              const rate = await getRateByTradeType(value, values.tradeCategory);
+                              setFieldValue("rate", String(rate || ""));
+                            }}
                           >
                             <SelectTrigger className="h-10 w-full">
                               <SelectValue placeholder="-- Select Option --" />
                             </SelectTrigger>
                             <SelectContent>
-                              {tradeTypeOptions.map((item) => (
+                              {tradeTypeByCategoryOptions.map((item) => (
                                 <SelectItem key={item.value} value={item.value}>
                                   {item.label}
                                 </SelectItem>
@@ -1759,7 +2266,54 @@ s
                           </Select>
                         </div>
 
-                        <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
+                        <section className="border-t border-gray-200 pt-6">
+                          <h4 className="mb-3 text-sm font-semibold text-gray-700">व्यवसाय</h4>
+                          <div className="max-h-[350px] overflow-y-auto border rounded-md">
+                            <Table className="w-full border-collapse">
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="w-[80px] bg-[#184aa6] text-white">
+                                    Select
+                                  </TableHead>
+                                  <TableHead className="bg-[#184aa6] text-white">
+                                    Trade
+                                  </TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {tradeCheckboxRows.length === 0 ? (
+                                  <TableRow>
+                                    <TableCell colSpan={2} className="py-4 text-center text-sm text-gray-500">
+                                      No trades found.
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  tradeCheckboxRows.map((row) => (
+                                    <TableRow key={row.tradeId}>
+                                      <TableCell className="text-center">
+                                        <Checkbox
+                                          checked={row.selected}
+                                          onCheckedChange={(checked) =>
+                                            setTradeCheckboxRows((prev) =>
+                                              prev.map((r) =>
+                                                r.tradeId === row.tradeId
+                                                  ? { ...r, selected: checked === true }
+                                                  : r,
+                                              ),
+                                            )
+                                          }
+                                        />
+                                      </TableCell>
+                                      <TableCell>{row.tradeName}</TableCell>
+                                    </TableRow>
+                                  ))
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </section>
+
+                        {/* <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
                           <Label
                             text="व्यवसाय ची जागा"
                             required
@@ -1783,40 +2337,9 @@ s
                               ))}
                             </SelectContent>
                           </Select>
-                        </div>
+                        </div> */}
 
-                        <div className="hidden">
-                          <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
-                            <Label
-                              text="झोन क्र."
-                              required
-                              className="!w-full pt-2 text-sm font-medium"
-                            />
-                            <span className="pt-2 text-center">:</span>
-                            <Select
-                              value={values.zoneNo}
-                              onValueChange={(value) =>
-                                setFieldValue("zoneNo", value)
-                              }
-                            >
-                              <SelectTrigger className="h-10 w-full">
-                                <SelectValue placeholder="-- Select Option --" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {zoneOptions.map((item) => (
-                                  <SelectItem
-                                    key={item.value}
-                                    value={item.value}
-                                  >
-                                    {item.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-
-                        <div className="hidden">
+                        <div>
                           <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
                             <Label
                               text="Rate"
@@ -1849,24 +2372,35 @@ s
                         <Table className="w-full table-fixed border">
                           <TableHeader>
                             <TableRow>
+                              <TableHead className="w-[110px] bg-[#184aa6] text-white">
+                                Delete
+                              </TableHead>
                               <TableHead className="bg-[#184aa6] text-white">
                                 Trade Type
                               </TableHead>
-
-                              <TableHead className="bg-[#184aa6] text-white">
-                                Trade Category
+                              <TableHead className="w-[140px] bg-[#184aa6] text-white">
+                                Rate
                               </TableHead>
                             </TableRow>
                           </TableHeader>
-
                           <TableBody>
                             {tradeTypeRateRows.map((item) => (
                               <TableRow key={item.id}>
+                                <TableCell>
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => removeTradeType(item.id, setFieldValue)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </TableCell>
                                 <TableCell className="break-words">
                                   {item.tradeType}
                                 </TableCell>
-                                <TableCell className="break-words">
-                                  {item.tradeCategory}
+                                <TableCell className="whitespace-nowrap">
+                                  {item.rate}
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -1901,7 +2435,7 @@ s
                         </section>
                       )}
 
-                    <div className="hidden">
+                    <div>
                       <section className="border-t border-gray-200 pt-6">
                         <div className="grid grid-cols-1 gap-x-8 gap-y-5 xl:grid-cols-2">
                           <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2">
@@ -1977,7 +2511,7 @@ s
                       <div className="grid grid-cols-1 gap-x-8 gap-y-5 xl:grid-cols-2">
                         <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2">
                           <Label
-                            text="अर्जदाराचे नाव"
+                            text="जागा मालकीचे नाव"
                             required
                             className="!w-full text-sm font-medium"
                           />
@@ -1993,23 +2527,23 @@ s
 
                         <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-start gap-2">
                           <Label
-                            text="अर्जदाराचे पत्ता"
+                            text="जागा मालकाचा पत्ता"
                             required
                             className="!w-full pt-2 text-sm font-medium"
                           />
                           <span className="pt-2">:</span>
-                          <textarea
+                          <Input
                             value={values.applicantAddress}
                             onChange={(e) =>
                               setFieldValue("applicantAddress", e.target.value)
                             }
-                            className="min-h-[90px] w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                            className="h-10 w-full"
                           />
                         </div>
                       </div>
                     </section>
 
-                    <div className="hidden">
+                    <div>
                       <section className="border-t border-gray-200 pt-6">
                         <div className="grid grid-cols-1 gap-x-8 gap-y-5 xl:grid-cols-2">
                           <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2">
@@ -2030,6 +2564,24 @@ s
                               className="h-10 w-full"
                             />
                           </div>
+
+                          <div className="grid min-w-0 grid-cols-[210px_16px_minmax(0,1fr)] items-start gap-2">
+                            <Label
+                              text="वापरात आलेले जागेचे क्षेत्र चौ. फु. मध्ये"
+                              required
+                              className="!w-full pt-2 text-sm font-medium"
+                            />
+                            <span className="pt-2 text-center">:</span>
+                            <Input
+                              type="number"
+                              value={values.usedArea}
+                              onChange={(e) =>
+                                setFieldValue("usedArea", e.target.value)
+                              }
+                              className="h-10 w-full"
+                            />
+                          </div>
+
 
                           <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2">
                             <Label
@@ -2062,6 +2614,35 @@ s
                                 नाही
                               </label>
                             </div>
+                          </div>
+
+                          <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2">
+                            <Label
+                              text="License Type"
+                              required
+                              className="!w-full text-sm font-medium"
+                            />
+                            <span>:</span>
+                            <Select
+                              value={values.licenseType}
+                              onValueChange={(value) =>
+                                setFieldValue("licenseType", value)
+                              }
+                            >
+                              <SelectTrigger className="h-10 w-full">
+                                <SelectValue placeholder="-- Select Option --" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {licenseTypeOptions.map((item) => (
+                                  <SelectItem
+                                    key={item.value}
+                                    value={item.value}
+                                  >
+                                    {item.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
 
                           <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2">
@@ -2121,35 +2702,6 @@ s
                               className="h-10 w-full"
                             />
                           </div>
-
-                          <div className="grid grid-cols-[210px_18px_minmax(0,1fr)] items-center gap-2">
-                            <Label
-                              text="License Type"
-                              required
-                              className="!w-full text-sm font-medium"
-                            />
-                            <span>:</span>
-                            <Select
-                              value={values.licenseType}
-                              onValueChange={(value) =>
-                                setFieldValue("licenseType", value)
-                              }
-                            >
-                              <SelectTrigger className="h-10 w-full">
-                                <SelectValue placeholder="-- Select Option --" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {licenseTypeOptions.map((item) => (
-                                  <SelectItem
-                                    key={item.value}
-                                    value={item.value}
-                                  >
-                                    {item.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
                         </div>
                       </section>
                     </div>
@@ -2168,6 +2720,12 @@ s
                           resetForm();
                           setTradeTypeRateRows([]);
                           setDirectorRows([]);
+                          setTradeCheckboxRows((prev) => prev.map((r) => ({ ...r, selected: false })));
+                          setFieldValue("amount", "0");
+                          setLicenseMode(serviceCodeFromUrl === "7" ? "N" : "R");
+                          setShowModeRadio(serviceCodeFromUrl === "");
+                          setApplicationId("");
+                          setApplicationNo("");
                           setActiveTab("primary");
                         }}
                       >
@@ -2218,7 +2776,7 @@ s
                       </div>
 
                       {/* Voter ID */}
-                      <div className="grid grid-cols-[220px_18px_minmax(0,1fr)] items-center gap-2">
+                      {/* <div className="grid grid-cols-[220px_18px_minmax(0,1fr)] items-center gap-2">
                         <Label
                           text="Voter ID Card No / License No"
                           className="!w-full text-sm font-medium"
@@ -2232,7 +2790,7 @@ s
                           }
                           className="h-10 w-full"
                         />
-                      </div>
+                      </div> */}
 
                       {/* Director Mobile */}
                       <div className="grid grid-cols-[220px_18px_minmax(0,1fr)] items-center gap-2">
@@ -2405,9 +2963,9 @@ s
                               संचालकांचे नाव
                             </TableHead>
 
-                            <TableHead className="w-[180px] whitespace-normal bg-[#184aa6] text-white">
+                            {/* <TableHead className="w-[180px] whitespace-normal bg-[#184aa6] text-white">
                               Voter ID Card No / License No
-                            </TableHead>
+                            </TableHead> */}
 
                             <TableHead className="w-[130px] whitespace-nowrap bg-[#184aa6] text-white">
                               मोबाईल क्र.
@@ -2451,9 +3009,9 @@ s
                                   {item.directorName}
                                 </TableCell>
 
-                                <TableCell className="break-words">
+                                {/* <TableCell className="break-words">
                                   {item.voterId}
-                                </TableCell>
+                                </TableCell> */}
 
                                 <TableCell className="whitespace-nowrap">
                                   {item.mobileNo}
@@ -2529,16 +3087,17 @@ s
                     <Table className="w-full table-fixed border">
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="w-[40%] bg-[#184aa6] text-white">
+                          <TableHead className="w-[30%] bg-[#184aa6] text-white">
                             दस्तऐवजाचे नांव
                           </TableHead>
-
-                          <TableHead className="w-[25%] bg-[#184aa6] text-white">
+                          <TableHead className="w-[20%] bg-[#184aa6] text-white">
                             शेरा
                           </TableHead>
-
-                          <TableHead className="w-[35%] bg-[#184aa6] text-white">
+                          <TableHead className="w-[30%] bg-[#184aa6] text-white">
                             फाईल निवडा
+                          </TableHead>
+                          <TableHead className="w-[20%] bg-[#184aa6] text-white">
+                            Download
                           </TableHead>
                         </TableRow>
                       </TableHeader>
@@ -2583,11 +3142,27 @@ s
                                   className="h-9 w-full"
                                 />
                               </TableCell>
+
+                              <TableCell className="align-middle text-center">
+                                {item.fileName && item.fileName !== "" && item.filebyte ? (
+                                  <a
+                                    href={`data:application/octet-stream;base64,${item.filebyte}`}
+                                    download={`${item.documentName}${item.fileName}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline"
+                                  >
+                                    Download ({item.fileName})
+                                  </a>
+                                ) : (
+                                  ""
+                                )}
+                              </TableCell>
                             </TableRow>
                           ))
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={3} className="py-8 text-center">
+                            <TableCell colSpan={4} className="py-8 text-center">
                               No Document Details Found.
                             </TableCell>
                           </TableRow>
@@ -2640,6 +3215,8 @@ s
                         resetForm();
                         setTradeTypeRateRows([]);
                         setDirectorRows([]);
+                        setTradeCheckboxRows((prev) => prev.map((r) => ({ ...r, selected: false })));
+                        setFieldValue("amount", "0");
                         setActiveTab("primary");
                       }}
                     >
