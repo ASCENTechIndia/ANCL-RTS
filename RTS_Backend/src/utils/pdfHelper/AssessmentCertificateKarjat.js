@@ -95,11 +95,11 @@ const AssessmentCertificateKarjatPdfHelper = async ({
 
       ZONE: row.ZONEID ?? "",
       WARD: row.WARDNAME ?? "",
-      PROPERTYNO: row.PROP ?? "",
-      PARTNO: row.PROP_NO ?? "",
+      PROPERTYNO: row.PROP_NO ?? "",
+      PARTNO: row.PROP ?? "",
       OLDPROPERTYNO: row.OLDPROPNO ?? "",
       CITYSURVEYNO: row.SURVENO ?? "",
-      PROPERTYDESCRIPTION: row.BUILD_NM ?? "",
+      PROPERTYDESCRIPTION: row.PROPERTY_TYPE ?? "",
       TOTALPLOTAREA: formatNumber(row.AREA),
 
       PRIMARYHOLDERNAME: row.FULLNAME ?? "",
@@ -107,17 +107,17 @@ const AssessmentCertificateKarjatPdfHelper = async ({
         .filter(Boolean)
         .join(" "),
       BUILDINGNAME: row.BUILD_NM ?? "",
-      ADDRESS: row.ROAD_NAME ?? "",
+      ADDRESS: row.BUILD_NM ?? "",
 
-      FLOOR: "",
+      FLOOR: row.UNIT,
       CONSTRUCTIONTYPE: row.CONST_TYPE ?? "",
       CONSTRUCTIONYEAR: row.CONST_YEAR ?? "",
       TAXABLEAREA: formatNumber(row.AREA),
       BUILDINGANNUALVALUE: formatNumber(row.RATE),
       EXPECTEDANNUALRENT: formatNumber(row.ANNUALRENT),
-      ANNUALRENTUNLET: "",
-      ANNUALRENTLAND: "",
-      REPAIRDEDUCTION: "",
+      ANNUALRENTUNLET: row.ANNUALRENT,
+      ANNUALRENTLAND: row.ANNUALRENT,
+      REPAIRDEDUCTION: row.ANNUALRENT,
       TAXABLEVALUE: formatNumber(row.RATE),
       TOTALTAX: formatNumber(
         Number(row.NUM_ASSESS_CPTAX || 0) +

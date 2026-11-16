@@ -594,7 +594,7 @@ const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
   }
 
     
-  if (serviceId === "3") {
+  else if (serviceId === "3") {
 
     query = `
       SELECT
