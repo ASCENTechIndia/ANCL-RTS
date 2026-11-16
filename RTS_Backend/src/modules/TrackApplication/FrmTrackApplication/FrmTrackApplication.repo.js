@@ -512,75 +512,151 @@ const getApplicationStepsRepo = async (ulbId, applino, serviceId) => {
 // GET CERTIFICATE DATA
 // ============================================================
 const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
+
+  console.log("serviceId: ", serviceId, appNo, ulbId);
+
   let query = "";
 
   // ============================================================
   // SERVICE ID = 2
   // ============================================================
-  
-if (serviceId === "2" || serviceId === "3") {
+  if (serviceId == "2") {
 
-  query = `
-    SELECT
-        var_ward_name prabhag_name,
-        var_zone_name zonename,
-        var_prop_ownersfnm || ' ' ||
-        var_prop_ownersmnm || ' ' ||
-        var_prop_ownerslnm owner3name,
-        var_prop_propno propno,
-        num_prop_zoneid zoneid,
-        num_zone_wardid wardno,
-        var_prop_buildnm address,
-        'KJPONLINE' || '/' || getaccyear(SYSDATE) || '/' ||
-        LPAD(prop.seq_RTSNoDues_ID.NEXTVAL, 5, '0') transcertinum,
-        var_rec_recno recno,
-        dat_rec_receiptdt receiptdt,
-        var_rec_bookno bookno,
-        (NVL(num_bill_tottax, 0) + NVL(num_prop_baltax, 0)) arrearsdemand,
-        (NVL(num_billprint_ctotal_s1, 0) + NVL(num_billprint_ctotal_s2, 0))
-        currentdemand,
-        NVL(num_rec_btotal, 0) arrearscoll,
-        (NVL(num_rec_ctotal_s1, 0) + NVL(num_rec_ctotal_s2, 0)) currentcoll,
-        num_prop_mobile mobile,
-        num_rec_totdiscamt discount,
-        var_propertytype_name propertytype
-
-    FROM prop.aoms_prop_mas
-
-    INNER JOIN prop.aoms_propertytype_mas
-        ON num_propertytype_id = num_prop_proptypeid
-
-    LEFT JOIN prop.aoms_bill_mas
-        ON num_bill_propid = num_propmas_propid
-        AND num_bill_ulbid = num_prop_ulbid
-
-    LEFT JOIN prop.aoms_billprint_mas
-        ON num_bill_propid = num_billprint_propid
-        AND num_billprint_ulbid = num_bill_ulbid
-
-    LEFT JOIN prop.aoms_rec_mas
-        ON num_rec_propid = num_propmas_propid
-
-    INNER JOIN prop.aoms_zone_mas
-        ON num_zone_id = num_prop_zoneid
-
-    INNER JOIN prop.aoms_ward_mas
-        ON num_ward_id = num_zone_wardid
-
-    WHERE var_prop_propno = (
-        SELECT var_application_propertyno
-        FROM (
-            SELECT var_application_propertyno
-            FROM aorts_applicant_infodet
-            WHERE var_appl_appno = '${appNo}'
-              AND num_appl_serviceid = '${serviceId}'
+    query = `
+      SELECT prop_mas.num_prop_srno AS sr_no,prop_mas.num_prop_prop AS prop,prop_mas.num_prop_zoneid AS zoneid,
+      wa.var_ward_name AS prabhag_name,wa.var_ward_name AS wardname,
+      prop_mas.var_prop_propno AS prop_no,prop_mas.var_prop_oldhouseno AS OldPropNo,wa.num_ward_id AS ward_no,
+      prop_mas.var_prop_roadname AS road_name,prop_mas.num_prop_surveyno AS surveno,prop_mas.num_prop_resrv AS ratable,prop_mas.num_prop_hissano AS hissano,
+      prop_mas.num_prop_legal AS legal,prop_mas.var_prop_buildnm AS build_nm,prop_mas.num_prop_rate AS rate,
+      consttype.var_consttype_name AS const_type,propertytype.var_propertytype_name AS property_type,
+      prop_mas.num_prop_area AS area,prop_mas.num_prop_constyear AS const_year,prop_mas.var_prop_houseno AS houseno,
+      prop_mas.var_prop_flatno AS flatno,prop_mas.var_prop_ownersfnm AS owners_fnm,
+      prop_mas.var_prop_ownersmnm AS owners_mnm,prop_mas.var_prop_ownerslnm AS owners_lnm,
+      prop_mas.var_prop_ocpfnm AS ocp_fnm,prop_mas.var_prop_ocpmnm AS ocp_mnm,prop_mas.var_prop_ocplnm AS ocp_lnm,
+      consttype.var_consttype_name AS constr_usg,0 AS unit,zonez.num_zone_id AS var_zone_zoneid,
+      NVL(taxdet.num_assess_cptax, 0) AS num_assess_cptax,NVL(taxdet.num_assess_edutax, 0) AS num_assess_edutax,
+      NVL(taxdet.num_assess_emptax, 0) AS num_assess_emptax,NVL(taxdet.num_assess_treetax, 0) AS num_assess_treetax,
+      0 AS num_assess_othertax,NVL(taxdet.num_assess_notfee, 0) AS num_assess_notfee,NVL(taxdet.num_assess_warfee, 0) AS num_assess_warfee,
+      NVL(taxdet.num_assess_intfee, 0) AS num_assess_intfee,0 AS num_assess_etc,'' AS var_assess_wardprop,
+      NVL(taxdet.num_assess_electric, 0) AS num_assess_electric,NVL(taxdet.num_assess_notno, 0) AS num_assess_notno,
+      NVL(taxdet.num_assess_cleaning, 0) AS num_assess_cleaning,NVL(taxdet.num_assess_fine, 0) AS num_assess_fine,
+      NVL(taxdet.num_assess_illegalfine, 0) AS num_assess_illegalfine,
+      assess.num_prop_annualrent AS annualrent,
+      TRIM(prop_mas.var_prop_ownersfnm || ' ' || prop_mas.var_prop_ownersmnm || ' ' || prop_mas.var_prop_ownerslnm) AS fullname,
+      'KJPONLINE' || '/' || getaccyear (SYSDATE)||'/'||LPAD(prop.seq_RTSNoDues_ID.NEXTVAL, 5, '0') transcertinum,
+      rc.var_rec_recno AS recno,rc.dat_rec_receiptdt AS receiptdt,rc.var_rec_bookno AS bookno,
+      (NVL(prop_mas.num_prop_baltax, 0) + NVL(bill.num_bill_tottax, 0)) AS arrearsdemand,
+      (NVL(billprint.num_billprint_ctotal_s1, 0) + NVL(billprint.num_billprint_ctotal_s2, 0) ) AS currentdemand,
+      0 AS arrearscoll,(NVL(rc.num_rec_ctotal_s1, 0)+NVL(rc.num_rec_ctotal_s2, 0)) AS currentcoll,
+      prop_mas.num_prop_mobile AS mobile,NVL(prop_mas.num_prop_discount, 0) AS discount,
+      CASE WHEN usage.var_usagetype_code = 'RES' THEN prop_mas.num_prop_area ELSE NULL END AS resarea,
+      CASE WHEN usage.var_usagetype_code = 'NRES' THEN prop_mas.num_prop_area ELSE NULL END AS nonresarea,
+      0 AS resfloorids,0 AS nonresfloorids
+      FROM prop.aoms_prop_mas prop_mas
+      INNER JOIN prop.aoms_usagetype_mas usage ON usage.num_usagetype_id = prop_mas.num_prop_usagetypeid
+      INNER JOIN prop.aoms_propertytype_mas propertytype ON propertytype.num_propertytype_id = prop_mas.num_prop_proptypeid
+      INNER JOIN prop.aoms_zone_mas zonez ON zonez.num_zone_id = prop_mas.num_prop_zoneid
+      INNER JOIN prop.aoms_ward_mas wa ON wa.num_ward_id = zonez.num_zone_wardid
+      LEFT JOIN prop.aoms_consttype_mas consttype ON consttype.num_consttype_id = prop_mas.num_prop_consttypeid
+      LEFT JOIN( SELECT * FROM ( SELECT a.*, ROW_NUMBER() OVER ( PARTITION BY a.num_prop_zoneid, a.var_prop_propno ORDER BY a.ROWID DESC ) AS rn
+      FROM prop.aoms_propassess_mas a ) WHERE rn = 1 ) assess ON assess.num_prop_zoneid = prop_mas.num_prop_zoneid AND assess.var_prop_propno = prop_mas.var_prop_propno
+      LEFT JOIN (SELECT * FROM ( SELECT b.*, ROW_NUMBER() OVER ( PARTITION BY b.num_bill_propid ORDER BY b.num_bill_billid DESC ) AS rn
+      FROM prop.aoms_bill_mas b ) WHERE rn = 1 ) bill ON bill.num_bill_propid = prop_mas.num_propmas_propid
+      LEFT JOIN ( SELECT bt.num_billtax_billmasid, 
+      SUM( CASE WHEN bt.num_billtax_taxid = 481 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_cptax,
+      SUM( CASE WHEN bt.num_billtax_taxid = 482 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_edutax,
+      SUM( CASE WHEN bt.num_billtax_taxid = 484 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_emptax,
+      SUM( CASE WHEN bt.num_billtax_taxid = 483 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_treetax,
+      SUM( CASE WHEN bt.num_billtax_taxid = 490 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_notfee,
+      SUM( CASE WHEN bt.num_billtax_taxid = 491 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_warfee,
+      SUM( CASE WHEN bt.num_billtax_taxid = 510 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_intfee,
+      SUM( CASE WHEN bt.num_billtax_taxid = 497 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_electric,
+      SUM( CASE WHEN bt.num_billtax_taxid = 490 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_notno,
+      SUM( CASE WHEN bt.num_billtax_taxid = 512 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_cleaning,
+      SUM( CASE WHEN bt.num_billtax_taxid = 493 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_fine,
+      SUM( CASE WHEN bt.num_billtax_taxid = 494 THEN NVL(bt.num_billtax_billamt_s1, 0) + NVL(bt.num_billtax_billamt_s2, 0) ELSE 0 END ) AS num_assess_illegalfine
+      FROM prop.aoms_billtax_det bt
+      GROUP BY bt.num_billtax_billmasid ) taxdet ON taxdet.num_billtax_billmasid = bill.num_bill_billid
+      LEFT JOIN ( SELECT * FROM ( SELECT bp.*, ROW_NUMBER() OVER ( PARTITION BY bp.num_billprint_propid ORDER BY bp.ROWID DESC ) AS rn
+      FROM prop.aoms_billprint_mas bp ) WHERE rn = 1 ) billprint ON billprint.num_billprint_propid = prop_mas.num_propmas_propid
+      LEFT JOIN ( SELECT * FROM ( SELECT r.*, ROW_NUMBER() OVER ( PARTITION BY r.num_rec_propid ORDER BY r.dat_rec_receiptdt DESC, r.var_rec_recno DESC ) AS rn
+      FROM prop.aoms_rec_mas r ) WHERE rn = 1 ) rc ON rc.num_rec_propid = prop_mas.num_propmas_propid  
+      
+        WHERE prop_mas.var_prop_propno = (
+          SELECT var_application_propertyno
+          FROM (
+              select var_appl_appno,var_application_propertyno from aorts_applicant_infodet 
+              WHERE var_appl_appno = '${appNo}'
               AND num_appl_ulbid = '${ulbId}'
-            ORDER BY dat_application_insdate DESC
-        )
-        WHERE ROWNUM = 1
-    )
-  `;
-}
+          )
+      )
+    `;
+  }
+
+    
+  if (serviceId === "3") {
+
+    query = `
+      SELECT
+          var_ward_name prabhag_name,
+          var_zone_name zonename,
+          var_prop_ownersfnm || ' ' ||
+          var_prop_ownersmnm || ' ' ||
+          var_prop_ownerslnm owner3name,
+          var_prop_propno propno,
+          num_prop_zoneid zoneid,
+          num_zone_wardid wardno,
+          var_prop_buildnm address,
+          'KJPONLINE' || '/' || getaccyear(SYSDATE) || '/' ||
+          LPAD(prop.seq_RTSNoDues_ID.NEXTVAL, 5, '0') transcertinum,
+          var_rec_recno recno,
+          dat_rec_receiptdt receiptdt,
+          var_rec_bookno bookno,
+          (NVL(num_bill_tottax, 0) + NVL(num_prop_baltax, 0)) arrearsdemand,
+          (NVL(num_billprint_ctotal_s1, 0) + NVL(num_billprint_ctotal_s2, 0))
+          currentdemand,
+          NVL(num_rec_btotal, 0) arrearscoll,
+          (NVL(num_rec_ctotal_s1, 0) + NVL(num_rec_ctotal_s2, 0)) currentcoll,
+          num_prop_mobile mobile,
+          num_rec_totdiscamt discount,
+          var_propertytype_name propertytype
+
+      FROM prop.aoms_prop_mas
+
+      INNER JOIN prop.aoms_propertytype_mas
+          ON num_propertytype_id = num_prop_proptypeid
+
+      LEFT JOIN prop.aoms_bill_mas
+          ON num_bill_propid = num_propmas_propid
+          AND num_bill_ulbid = num_prop_ulbid
+
+      LEFT JOIN prop.aoms_billprint_mas
+          ON num_bill_propid = num_billprint_propid
+          AND num_billprint_ulbid = num_bill_ulbid
+
+      LEFT JOIN prop.aoms_rec_mas
+          ON num_rec_propid = num_propmas_propid
+
+      INNER JOIN prop.aoms_zone_mas
+          ON num_zone_id = num_prop_zoneid
+
+      INNER JOIN prop.aoms_ward_mas
+          ON num_ward_id = num_zone_wardid
+
+      WHERE var_prop_propno = (
+          SELECT var_application_propertyno
+          FROM (
+              SELECT var_application_propertyno
+              FROM aorts_applicant_infodet
+              WHERE var_appl_appno = '${appNo}'
+                AND num_appl_serviceid = '${serviceId}'
+                AND num_appl_ulbid = '${ulbId}'
+              ORDER BY dat_application_insdate DESC
+          )
+          WHERE ROWNUM = 1
+      )
+    `;
+  }
 
 
   // ============================================================

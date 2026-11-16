@@ -7,6 +7,8 @@ const { AppError } = require("../../../libs/errors");
 const { ExtractOfPropertyReportHelper } = require("../../../utils/pdfHelper/FrmTrackApplication");
 const { getCorporationDetailsService } = require("../../Dashboard/Dashboard.service");
 const FrmServiceCertificatePdfHelper = require("../../../utils/pdfHelper/FrmServiceCertificatePdfHelper");
+const { AssessmentCertificateKarjatPdfHelper } = require("../../../utils/pdfHelper/AssessmentCertificateKarjat");
+const NoDueCertificateService3PdfHelper = require("../../../utils/pdfHelper/NoDueCertificateService3PdfHelper");
 
 // ============================================================
 // GET APPLICATION DETAILS
@@ -621,7 +623,25 @@ const generateCertificateReport = asyncHandler(async (req, res) => {
       appNo: filters.appNo,
       ulbId: filters.ulbId,
     });
-  } else {
+  }
+  else if (String(filters.serviceId) === "2") {
+    pdf = await AssessmentCertificateKarjatPdfHelper({
+      rows: reportData,
+      corporationName: corporationName || "",
+      ulbLogo: ulbLogo || path.join(process.cwd(), "public", "tmclogo.jpg"),
+      serviceId: filters.serviceId,
+      appNo: filters.appNo,
+      ulbId: filters.ulbId,
+    });
+  }
+  else if (String(filters.serviceId) === "3") {
+    pdf = await NoDueCertificateService3PdfHelper({
+      rows: reportData,
+      corporationName,
+      ulbLogo: ulbLogo || path.join(process.cwd(), "public", "tmclogo.jpg"),
+    });
+  } 
+  else {
     pdf = await ExtractOfPropertyReportHelper({
       rows: reportData,
       corporationName: corporationName || "",
