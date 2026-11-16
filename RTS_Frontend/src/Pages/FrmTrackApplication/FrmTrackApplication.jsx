@@ -799,7 +799,7 @@ const FrmTrackApplication = () => {
         const departmentId = selectedApp?.departmentId;
 
 
-        if (departmentId === 290 ||(departmentId === 7 && ![2, 3].includes(Number(serviceId)))) {
+        if (departmentId === 290 ||(departmentId === 7 && [2, 3].includes(Number(serviceId)))) {
         // if (departmentId === 290 || ![2, 3].includes(Number(serviceId))) {
         // if (departmentId === 7 || departmentId === 290) {
           Swal.fire({

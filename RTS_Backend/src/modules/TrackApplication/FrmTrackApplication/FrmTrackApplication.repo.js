@@ -517,18 +517,71 @@ const getCertificateDataRepo = async (serviceId, appNo, ulbId) => {
   // ============================================================
   // SERVICE ID = 2
   // ============================================================
-  if (serviceId === "2") {
-    query =
-      " select var_service_eng_name || '/' || var_service_mar_name servid,zonename zoneid, wardname, case when var_propassess_subcode is not null then var_propassess_propno||'/'||var_propassess_subcode else var_propassess_propno end  propno,var_propassess_subcode subcode, ";
-    query += " var_propassess_appno appno,var_propassess_landholder landholder,var_propassess_structholder structholder, ";
-    query += " var_propassess_owndtls owndtls,var_propassess_address address,var_propassess_flatno flatno,var_propassess_structure structure, ";
-    query += " num_propassess_usagetype usagetype,var_propassess_consttype consttype,num_propassess_area area,num_propassess_lettingrate lettingrate, ";
-    query += " num_propassess_rate rate,num_propassess_yeartax yeartax,var_propassess_assessyr assessyr,var_propassess_appliname appliname, ";
-    query += " num_propassess_applimob applimob,var_propassess_appliemail appliemail, dat_propassess_insdate appdate, dat_applitrack_insdt authdate, var_propassess_javakno outno from aorts_propassess_mas ";
-    query += " inner join aorts_tmcservice_def on num_service_serviceid = num_propassess_servid ";
-    query += " inner join prop.vw_zonemas on num_propassess_zoneid = zoneid inner join aorts_applitracking_det on var_applitrack_applno= var_propassess_appno and num_applitrack_stageid=3 ";
-    query += " where var_propassess_appno = '" + appNo + "' and ulbid = '" + ulbId + "' ";
-  }
+  
+if (serviceId === "2" || serviceId === "3") {
+
+  query = `
+    SELECT
+        var_ward_name prabhag_name,
+        var_zone_name zonename,
+        var_prop_ownersfnm || ' ' ||
+        var_prop_ownersmnm || ' ' ||
+        var_prop_ownerslnm owner3name,
+        var_prop_propno propno,
+        num_prop_zoneid zoneid,
+        num_zone_wardid wardno,
+        var_prop_buildnm address,
+        'KJPONLINE' || '/' || getaccyear(SYSDATE) || '/' ||
+        LPAD(prop.seq_RTSNoDues_ID.NEXTVAL, 5, '0') transcertinum,
+        var_rec_recno recno,
+        dat_rec_receiptdt receiptdt,
+        var_rec_bookno bookno,
+        (NVL(num_bill_tottax, 0) + NVL(num_prop_baltax, 0)) arrearsdemand,
+        (NVL(num_billprint_ctotal_s1, 0) + NVL(num_billprint_ctotal_s2, 0))
+        currentdemand,
+        NVL(num_rec_btotal, 0) arrearscoll,
+        (NVL(num_rec_ctotal_s1, 0) + NVL(num_rec_ctotal_s2, 0)) currentcoll,
+        num_prop_mobile mobile,
+        num_rec_totdiscamt discount,
+        var_propertytype_name propertytype
+
+    FROM prop.aoms_prop_mas
+
+    INNER JOIN prop.aoms_propertytype_mas
+        ON num_propertytype_id = num_prop_proptypeid
+
+    LEFT JOIN prop.aoms_bill_mas
+        ON num_bill_propid = num_propmas_propid
+        AND num_bill_ulbid = num_prop_ulbid
+
+    LEFT JOIN prop.aoms_billprint_mas
+        ON num_bill_propid = num_billprint_propid
+        AND num_billprint_ulbid = num_bill_ulbid
+
+    LEFT JOIN prop.aoms_rec_mas
+        ON num_rec_propid = num_propmas_propid
+
+    INNER JOIN prop.aoms_zone_mas
+        ON num_zone_id = num_prop_zoneid
+
+    INNER JOIN prop.aoms_ward_mas
+        ON num_ward_id = num_zone_wardid
+
+    WHERE var_prop_propno = (
+        SELECT var_application_propertyno
+        FROM (
+            SELECT var_application_propertyno
+            FROM aorts_applicant_infodet
+            WHERE var_appl_appno = '${appNo}'
+              AND num_appl_serviceid = '${serviceId}'
+              AND num_appl_ulbid = '${ulbId}'
+            ORDER BY dat_application_insdate DESC
+        )
+        WHERE ROWNUM = 1
+    )
+  `;
+}
+
 
   // ============================================================
   // SERVICE ID = 43 OR 289
