@@ -1,0 +1,748 @@
+
+<!doctype html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assessment Certificate</title>
+
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Noto Sans Devanagari", "Mangal", Arial, sans-serif;
+      color: #000;
+      background: #fff;
+      font-size: 11px;
+    }
+
+    .page {
+      width: 297mm;
+      min-height: 210mm;
+      padding: 3mm 3mm 2mm;
+      position: relative;
+      border: 1px solid #000;
+    }
+
+    .header {
+      position: relative;
+      height: 22mm;
+      text-align: center;
+    }
+
+    .left-logo {
+      position: absolute;
+      left: 2mm;
+      top: 0;
+      width: 27mm;
+      height: 21mm;
+      object-fit: contain;
+    }
+
+    .header-center {
+      margin-left: 29mm;
+      margin-right: 65mm;
+      padding-top: 1mm;
+      text-align: center;
+    }
+
+    .corporation-name {
+      font-size: 21px;
+      font-weight: bold;
+      line-height: 1.3;
+    }
+
+    .report-title {
+      font-size: 17px;
+      font-weight: bold;
+      margin-top: 1mm;
+    }
+
+    .form-number {
+      position: absolute;
+      right: 62mm;
+      top: 13mm;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .printed-date {
+      position: absolute;
+      right: 2mm;
+      top: 1mm;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .sub-heading {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      margin: 0 0 2mm;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      border: 1px solid #000;
+      padding: 2mm 1mm;
+      text-align: center;
+      vertical-align: middle;
+      overflow-wrap: break-word;
+    }
+
+    .property-table {
+      margin-top: 1mm;
+    }
+
+    .property-table th {
+      height: 11mm;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .property-table td {
+      height: 10mm;
+      font-size: 12px;
+    }
+
+    .holder-row td {
+      height: 8mm;
+      text-align: left;
+      font-size: 13px;
+      font-weight: bold;
+      padding-left: 2mm;
+    }
+
+    .occupant-row td {
+      height: 8mm;
+      text-align: left;
+      font-size: 12px;
+      padding-left: 2mm;
+    }
+
+    .address-row td {
+      height: 8mm;
+      text-align: left;
+      font-size: 12px;
+      padding-left: 2mm;
+    }
+
+    .assessment-table {
+      margin-top: 0;
+    }
+
+    .assessment-table th {
+      height: 22mm;
+      font-size: 11px;
+      line-height: 1.5;
+      padding: 1mm;
+    }
+
+    .assessment-table td {
+      height: 20mm;
+      font-size: 12px;
+      padding: 1mm;
+    }
+
+    .assessment-table .usage {
+      text-align: left;
+      padding-left: 1mm;
+      line-height: 2;
+    }
+
+    .lower-section {
+      display: flex;
+      gap: 2mm;
+      margin-top: 1mm;
+      width: 100%;
+      align-items: flex-start;
+    }
+
+    .photo-section {
+      width: 37%;
+      flex-shrink: 0;
+    }
+
+    .photo-title {
+      font-size: 11px;
+      height: 7mm;
+      display: flex;
+      align-items: center;
+    }
+
+    .property-photo {
+      width: 100%;
+      height: 34mm;
+      border: 1px solid #000;
+      object-fit: contain;
+      display: block;
+    }
+
+    .photo-placeholder {
+      width: 100%;
+      height: 34mm;
+      border: 1px solid #000;
+    }
+
+    .right-section {
+      width: 63%;
+      flex: 1;
+    }
+
+    .certificate-text {
+      min-height: 10mm;
+      font-size: 11px;
+      line-height: 1.5;
+      text-align: justify;
+      padding: 0 1mm;
+    }
+
+    .summary-table {
+      margin-top: 1mm;
+    }
+
+    .summary-table th {
+      height: 9mm;
+      font-size: 12px;
+    }
+
+    .summary-table td {
+      height: 8mm;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .summary-table .amount {
+      text-align: left;
+      padding-left: 2mm;
+    }
+
+    .book-details td {
+      height: 7mm;
+      font-size: 11px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .signature-section {
+      position: relative;
+      height: 25mm;
+      margin-top: 1mm;
+    }
+
+    .signature {
+      position: absolute;
+      right: 9mm;
+      bottom: 2mm;
+      width: 45mm;
+      text-align: center;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 1.6;
+    }
+
+    .bottom-date-section {
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      min-height: 10mm;
+      display: flex;
+      align-items: center;
+      padding: 1mm 1mm;
+      gap: 4mm;
+      font-size: 10px;
+    }
+
+    .document-date {
+      width: 11%;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .notes {
+      flex: 1;
+      line-height: 1.5;
+      text-align: justify;
+    }
+
+    .appendix {
+      min-height: 15mm;
+      padding: 1mm 1mm;
+      font-size: 10px;
+      line-height: 1.5;
+      text-align: justify;
+    }
+
+    .appendix p {
+      margin: 0;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+    .text-left {
+      text-align: left;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .nowrap {
+      white-space: nowrap;
+    }
+
+    .rupee {
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <div class="header">
+
+      {{#if leftLogo}}
+      <img src="{{leftLogo}}" class="left-logo" />
+      {{/if}}
+
+      <div class="header-center">
+        <div class="corporation-name">
+          {{corporationName}}
+        </div>
+
+        <div class="report-title">
+          ABSTRACT FROM ASSESMENT REGISTER (PREVIEW)
+        </div>
+      </div>
+
+      <div class="form-number">
+        फॉर्म 43 (नियम 74)
+      </div>
+
+      <div class="printed-date">
+        Printed On: {{PRINTEDDATE}}
+      </div>
+
+    </div>
+
+    <div class="sub-heading">
+      सन {{FINANCIALYEAR}} या वर्षामधील कर आकारणीस पात्र असलेल्या इमारती आणि जमिनी यांची आकारणी सूची
+    </div>
+
+    <!-- PROPERTY BASIC DETAILS -->
+    <table class="property-table">
+
+      <colgroup>
+        <col style="width:7.7%">
+        <col style="width:7.5%">
+        <col style="width:9%">
+        <col style="width:8%">
+        <col style="width:11.7%">
+        <col style="width:12.7%">
+        <col style="width:20%">
+        <col style="width:23.4%">
+      </colgroup>
+
+      <thead>
+        <tr>
+          <th>झोन क्र.</th>
+          <th>वार्ड क्र.</th>
+          <th>मालमत्ता क्र.</th>
+          <th>भाग क्र.</th>
+          <th>जुना मालमत्ता क्र.</th>
+          <th>सिटी सर्वे क्र.</th>
+          <th>मालमत्तेचे वर्णन</th>
+          <th>एकूण प्लॉट क्षेत्रफळ चौ.मी.</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>{{ZONE}}</td>
+          <td>{{WARD}}</td>
+          <td>{{PROPERTYNO}}</td>
+          <td>{{PARTNO}}</td>
+          <td>{{OLDPROPERTYNO}}</td>
+          <td>{{CITYSURVEYNO}}</td>
+          <td>{{PROPERTYDESCRIPTION}}</td>
+          <td>{{TOTALPLOTAREA}}</td>
+        </tr>
+      </tbody>
+
+    </table>
+
+    <!-- PROPERTY HOLDER DETAILS -->
+    <table>
+
+      <tbody>
+        <tr class="holder-row">
+          <td colspan="8">
+            प्राथमिक कर धारकाचे नाव : {{PRIMARYHOLDERNAME}}
+          </td>
+        </tr>
+
+        <tr class="occupant-row">
+          <td colspan="8">
+            <div style="display:flex; justify-content:space-between; width:100%;">
+              <span>
+                भोगवटदाराचे नाव : {{OCCUPANTNAME}}
+              </span>
+
+              <span>
+                दुकान व इमारतीचे नाव व क्र. {{BUILDINGNAME}}
+              </span>
+            </div>
+          </td>
+        </tr>
+
+        <tr class="address-row">
+          <td colspan="8">
+            पत्ता : {{ADDRESS}}
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+
+    <!-- ASSESSMENT DETAILS -->
+    <table class="assessment-table">
+
+      <colgroup>
+        <col style="width:6%">
+        <col style="width:5.8%">
+        <col style="width:7.3%">
+        <col style="width:6.3%">
+        <col style="width:8.5%">
+        <col style="width:8.5%">
+        <col style="width:9.5%">
+        <col style="width:9.2%">
+        <col style="width:9.7%">
+        <col style="width:9.3%">
+        <col style="width:8.8%">
+        <col style="width:11.1%">
+      </colgroup>
+
+      <thead>
+        <tr>
+          <th>मालमत्तेचा उपयोग</th>
+
+          <th>मजला</th>
+
+          <th>
+            मालमत्तेचे बांधकाम प्रकार
+          </th>
+
+          <th>
+            सर्वेक्षण बांधकाम वर्ष
+          </th>
+
+          <th>
+            मालमत्तेचे करपात्र क्षेत्रफळ (चौ.मी.)
+          </th>
+
+          <th>
+            इमारतीची किंमत वार्षिक
+          </th>
+
+          <th>
+            अपेक्षित वार्षिक भाडे घरसारा मूल्य रु.
+          </th>
+
+          <th>
+            भाड्याने न दिलेल्या भागाचे वार्षिक भाडेमूल्य रु.
+          </th>
+
+          <th>
+            इमारतीचे किंवा जमिनीचे वार्षिक भाडे रु.
+          </th>
+
+          <th>
+            दुरुस्ती इत्यादीसाठी १०% वजा केल्यावर रु.
+          </th>
+
+          <th>
+            करयोग्य मूल्य रु.
+          </th>
+
+          <th>
+            एकूण कर
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr>
+          <td class="usage">
+            निवासी<br />
+            अनिवासी
+          </td>
+
+          <td>
+            {{FLOOR}}
+          </td>
+
+          <td>
+            {{CONSTRUCTIONTYPE}}
+          </td>
+
+          <td>
+            {{CONSTRUCTIONYEAR}}
+          </td>
+
+          <td>
+            {{TAXABLEAREA}}
+          </td>
+
+          <td>
+            {{BUILDINGANNUALVALUE}}
+          </td>
+
+          <td>
+            {{EXPECTEDANNUALRENT}}
+          </td>
+
+          <td>
+            {{ANNUALRENTUNLET}}
+          </td>
+
+          <td>
+            {{ANNUALRENTLAND}}
+          </td>
+
+          <td>
+            {{REPAIRDEDUCTION}}
+          </td>
+
+          <td>
+            {{TAXABLEVALUE}}
+          </td>
+
+          <td>
+            {{TOTALTAX}}
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+    <!-- PHOTO AND DEMAND SUMMARY -->
+    <div class="lower-section">
+
+      <!-- PROPERTY PHOTO -->
+      <div class="photo-section">
+
+        <div class="photo-title">
+          मालमत्तेचे स्थळदर्शक फोटो
+        </div>
+
+        <div class="photo-placeholder"></div>
+
+      </div>
+
+      <!-- DEMAND AND COLLECTION -->
+      <div class="right-section">
+
+        <div class="certificate-text">
+          प्रमाणित करण्यात येते की वरील प्रमाणे उल्लेखित मालमत्ता बाबत सन
+          {{FINANCIALYEAR}} या आर्थिक वर्षापर्यंत मालमत्ता कर आकारणी मधील
+          नोंदणीतील संपूर्ण रक्कम थकबाकीसह भरणा करण्यात आलेला आहे व
+          उल्लेखित मालमत्तेवर मालमत्ता कर बाबत कोणतीही रक्कम थकबाकी नाही.
+        </div>
+
+        <table class="summary-table">
+
+          <colgroup>
+            <col style="width:20%">
+            <col style="width:20%">
+            <col style="width:20%">
+            <col style="width:20%">
+            <col style="width:20%">
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th>विवरण</th>
+              <th>चालू रु.</th>
+              <th>थकीत रु.</th>
+              <th>एकूण रु.</th>
+              <th>एकूण सूट रु.</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td>मागणी</td>
+
+              <td class="amount">
+                रु. {{CURRENTDEMAND}}
+              </td>
+
+              <td class="amount">
+                रु. {{ARREARSDEMAND}}
+              </td>
+
+              <td class="amount">
+                रु. {{TOTALDEMAND}}
+              </td>
+
+              <td rowspan="2">
+                {{TOTALREBATE}}
+              </td>
+            </tr>
+
+            <tr>
+              <td>वसुली</td>
+
+              <td class="amount">
+                रु. {{CURRENTCOLLECTION}}
+              </td>
+
+              <td class="amount">
+                रु. {{ARREARSCOLLECTION}}
+              </td>
+
+              <td class="amount">
+                रु. {{TOTALCOLLECTION}}
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+        <!-- BOOK / RECEIPT DETAILS -->
+        <table class="book-details">
+
+          <tbody>
+            <tr>
+
+              <td>
+                पुस्तक नं. : {{BOOKNO}}
+              </td>
+
+              <td>
+                पावती नं. : {{RECEIPTNO}}
+              </td>
+
+              <td>
+                दिनांक : {{RECEIPTDATE}}
+              </td>
+
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="signature-section">
+
+      <div class="signature">
+        मुख्य अधिकारी<br />
+        {{corporationName}}
+      </div>
+
+    </div>
+
+    <!-- DATE AND NOTES -->
+    <div class="bottom-date-section">
+
+      <div class="document-date">
+        दि. {{AUTHDATE}}
+      </div>
+
+      <div class="notes">
+
+        <strong>टीप:-</strong>
+        *सदर मालमत्तेवर महानगरपालिकेमार्फत केवळ कर आकारणीपुरती मर्यादित नोंद घेण्यात आली आहे, तरी हा उतारा मालकीहक्क किंवा त्याबाबत कोणताही कायदेशीर पुरावा म्हणून ग्राह्य धरता येणार नाही.
+
+        <br />
+
+        *मालमत्ता धारकाचे/भोगवटदाराचे नाव हे कर वसुली करण्यापुरते मर्यादित असून यास मालकी हक्काबाबतचा पुरावा अथवा दस्त म्हणून ग्राह्य धरण्यात येणार नाही.
+
+      </div>
+
+    </div>
+
+    <!-- APPENDIX -->
+    <div class="appendix">
+
+      <p>
+        <strong>परिशिष्ट:-</strong>
+
+        I) मजला:-
+        B : तळघर / बेसमेंट,
+        G : तळमजला,
+        M : पोटमाळा,
+        1 : पहिला मजला,
+        2 : दुसरा मजला या प्रकारे.
+
+        II) बांधकाम प्रकार:-
+
+        A : आर.सी.सी. स्लॅबची घरे
+
+        B : विटा सिमेंटच्या भिंती विटा सिमेंटची भारवाहक संरचना
+
+        C : सिमेंटच्या भिंती व टिन कव्हरचे छत
+
+        D : मातीच्या भिंती व टिन कव्हरचे छत
+
+        E : अस्थायी कुळाच्या/लाकडी फळ्यांचे बांधकाम
+
+        OP : खुला भूखंड (प्लॉट)
+
+        III) उपयोगाचा प्रकार:-
+
+        R : शासकीय शैक्षणिक इमारत
+
+        G : हॉटेल
+
+        D : शासकीय
+
+        T : दवाखाना
+
+        M : मंदिर
+
+        M : मंगल कार्यालय
+
+        I : औद्योगिक
+
+        B : बँक/वित्तीय संस्था
+
+        TW : मोबाईल टॉवर
+
+        N : उपयोगात नाही.
+
+        IV) UTILITY : स्नानगृह, शौचालय, जिना (Stair), पूजाघर, पॅसेज.
+
+        talghar/basement vit simentchi bharvah savrachna SNANGRUH KIVA KHULA BHUKHAND (PLOT) RAHIVASI S DUKAN
+      </p>
+
+    </div>
+
+  </div>
+</body>
+</html>
