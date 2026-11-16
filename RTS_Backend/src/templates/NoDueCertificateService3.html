@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="mr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>No Due Certificate</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 0
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm 12mm;
+            font-family: "Nirmala UI", "Mangal", Arial, sans-serif;
+            font-size: 11px;
+            color: #000
+        }
+
+        .page {
+            position: relative;
+            min-height: 277mm;
+            border: 2px solid #222;
+            padding: 5mm
+        }
+
+        .header {
+            height: 20mm;
+            border: 1.5px solid #222;
+            position: relative;
+            text-align: center;
+            padding: 2mm 5mm
+        }
+
+        .logo {
+            position: absolute;
+            left: 4mm;
+            top: 3mm;
+            width: 15mm;
+            height: 15mm;
+            object-fit: contain
+        }
+
+        .corp {
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1.5
+        }
+
+        .dept {
+            font-size: 15px;
+            font-weight: bold
+        }
+
+        .heading {
+            text-align: center;
+            font-size: 17px;
+            font-weight: bold;
+            margin: 4mm 0 5mm;
+            padding: 2.5mm;
+            border: 1px solid #222
+        }
+
+        .preview {
+            font-size: 10px
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed
+        }
+
+        .details {
+            margin-bottom: 5mm;
+            border: 1px solid #222
+        }
+
+        .details td {
+            border: 1px solid #555;
+            padding: 2.5mm 2mm;
+            vertical-align: middle;
+            line-height: 1.5
+        }
+
+        .label {
+            width: 19%;
+            font-weight: bold;
+            background: #f2f2f2
+        }
+
+        .value {
+            width: 31%
+        }
+
+        .certificate {
+            margin: 5mm 0 7mm;
+            padding: 3mm;
+            border: 1px solid #555;
+            line-height: 1.8;
+            text-align: justify
+        }
+
+        .certificate p {
+            margin: 2mm 0
+        }
+
+        .tax-table {
+            border: 1.5px solid #222
+        }
+
+        .tax-table th,
+        .tax-table td {
+            border: 1px solid #333;
+            padding: 3mm 2mm;
+            text-align: right
+        }
+
+        .tax-table th {
+            background: #e8e8e8;
+            text-align: center;
+            font-weight: bold
+        }
+
+        .tax-table th:first-child,
+        .tax-table td:first-child {
+            width: 25%;
+            text-align: left
+        }
+
+        .receipt {
+            margin-top: 5mm;
+            border: 1px solid #333
+        }
+
+        .receipt td {
+            border: 1px solid #555;
+            padding: 2.5mm
+        }
+
+        .balance {
+            margin-top: 2mm;
+            padding: 2.5mm;
+            /* border: 1px solid #333; */
+            font-size: 12px;
+            font-weight: bold
+        }
+
+        .signature {
+            margin: 20mm 0 0 auto;
+            padding: 3mm;
+            width: 45%;
+            /* border: 1px solid #555; */
+            text-align: center;
+            font-weight: bold;
+            line-height: 1.8
+        }
+
+        .print-date {
+            position: absolute;
+            right: 5mm;
+            bottom: 3mm;
+            font-size: 9px
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3mm;
+            min-height: 55mm
+        }
+
+        .property-photo {
+            width: 65mm
+        }
+
+        .photo-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 3mm
+        }
+
+        .photo-box {
+            width: 65mm;
+            height: 48mm;
+            border: 1.5px solid #222;
+            overflow: hidden
+        }
+
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain
+        }
+
+        .signature {
+            margin: 0;
+            padding: 3mm;
+            width: 45%;
+            text-align: center;
+            font-weight: bold;
+            line-height: 1.8;
+            align-self: center
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact
+            }
+
+            .page {
+                break-inside: avoid
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="header">
+            {{#if logo}}<img src="{{logo}}" class="logo">{{/if}}
+            <div class="corp">{{corporationName}}</div>
+            <div class="dept">मालमत्ता कर विभाग</div>
+        </div>
+
+        <div class="heading">थकबाकी नसल्याचा दाखला <span class="preview">(PREVIEW)</span></div>
+
+        <table class="details">
+            <tr>
+                <td class="label">म.न.पा.</td>
+                <td class="value">{{prabhagName}}</td>
+                <td class="label">वार्ड क्र.</td>
+                <td class="value">{{wardNo}}</td>
+            </tr>
+            <tr>
+                <td class="label">मालमत्ता क्र.</td>
+                <td class="value">{{propNo}}</td>
+                <td class="label">झोन</td>
+                <td class="value">{{zoneName}}</td>
+            </tr>
+            <tr>
+                <td class="label">मालमत्तेचे वर्णन</td>
+                <td class="value">{{propertyType}}</td>
+                <td class="label">प्रमाणपत्र क्र.</td>
+                <td class="value">{{certificateNo}}</td>
+            </tr>
+            <tr>
+                <td class="label">पत्ता</td>
+                <td colspan="3">{{address}}</td>
+            </tr>
+            <tr>
+                <td class="label">मालमत्ता धारकाचे नाव</td>
+                <td colspan="3">{{ownerName}}</td>
+            </tr>
+            <tr>
+                <td class="label">मोबाईल नं.</td>
+                <td class="value">{{mobile}}</td>
+                <td class="label">प्रभाग</td>
+                <td class="value">{{prabhagName}}</td>
+            </tr>
+        </table>
+
+        <div class="certificate">
+            <div style="text-align:center;font-weight:bold">-: थकबाकी नसल्याचा दाखला :-</div>
+            <p>प्रमाणित करण्यात येते की वरील नमूद मालमत्तेबाबत चालू आर्थिक वर्षापर्यंत मालमत्ता कर आकारणीमधील नोंदीनुसार
+                संपूर्ण रक्कम थकबाकीसह भरणा करण्यात आलेली आहे व उल्लेखित मालमत्तेवर मालमत्ता कराबाबत कोणतीही रक्कम थकीत
+                नाही.</p>
+            <p>This is hereby certified that the above reference property has no dues on property taxes, as current and
+                pending property taxes have been fully paid. Hence, the certificate is issued on behalf of the property
+                occupier's request.</p>
+        </div>
+
+        <table class="tax-table">
+            <thead>
+                <tr>
+                    <th>विवरण</th>
+                    <th>चालू रक्कम</th>
+                    <th>थकीत रक्कम</th>
+                    <th>एकूण रक्कम</th>
+                    <th>सवलत</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>मागणी</td>
+                    <td>{{currentDemand}}</td>
+                    <td>{{arrearsDemand}}</td>
+                    <td>{{totalDemand}}</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td>वसुली</td>
+                    <td>{{currentColl}}</td>
+                    <td>{{arrearsColl}}</td>
+                    <td>{{totalColl}}</td>
+                    <td>{{discount}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="receipt">
+            <tr>
+                <td><b>पावती नं.:</b> {{receiptNo}}</td>
+                <td><b>पुस्तक नं.:</b> {{bookNo}}</td>
+                <td><b>दिनांक:</b> {{receiptDate}}</td>
+            </tr>
+        </table>
+        <div class="balance">शिल्लक : {{balance}}</div>
+
+        <div class="bottom-section">
+            <div class="property-photo">
+                <div class="photo-title">मालमत्तेचे स्थळदर्शक फोटो</div>
+                <div class="photo-box">
+                    {{#if propertyPhoto}}<img src="{{propertyPhoto}}">{{/if}}
+                </div>
+            </div>
+            <div class="signature">(उपायुक्त कर)<br>{{corporationName}}</div>
+        </div>
+
+        <div class="print-date">Printed On: {{printDate}}</div>
+    </div>
+</body>
+
+</html>
