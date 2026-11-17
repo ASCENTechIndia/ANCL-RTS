@@ -416,7 +416,7 @@ const FrmStep0 = () => {
                 if (state.returnTo) navigate(state.returnTo, { state: { appNo, serviceId, ulbId } });
                 // else navigate("/app/FrmTrackApplication", { state: { appNo, serviceId, ulbId, userId } });
                 else navigate("/Step1", {
-                    state: { ...state, ...values, appNo, applicationNo: appNo, serviceId, ulbId, userId, corpId, serviceName: state.serviceName || state.service, nocPurposeId: values.nocPurposeId || state.nocPurposeId || state._NOCPurposeid,},
+                    state: { ...state, ...values, appNo, applicationNo: appNo, serviceId, ulbId, userId, corpId, serviceName: state.serviceName || state.service, nocPurposeId: values.nocPurposeId || state.nocPurposeId || state._NOCPurposeid, },
                 });
             } catch (error) {
                 console.error("Step0 submit error:", error?.response?.data || error);
@@ -650,12 +650,11 @@ const FrmStep0 = () => {
                 <Form
                     onSubmit={async (e) => {
                         e.preventDefault();
-                        const validationErrors = await formik.validateForm();
-                        if (Object.keys(validationErrors).length > 0) {
+                        const errors = await formik.validateForm();
+                        const firstError = Object.values(errors)[0];
+                        if (firstError) {
                             await Swal.fire({
-                                // icon: "warning",
-                                // title: "Please check the required fields",
-                                text: Object.values(validationErrors).join("\n"),
+                                text: firstError,
                                 confirmButtonColor: "#083c76",
                             });
                             return;
