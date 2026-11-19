@@ -2,11 +2,7 @@ const asyncHandler = require("../../../libs/asyncHandler");
 const { ok, fail } = require("../../../libs/response");
 const service = require("./Step1.service");
 
-// ---------------------------------------------------------------------------
-// ONE unified document upload endpoint
-// Expects: corpId, serviceId, appNo, docType, documentId, ulbId, userId
-//         + file field "document"
-// ---------------------------------------------------------------------------
+
 exports.uploadDocument = asyncHandler(async (req, res) => {
   const { corpId, serviceId, appNo, docType, documentId, ulbId, userId } = req.body;
   const fileBuffer = req.file?.buffer;
@@ -38,9 +34,7 @@ exports.uploadDocument = asyncHandler(async (req, res) => {
   return ok(res, result, result.message || "Document uploaded successfully");
 });
 
-// ---------------------------------------------------------------------------
-// Procedure endpoint (unchanged, separate)
-// ---------------------------------------------------------------------------
+
 exports.callApplicationIns = asyncHandler(async (req, res) => {
   const {
     ulbId,
