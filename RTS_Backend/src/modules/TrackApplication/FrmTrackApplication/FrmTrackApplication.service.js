@@ -228,7 +228,7 @@ const getReApplyServiceDetailsService = async (serviceId) => {
 
   const service = rows[0];
 
-  let serviceUrl = service.VAR_SERVICE_URL;
+  let serviceUrl = service.VAR_SERVMENU_PAGEURL;
 
   // Same logic as C#:
   // if URL contains @ -> use &
