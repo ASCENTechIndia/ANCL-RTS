@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import config from "@/utils/config";
 
 const BND_SERVICES = [14, 15, 342, 343];
 const FIRE_SERVICES = [12, 13, 553];
@@ -98,6 +99,8 @@ const FrmStep0 = () => {
     const [prefillLoaded, setPrefillLoaded] = useState(false);
 
     const isBnd = BND_SERVICES.includes(serviceId);
+    const canEnterBndManually = isBnd && MANUAL_BND_ULBS.includes(ulbId) && [14, 15].includes(serviceId);
+    const showBndManual = canEnterBndManually && bndSearched && bndRows.length === 0;
     const isBirth = [14, 342].includes(serviceId);
     const isFire = FIRE_SERVICES.includes(serviceId);
     const isImc = IMC_ULBS.includes(ulbId);
@@ -105,7 +108,7 @@ const FrmStep0 = () => {
     const showWaterSearch = departmentId === 24 && (ulbId === 1630 || (HOARDING_ULBS.includes(ulbId) && serviceId === 573));
     const showPropertyNo = serviceId === 2;
     const showSewerage = serviceId === 16;
-    const showBndManual = isBnd && bndSearched && bndRows.length === 0 && MANUAL_BND_ULBS.includes(ulbId);
+    // const showBndManual = isBnd && bndSearched && bndRows.length === 0 && MANUAL_BND_ULBS.includes(ulbId);
     const showCertificateType = [14, 15].includes(serviceId) && ulbId === 2;
 
     const formik = useFormik({
@@ -122,7 +125,19 @@ const FrmStep0 = () => {
             if (!String(values.lastNameMarathi ?? "").trim()) errors.lastNameMarathi = "Last name in Marathi is required";
             if (!String(values.mobileNo ?? "").trim()) errors.mobileNo = "Mobile number is required";
             if (!/^\d{10}$/.test(values.mobileNo)) errors.mobileNo = "Enter a valid 10-digit mobile number";
-            if (isBnd && !selectedBnd && !String(values.registrationNo ?? "").trim()) errors.registrationNo = "Registration number is required";
+            if (isBnd) {
+                if (!selectedBnd && !showBndManual) {
+                    errors.registrationNo = "Search and select a Birth/Death record.";
+                }
+                if (showBndManual) {
+                    if (!String(values.bndDate ?? "").trim()) errors.bndDate = `${isBirth ? "Birth date" : "Death date"} is required`;
+                    if (!String(values.fatherName ?? "").trim()) errors.fatherName = "Father name is required";
+                    if (!String(values.motherName ?? "").trim()) errors.motherName = "Mother name is required";
+                    if (!String(values.bndName ?? "").trim()) errors.bndName = `${isBirth ? "Child name" : "Name of deceased"} is required`;
+                    if (!String(values.gender ?? "").trim()) errors.gender = "Gender is required";
+                    if (ulbId === 2 && [14, 15].includes(serviceId) && !String(values.noOfCopies ?? "").trim()) errors.noOfCopies = "Number of copies is required";
+                }
+            }
             if ([14, 15].includes(serviceId) && ulbId !== 2 && !String(values.email ?? "").trim()) errors.email = "Email is required";
             if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(values.email)) errors.email = "Enter a valid email address";
             if (!String(values.address ?? "").trim()) errors.address = "Address is required";
@@ -150,19 +165,49 @@ const FrmStep0 = () => {
             }
             if (showCertificateType && !String(values.certificateType ?? "").trim()) errors.certificateType = "Certificate type is required";
             if (showBndManual) {
+                if (!String(values.bndDate ?? "").trim()) errors.bndDate = `${isBirth ? "Birth date" : "Death date"} is required`;
+                if (!String(values.fatherName ?? "").trim()) errors.fatherName = "Father name is required";
+                if (!String(values.motherName ?? "").trim()) errors.motherName = "Mother name is required";
                 if (!String(values.bndName ?? "").trim()) errors.bndName = `${isBirth ? "Child name" : "Name of deceased"} is required`;
                 if (!String(values.gender ?? "").trim()) errors.gender = "Gender is required";
-                if (!String(values.motherName ?? "").trim()) errors.motherName = "Mother name is required";
-                if (!String(values.fatherName ?? "").trim()) errors.fatherName = "Father name is required";
-                if (!String(values.bndDate ?? "").trim()) errors.bndDate = `${isBirth ? "Birth date" : "Death date"} is required`;
                 if (ulbId === 2 && [14, 15].includes(serviceId) && !String(values.noOfCopies ?? "").trim()) errors.noOfCopies = "Number of copies is required";
             }
             return errors;
         },
         onSubmit: async (values) => {
-            if (isBnd && bndRows.length && !selectedBnd) {
-                await Swal.fire({ text: "Please select one Birth/Death record from the search results." });
-                return;
+            if (isBnd) {
+                if (bndRows.length > 0 && !selectedBnd) {
+                    await Swal.fire({ text: "Please select one Birth/Death record from the search results." });
+                    return;
+                }
+
+                if (!selectedBnd && !showBndManual) {
+                    await Swal.fire({
+                        text: "Please search and select a Birth/Death record before submitting.",
+                        confirmButtonColor: "#083c76",
+                    });
+                    return;
+                }
+
+                if (showBndManual) {
+                    const manualFields = [
+                        [values.bndDate, isBirth ? "Birth date" : "Death date"],
+                        [values.fatherName, "Father name"],
+                        [values.motherName, "Mother name"],
+                        [values.bndName, isBirth ? "Child name" : "Name of deceased"],
+                        [values.gender, "Gender"],
+                    ];
+
+                    const missingField = manualFields.find(([value]) => !String(value ?? "").trim());
+
+                    if (missingField) {
+                        await Swal.fire({
+                            text: `${missingField[1]} is required.`,
+                            confirmButtonColor: "#083c76",
+                        });
+                        return;
+                    }
+                }
             }
             if (showWaterSearch && !waterConnection) {
                 await Swal.fire({ text: "Search and verify the water connection before submitting." });
@@ -172,8 +217,8 @@ const FrmStep0 = () => {
             setLoading((prev) => ({ ...prev, submit: true }));
             const baseUrl = import.meta.env.VITE_BASE_URL;
             const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
-            const userUniqueId = state.userUniqueId ?? user?.userUniqueId ?? user?.uniqueId ?? userId;
-            const appSource = state.appSource || (state.mahaUlbId ? "MAHA" : state.chatbot ? "CBOT" : "WEB");
+            const userUniqueId = state.userUniqueId ?? user?.userUniqueId ?? user?.uniqueId ?? 4478;
+            const appSource = state.mahaUlbId ? "MAHA" : config.source;
             const str = (value) => value === null || value === undefined ? "" : String(value);
             const readResult = (response) => {
                 const data = response?.data;
@@ -218,7 +263,7 @@ const FrmStep0 = () => {
                     ulbId,
                     corpId,
                     serviceId,
-                    userId,
+                    userId: userUniqueId,
                     userUniqueId,
                     mode,
                     departmentId,
@@ -258,8 +303,8 @@ const FrmStep0 = () => {
                     hoardingTypeId: values.hoardingTypeId,
                     hoardingSize: values.hoardingSize,
                     zoneId: isImc && [7, 8].includes(serviceId) ? 1282 : values.zoneId,
-                    insertType: isBndInsert ? "BND" : isWaterApplicantInsert ? "WATER" : "APPLICANT",
-                    insertProcedure: isBndInsert ? "aorts_bndapplicant_ins" : isWaterApplicantInsert ? "aorts_applicant_info_wtr_ins" : "aorts_applicant_info_ins",
+                    // insertType: isBndInsert ? "BND" : isWaterApplicantInsert ? "WATER" : "APPLICANT",
+                    // insertProcedure: isBndInsert ? "aorts_bndapplicant_ins" : isWaterApplicantInsert ? "aorts_applicant_info_wtr_ins" : "aorts_applicant_info_ins",
                     in_conno: connection.connectionNo ?? connection.CONNNO ?? connection.connno ?? connection.var_wtreg_consno ?? values.connectionNo ?? "",
                     in_usagetyp: connection.usageType ?? connection.USAGETYPE ?? connection.usagetype ?? connection.var_usagetype_name ?? "",
                     in_consize: connection.connectionSize ?? connection.CONNSIZE ?? connection.consize ?? connection.num_connsize_size ?? "",
@@ -556,11 +601,11 @@ const FrmStep0 = () => {
             try {
                 const response = await axios.post(
                     `${import.meta.env.VITE_BASE_URL}/api/Step0/user-mobile`,
-                    { userId, ulbId },
+                    { userId: 44788, ulbId },
                     { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
                 );
                 const result = (response?.data?.data?.data && !Array.isArray(response.data.data.data) ? response.data.data.data : response?.data?.data && !Array.isArray(response.data.data) ? response.data.data : response?.data || {});
-                const mobile = result?.mobileNo ?? result?.mobile ?? result?.MOBILENO ?? result?.var_usermobile ?? "";
+                const mobile = result?.mobileNo ?? result?.mobile ?? result?.MOBILENO ?? result?.rows[0].NUM_USER_MOBILENO ?? "";
                 if (mobile) formik.setFieldValue("mobileNo", String(mobile), false);
             } catch (error) {
                 console.error("Step0 user mobile error:", error?.response?.data || error);
@@ -571,7 +616,7 @@ const FrmStep0 = () => {
     const searchBnd = async () => {
         const values = formik.values;
         if (![values.registrationNo, values.bndDate, values.fatherName, values.motherName].some((v) => String(v || "").trim())) {
-            Swal.fire({ text: "Enter registration number, date, father name or mother name." });
+            Swal.fire({ text: "Enter registration number / date / father name or mother name." });
             return;
         }
         setLoading((prev) => ({ ...prev, bnd: true }));
@@ -580,8 +625,7 @@ const FrmStep0 = () => {
         setBndSearched(false);
         try {
             const path = [15, 343].includes(serviceId) ? "death-search" : "birth-search";
-            const response = await axios.post(`
-                ${import.meta.env.VITE_BASE_URL}/api/Step0/${path}`,
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/Step0/${path}`,
                 {
                     ulbId, serviceId,
                     registrationNo: values.registrationNo.trim(),
@@ -594,7 +638,7 @@ const FrmStep0 = () => {
             setBndRows(rows);
             setBndSearched(true);
             if (!rows.length) {
-                if (MANUAL_BND_ULBS.includes(ulbId) && [14, 15].includes(serviceId)) {
+                if (canEnterBndManually) {
                     await Swal.fire({ text: "No matching record was found. Enter the certificate details manually." });
                 } else {
                     await Swal.fire({ text: "No matching Birth/Death records were found." });
@@ -668,6 +712,25 @@ const FrmStep0 = () => {
                             <CardTitle className="text-base font-semibold">Applicant Details</CardTitle>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
+                            {!isImc && (
+                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
+                                    <Label text="Zone" htmlFor="zoneId" required />
+
+                                    <span className="text-center">:</span>
+                                    <Select
+                                        value={formik.values.zoneId}
+                                        onValueChange={(v) => formik.setFieldValue("zoneId", v)}
+                                        disabled={loading.zones}
+                                    >
+                                        <SelectTrigger id="zoneId" className="sm:min-w-full">
+                                            <SelectValue placeholder={loading.zones ? "Loading..." : "Select"} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {zones.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
                             <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
                                 <Label text="First Name" htmlFor="firstName" required />
 
@@ -768,26 +831,7 @@ const FrmStep0 = () => {
                                 <span className="text-center">:</span>
                                 <Input id="purposeMarathi" name="purposeMarathi" type="text" value={formik.values.purposeMarathi ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                             </div>
-                            {!isImc && (
-                                <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
-                                    <Label text="Zone" htmlFor="zoneId" required />
 
-                                    <span className="text-center">:</span>
-                                    <Select
-                                        className="min-w-full"
-                                        value={formik.values.zoneId}
-                                        onValueChange={(v) => formik.setFieldValue("zoneId", v)}
-                                        disabled={loading.zones}
-                                    >
-                                        <SelectTrigger id="zoneId">
-                                            <SelectValue placeholder={loading.zones ? "Loading..." : "Select"} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {zones.map((option, index) => <SelectItem key={`${option.value}-${index}`} value={String(option.value)}>{option.label}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            )}
                             {showPropertyNo && <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
                                 <Label text="Property Number" htmlFor="propertyNo" required={showPropertyNo} />
 
@@ -1081,7 +1125,9 @@ const FrmStep0 = () => {
 
                                             <span className="text-center">:</span>
                                             <Select value={formik.values.gender} onValueChange={(value) => formik.setFieldValue("gender", value)}>
-                                                <SelectTrigger id="gender"><SelectValue placeholder="Select gender" /></SelectTrigger>
+                                                <SelectTrigger id="gender" className="sm:min-w-full">
+                                                    <SelectValue placeholder="Select gender" />
+                                                </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="M">Male</SelectItem>
                                                     <SelectItem value="F">Female</SelectItem>
@@ -1119,7 +1165,8 @@ const FrmStep0 = () => {
                                         </div>
                                     </div>
                                 )}
-                            </CardContent></Card>
+                            </CardContent>
+                        </Card>
                     )}
 
                     {isImc && (

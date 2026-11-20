@@ -574,7 +574,7 @@ const FrmEmpLogin = () => {
                                         value={values.securityCode}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        placeholder="Enter security code"
+                                        placeholder="Enter Captcha"
                                         autoComplete="off"
                                         autoCorrect="off"
                                         autoCapitalize="none"

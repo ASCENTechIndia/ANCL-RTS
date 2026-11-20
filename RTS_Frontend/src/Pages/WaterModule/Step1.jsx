@@ -16,6 +16,7 @@ import { FileText } from "lucide-react";
 const Step1 = () => {
     const location = useLocation();
     const { user, token } = useAuth();
+    console.log({user})
     const baseUrl = import.meta.env.VITE_BASE_URL;
        const navigate = useNavigate();
 
@@ -145,12 +146,13 @@ const Step1 = () => {
                     id: document.id,
                     type: document.type,
                     document: (
-                        <div className="flex items-center gap-2">
+                        <div className="flex gap-2">
                             <FileText className="h-4 w-4 shrink-0 text-gray-600" />
-                            <span>{document.engname || "-"}</span>
+                            <span className="text-left">{document.engname || "-"}</span>
                             {isMandatory && (
                                 <span className="font-bold text-red-600">*</span>
                             )}
+                            {/* <Label text={document.engname} className="min-w-full"/> */}
                         </div>
                     ),
                     description: document.engdocdesc || "-",
@@ -233,7 +235,7 @@ const Step1 = () => {
             corpid: Number(corpId),
             serviceid: serviceId,
             zoneid: 0,
-            userid: Number(userId),
+            userid: (userId),
             noofcopy: Number(values.noOfCopies || 1),
             marriageDate,
             appno: applicationNo || "0",
