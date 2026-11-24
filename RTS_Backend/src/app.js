@@ -21,17 +21,9 @@ app.set("trust proxy", 1);
 
 // security & parsing
 // app.use(cors({ origin: NODE_ENV === "production" ? ["https://yourdomain.com"] : "*", credentials: true }));
-const allowedOrigins = [
-  "https://karjatrts.nagarkaryavalinewuat.com", 
+const allowedOrigins = ["https://karjatrts.nagarkaryavalinewuat.com", "http://localhost:5173"];
 
-  "http://localhost:5173"];
-
-app.post(
-    "/api/payment-response",
-    express.urlencoded({extended: true}),
-    paymentResponseController
-);
-
+app.post("/api/payment-response", express.urlencoded({ extended: true }), paymentResponseController);
 
 app.use(
   cors({
@@ -43,7 +35,7 @@ app.use(
       }
     },
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json({ limit: "1mb" }));
@@ -81,15 +73,15 @@ app.use("/api/FrmRebateTax", require("./modules/Property/FrmRebateTax/FrmRebateT
 app.use("/api/FrmNoDuesCerti", require("./modules/Property/FrmNoDuesCerti/FrmNoDuesCerti.routes"));
 app.use("/api/FrmNewTaxAssesment", require("./modules/Property/FrmNewTaxAssesment/FrmNewTaxAssesment.route"));
 app.use("/api/FrmPropertyAppel", require("./modules/Property/FrmPropertyAppel/FrmPropertyAppel.route"));
-app.use("/api/FrmAfterTransactionTMC", require("./modules/Property/FrmAfterTransactionTMC/FrmAfterTransactionTMC.routes"))
+app.use("/api/FrmAfterTransactionTMC", require("./modules/Property/FrmAfterTransactionTMC/FrmAfterTransactionTMC.routes"));
 app.use("/api/FrmNewTaxRecoveryReg", require("./modules/Property/FrmNewTaxRecoveryReg/FrmNewTaxRecoveryReg.routes"));
 
-//Water module 
-app.use("/api/watermodule", require("./modules/WaterModule/WaterBillCopy/Stepnew.route"))
-app.use("/api/FrmWaterRegister", require("./modules/WaterModule/FrmWaterRegister/FrmWaterRegister.route"))
-app.use("/api/FrmPlumberLicense", require("./modules/WaterModule/FrmPlumberLicense/FrmPlumberLicense.route"))
+//Water module
+app.use("/api/watermodule", require("./modules/WaterModule/WaterBillCopy/Stepnew.route"));
+app.use("/api/FrmWaterRegister", require("./modules/WaterModule/FrmWaterRegister/FrmWaterRegister.route"));
+app.use("/api/FrmPlumberLicense", require("./modules/WaterModule/FrmPlumberLicense/FrmPlumberLicense.route"));
 app.use("/api/FrmWaterAppliEntry", require("./modules/WaterModule/FrmWaterAppliEntry/FrmWaterAppliEntry.routes"));
-app.use("/api/FrmWaterAppliDetails", require("./modules/WaterModule/FrmWaterAppliDetails/FrmWaterAppliDetails.route"))
+app.use("/api/FrmWaterAppliDetails", require("./modules/WaterModule/FrmWaterAppliDetails/FrmWaterAppliDetails.route"));
 
 //Trade
 app.use("/api/FrmMarketEntry", require("./modules/Trade/FrmMarketEntry/FrmMarketEntry.routes"));
@@ -104,29 +96,26 @@ app.use("/api/FrmFirstAppealDocUpload", require("./modules/FrmFirstAppealDocUplo
 
 //Solid Health
 
-app.use("/api/FrmServiceApplicationMst", require("./modules/SolidHealth/FrmServiceApplicationMst/FrmServiceApplicationMst.routes"))
+app.use("/api/FrmServiceApplicationMst", require("./modules/SolidHealth/FrmServiceApplicationMst/FrmServiceApplicationMst.routes"));
 
 // Marriage
 app.use("/api/FrmMarriageRgstn", require("./modules/Marriage/FrmMarriageRgstn/FrmMarriageRgstn.routes"));
 app.use("/api/FrmAppoints", require("./modules/Marriage/FrmAppoints/FrmAppoints.route"));
 
-
 // PWD
 app.use("/api/FrmRoadCutting", require("./modules/PWD/FrmRoadCutting.route"));
-
-
 
 //AdminDepartmet
 app.use("/api/FrmMappingConfig", require("./modules/AdminDepartment/FrmMappingConfig/FrmMappingConfig.route"));
 app.use("/api/FrmDeptMappingConfig", require("./modules/AdminDepartment/FrmDeptMappingConfig/FrmDeptMappingConfig.route"));
-app.use("/api/Doclist",require("./modules/AdminDepartment/FrmDocList/frmDocList.routes"));
-app.use("/api/Tradetypeconfig", require("./modules/AdminDepartment/FrmTradeCtgryTypeCnfgList/frmTradeCtgryTypeCnfgList.routes"))
+app.use("/api/Doclist", require("./modules/AdminDepartment/FrmDocList/frmDocList.routes"));
+app.use("/api/Tradetypeconfig", require("./modules/AdminDepartment/FrmTradeCtgryTypeCnfgList/frmTradeCtgryTypeCnfgList.routes"));
 app.use("/api/Holiday", require("./modules/AdminDepartment/FrmHolidayMst/FrmHolidayMst.route"));
 app.use("/api/FrmTradeCategoryConfig", require("./modules/AdminDepartment/FrmTradeCategoryConfigList/frmTradeCategoryConfig.routes"));
 app.use("/api/frmAppAuth", require("./modules/AdminDepartment/FrmAppAuth/frmAppAuth.routes"));
-app.use("/api/Doclist",require("./modules/AdminDepartment/FrmDocList/frmDocList.routes"))
+app.use("/api/Doclist", require("./modules/AdminDepartment/FrmDocList/frmDocList.routes"));
 app.use("/api/FrmRTSOnlineColl", require("./modules/AdminDepartment/FrmRTSOnlineColl/FrmRTSOnlineColl.route"));
-app.use("/api/FrmDashboardAll", require("./modules/AdminDepartment/FrmDashboardAll/FrmDashboardAll.routes"))
+app.use("/api/FrmDashboardAll", require("./modules/AdminDepartment/FrmDashboardAll/FrmDashboardAll.routes"));
 app.use("/api/FrmTradeCtgrytypListMst", require("./modules/AdminDepartment/FrmTradeCtgrytypListMst/FrmTradeCtgrytypListMst.route"));
 app.use("/api/FrmFirstAppealAuthoRpt", require("./modules/AdminDepartment/FrmFirstAppealAuthoRpt/FrmFirstAppealAuthoRpt.route"));
 app.use("/api/FrmSecondAppealAutoRpt", require("./modules/AdminDepartment/FrmSecondAppealAutoRpt/FrmSecondAppealAutoRpt.route"));
@@ -134,8 +123,8 @@ app.use("/api/FrmChallanGenReport", require("./modules/AdminDepartment/FrmChalla
 app.use("/api/FrmTownPlanningSectorMapping", require("./modules/AdminDepartment/FrmTownPlanningSectorMapping/frmTownPlanningSectorMapping.routes"));
 app.use("/api/FrmAppliReportEMst", require("./modules/AdminDepartment/FrmAppliReportEMst/frmAppliReportEMst.routes"));
 app.use("/api/FrmHearingProccess", require("./modules/AdminDepartment/FrmHearingProccess/FrmHearingProccess.routes"));
-app.use("/api/FrmHearingDateAssign", require("./modules/AdminDepartment/FrmHearingDateAssign/FrmHearingDateAssign.routes"))
-app.use("/api/FrmNOCHordingType", require("./modules/AdminDepartment/FrmNOCHordingType/FrmNOCHordingType.routes"))
+app.use("/api/FrmHearingDateAssign", require("./modules/AdminDepartment/FrmHearingDateAssign/FrmHearingDateAssign.routes"));
+app.use("/api/FrmNOCHordingType", require("./modules/AdminDepartment/FrmNOCHordingType/FrmNOCHordingType.routes"));
 
 // NOC
 app.use("/api/FrmToursTravels", require("./modules/NOC/FrmToursTravels/FrmToursTravels.routes"));
@@ -144,13 +133,17 @@ app.use("/api/FrmElectrical", require("./modules/NOC/FrmElectrical/FrmElectrical
 app.use("/api/FrmMeatShopNOC", require("./modules/NOC/FrmMeatShopNOC/FrmMeatShopNOC.route"));
 app.use("/api/FrmHospitalParvana", require("./modules/AdminDepartment/FrmHospitalParvana/frmHospitalParvana.routes"));
 app.use("/api/FrmHospitalNOC", require("./modules/NOC/NOCPdf/frmHospitalNOC.route"));
-app.use("/api/FrmBusinessTypeListMst", require("./modules/AdminDepartment/FrmBusinessTypeListMst/FrmBusinessTypeListMst.routes"))
-app.use("/api/FrmNOCHordingType", require("./modules/AdminDepartment/FrmNOCHordingType/FrmNOCHordingType.routes"))
+app.use("/api/FrmBusinessTypeListMst", require("./modules/AdminDepartment/FrmBusinessTypeListMst/FrmBusinessTypeListMst.routes"));
+app.use("/api/FrmNOCHordingType", require("./modules/AdminDepartment/FrmNOCHordingType/FrmNOCHordingType.routes"));
 app.use("/api/FrmNOCHordingSubType", require("./modules/AdminDepartment/FrmNOCHordingSubType/FrmNOCHordingSubType.routes"));
 app.use("/api/FrmLicenseType", require("./modules/AdminDepartment/FrmLicenseTypeList/FrmLicenseTypeList.route"));
 app.use("/api/FrmNocRoadType", require("./modules/AdminDepartment/FrmRoadType/frmNocRoadType.routes"));
 app.use("/api/Step0", require("./modules/WaterModule/Step0/Step0.routes"));
 app.use("/api/Step1", require("./modules/WaterModule/Step1/Step1.routes"));
+
+//Bombay Nursing Act
+
+app.use("/api/BombayNursingAct", require("./modules/BombayNursingAct/FrmBombayNursing.routes"));
 
 app.use(errorMiddleware);
 
