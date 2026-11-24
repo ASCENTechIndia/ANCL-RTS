@@ -1451,7 +1451,7 @@ function PersonTab({
               <>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
-                    <Label text="दस्तऐवज" />
+                    <Label text="दस्तऐवज" required />
                     <span>:</span>
                   </div>
                   <Select
@@ -1473,7 +1473,7 @@ function PersonTab({
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
-                    <Label text="नाते संबंध" />
+                    <Label text="नाते संबंध" required />
                     <span>:</span>
                   </div>
                   <Select
@@ -1696,7 +1696,7 @@ function PersonTab({
               <>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
-                    <Label text="जन्माने धर्म" />
+                    <Label text="जन्माने धर्म" required />
                     <span>:</span>
                   </div>
                   <Select
@@ -1718,7 +1718,7 @@ function PersonTab({
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <div className="sm:w-32 shrink-0 flex justify-start sm:justify-between items-center">
-                    <Label text="दत्तक घेऊन धर्म" />
+                    <Label text="दत्तक घेऊन धर्म" required />
                     <span>:</span>
                   </div>
                   <Select
@@ -1807,7 +1807,7 @@ function PersonTab({
                     value={values.idDocument || ""}
                     onValueChange={(val) => setFieldValue("idDocument", val)}
                   >
-                    <SelectTrigger className="w-full h-9">
+                    <SelectTrigger className="w-full! h-9 overflow-hidden">
                       <SelectValue placeholder="-- Select Option --" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1849,7 +1849,7 @@ function PersonTab({
                     value={values.addressDocument || ""}
                     onValueChange={(val) => setFieldValue("addressDocument", val)}
                   >
-                    <SelectTrigger className="w-full h-9">
+                    <SelectTrigger className="w-full! h-9 overflow-hidden">
                       <SelectValue placeholder="-- Select Option --" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1891,7 +1891,7 @@ function PersonTab({
                     value={values.ageDocument || ""}
                     onValueChange={(val) => setFieldValue("ageDocument", val)}
                   >
-                    <SelectTrigger className="w-full h-9">
+                    <SelectTrigger className="w-full! h-9 overflow-hidden">
                       <SelectValue placeholder="-- Select Option --" />
                     </SelectTrigger>
                     <SelectContent>
