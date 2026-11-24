@@ -34,7 +34,8 @@ const FrmPlumberLicense = () => {
     const [loadingMasters, setLoadingMasters] = useState(false);
 
     const initialValues = {
-        zoneId: "12",
+        // zoneId: "12",
+        zoneId: "",
         aadhaar: "",
         firstName: "",
         middleName: "",
@@ -190,7 +191,7 @@ const FrmPlumberLicense = () => {
         if (!values.zoneId) {
             Swal.fire({
                 // icon: "warning",
-                text: "Select valid Zone from the list.",
+                text: "Please Select Zone.",
             });
             return;
         }

@@ -556,7 +556,7 @@ const FrmWaterAppliDetails = () => {
 
       if (!values.resNo?.trim()) {
         await Swal.fire({
-          text: "Please enter Residence Number / Address.",
+          text: "Please enter Residential Number / Address.",
           confirmButtonText: "OK",
         });
         return;

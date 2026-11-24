@@ -1,29 +1,19 @@
 const repo = require("./Step1.repo");
 const { AppError } = require("../../../libs/errors");
 
-// ---------------------------------------------------------------------------
-// Constants mirroring the legacy C# conditions
-// ---------------------------------------------------------------------------
-
-// ULBs where the extra prop/water inserts apply (Karjat etc.)
 const KARJAT_ULBS = ["1890", "1150"];
 
-// Service IDs that trigger the prop.aoms_rtsdoc_det insert
 const PROP_SERVICE_IDS = [
   "5", "44", "45", "46", "48", "49", "51", "52", "58", "61", "133",
 ];
 
-// Service IDs that trigger the water.aowt_rtsdoc_det insert
 const WATER_SERVICE_IDS = [
   "23", "26", "27", "28", "29", "30", "66", "19", "21", "22", "91", "196", "24", "25",
 ];
 
-// Fire NOC Final services
 const FIRE_SERVICE_IDS = ["12", "13"];
 
-// ---------------------------------------------------------------------------
-// Unified document upload — decides which inserts to run
-// ---------------------------------------------------------------------------
+
 async function uploadDocumentService(params) {
   const {
     corpId,
@@ -36,7 +26,6 @@ async function uploadDocumentService(params) {
     fileBuffer,
   } = params;
 
-  // Basic validation
   if (!serviceId) throw new AppError("Service ID is required", 400);
   if (!appNo) throw new AppError("Application Number is required", 400);
   if (!docType) throw new AppError("Document Type is required", 400);
@@ -52,10 +41,6 @@ async function uploadDocumentService(params) {
   const insertedTables = [];
 
   try {
-    // =======================================================================
-    // 1) ALWAYS: main document insert into aorts_appdoc_det
-    //    (matches obj.DocumentInsert(...) in legacy code — always runs)
-    // =======================================================================
     const mainResult = await repo.insertMainDocument({
       corpId: Number(corpId),
       serviceId: Number(serviceId),
@@ -70,11 +55,7 @@ async function uploadDocumentService(params) {
     }
     insertedTables.push("aorts_appdoc_det");
 
-    // =======================================================================
-    // 2) CONDITIONAL — Karjat ULBs (1890, 1150)
-    // =======================================================================
     if (KARJAT_ULBS.includes(sUlbId)) {
-      // 2a) PROP insert — only for certain service IDs
       if (PROP_SERVICE_IDS.includes(sServiceId)) {
         const propResult = await repo.insertPropDoc({
           corpId: Number(corpId),
@@ -91,7 +72,6 @@ async function uploadDocumentService(params) {
         insertedTables.push("prop.aoms_rtsdoc_det");
       }
 
-      // 2b) WATER insert — only for certain service IDs
       if (WATER_SERVICE_IDS.includes(sServiceId)) {
         const waterResult = await repo.insertWaterDoc({
           corpId: Number(corpId),
@@ -109,12 +89,8 @@ async function uploadDocumentService(params) {
       }
     }
 
-    // =======================================================================
-    // 3) CONDITIONAL — Fire NOC Final (serviceId 12 or 13)
-    //    Legacy code looks up num_appentry_id by AppNo first.
-    // =======================================================================
+
     if (FIRE_SERVICE_IDS.includes(sServiceId)) {
-      // Look up Fire Application ID from fire.aofr_appentry_mas
       const fireLookup = await repo.getFireApplicationId({ appNo });
 
       if (!fireLookup.success) {
@@ -138,7 +114,6 @@ async function uploadDocumentService(params) {
         }
         insertedTables.push("fire.aofr_appdoc_det");
       } else {
-        // No fire application found — log but don't fail the whole request
         console.warn(
           `[uploadDocumentService] No fire.aofr_appentry_mas row for AppNo=${appNo}; skipping fire insert.`
         );
@@ -158,9 +133,6 @@ async function uploadDocumentService(params) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Procedure service (unchanged, separate)
-// ---------------------------------------------------------------------------
 async function callApplicationInsService(params) {
   const {
     ulbId,
@@ -199,7 +171,6 @@ async function callApplicationInsService(params) {
   const outBinds = result.outBinds || {};
   const errCode = Number(outBinds.out_errcode);
 
-  // 9999 = success in this procedure
   if (errCode !== 9999) {
     throw new AppError(
       outBinds.out_ErrMsg || `Procedure failed with code ${errCode}`,
