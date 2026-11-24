@@ -104,6 +104,7 @@ app.use("/api/FrmAppoints", require("./modules/Marriage/FrmAppoints/FrmAppoints.
 
 // PWD
 app.use("/api/FrmRoadCutting", require("./modules/PWD/FrmRoadCutting.route"));
+//app.use("/api/FrmPwdCompEntry", require("./modules/PWD/FrmPwdCompEntry/FrmPwdCompEntry.routes"));
 
 //AdminDepartmet
 app.use("/api/FrmMappingConfig", require("./modules/AdminDepartment/FrmMappingConfig/FrmMappingConfig.route"));
