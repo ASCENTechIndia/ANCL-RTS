@@ -1238,9 +1238,10 @@ const FrmWaterRegister = () => {
       if (!values.tarriff?.trim())      return show("Please Enter Tarriff Rate");
       if (!values.currConnsize || values.currConnsize === "0") return show("Select valid Connection Size");
       if (!values.existUsage  || values.existUsage  === "0")   return show("Select valid Usage Type");
+     
     } else {
       if (!values.consumerNo?.trim()) return show("Please Enter Consumer No");
-    }
+    } 
 
     if (!values.firstName?.trim())    return show("First Name can not be blank");
     if (!values.middleName?.trim())   return show("Middle Name can not be blank");
@@ -1250,6 +1251,8 @@ const FrmWaterRegister = () => {
     if (!values.lastNameMr?.trim())   return show("Last Name Marathi can not be blank");
     if (!values.address?.trim())      return show("Address can not be blank");
     if (!values.addressMr?.trim())    return show("Address Marathi can not be blank");
+    if (!values.usageType  || values.usageType  === "0")   return show("Select Change Usage Type");
+    if (!values.newConSize  || values.newConSize  === "0")   return show("Select New Conn. Size");
     if (!values.remark?.trim())       return show("Please Enter Remark");
 
     return true;
