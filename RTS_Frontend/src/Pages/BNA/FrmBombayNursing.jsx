@@ -679,8 +679,13 @@ const FrmBombayNursing = () => {
                     <FieldRow label="NOC Document Number" required>
                       <Input
                         name="nocDoc"
+                        inputMode="numeric"
+                        maxLength={12}
                         value={values.nocDoc}
-                        onChange={handleChange}
+                        //onChange={handleChange}
+                        onChange={(e) =>
+                          setFieldValue("nocDoc", e.target.value.replace(/\D/g, ""))
+                        }
                         className="w-full h-9"
                       />
                     </FieldRow>
