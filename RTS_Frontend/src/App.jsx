@@ -83,7 +83,8 @@ import FrmNocRoadTypeMst from "./Pages/Admin/FrmNocRoadTypeMst";
 import FrmNewTaxRecoveryReg from "./Pages/Property/FrmNewTaxRecoveryReg";
 import FrmStep0 from "./Pages/WaterModule/FrmStep0";
 import Step1 from "./Pages/WaterModule/Step1";
-
+//import FrmPwdCompEntry from "./Pages/PWD/FrmPwdCompEntry";
+import FrmBombayNursing from "./Pages/BNA/FrmBombayNursing";
 
 function HomePage() {
   return <div>Welcome to Employee Portal</div>;
@@ -259,6 +260,15 @@ const router = createBrowserRouter([
         path: "/FrmNewTaxRecoveryReg",
         element: <FrmNewTaxRecoveryReg />
       },
+      // {
+      //   path: "/FrmPwdCompEntry",
+      //   element: <FrmPwdCompEntry />
+      // },
+      {
+        path: "/FrmBombayNursing",
+        element: <FrmBombayNursing />,
+      },
+
     ],
   },
   {
@@ -434,6 +444,7 @@ const router = createBrowserRouter([
         path: "/FrmNocRoadTypeMst",
         element: <FrmNocRoadTypeMst />,
       },
+      
     ]
   },
 ]);
