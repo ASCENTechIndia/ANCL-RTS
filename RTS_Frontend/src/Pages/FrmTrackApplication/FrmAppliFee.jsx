@@ -282,11 +282,7 @@ const FrmAppliFee = () => {
             const result = response?.data?.data;
 
             if (!result?.success || Number(result?.errorCode) !== 9999) {
-                throw new Error(
-                    result?.message ||
-                    response?.data?.message ||
-                    "Unable to create payment session."
-                );
+                throw new Error(result?.message ||response?.data?.message ||"Unable to create payment session.");
             }
 
             Swal.close();

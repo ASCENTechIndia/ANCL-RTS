@@ -302,8 +302,8 @@ const Step1 = () => {
             console.error("Step1 Submit Error:", error);
             Swal.close();
             Swal.fire({
-                icon: "error",
-                text: error?.response?.data?.message || error.message || "Unable to submit application.",
+                // icon: "error",
+                text: error?.response?.data?.message || error?.response?.data?.error || error.message || "Unable to submit application.",
                 confirmButtonColor: "#1e3a8a",
             });
         }

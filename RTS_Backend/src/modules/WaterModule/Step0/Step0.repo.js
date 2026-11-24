@@ -534,12 +534,14 @@ async function getDocuments({ serviceId, ulbId, nocPurposeId }) {
     const isFireService = ["12", "13"].includes(String(serviceId));
 
     let query;
-    const binds = {
-        serviceId: Number(serviceId),
-        ulbId: String(ulbId),
-    };
+    let binds;
 
     if (isFireService) {
+        binds = {
+            ulbId: String(ulbId),
+            nocPurposeId: String(nocPurposeId),
+        };
+
         query = `
             SELECT
                 v.appdoc_id AS id,
@@ -552,7 +554,6 @@ async function getDocuments({ serviceId, ulbId, nocPurposeId }) {
             FROM fire.view_firedoc v
         `;
 
-        // Apply document configuration for specific ULBs.
         if (["50", "1610"].includes(String(ulbId))) {
             query += `
                 INNER JOIN fire.aofr_document_config dc
@@ -567,9 +568,12 @@ async function getDocuments({ serviceId, ulbId, nocPurposeId }) {
               AND v.ulbid = :ulbId
         `;
 
-        binds.nocPurposeId = String(nocPurposeId);
-
     } else {
+        binds = {
+            serviceId: Number(serviceId),
+            ulbId: String(ulbId),
+        };
+
         query = `
             SELECT
                 d.num_doc_id AS id,
@@ -592,7 +596,7 @@ async function getDocuments({ serviceId, ulbId, nocPurposeId }) {
               AND sc.num_serdoc_ulbid = :ulbId
         `;
     }
-
+    // console.log({query, binds})
     return executeQueryTMC(query, binds);
 }
 
