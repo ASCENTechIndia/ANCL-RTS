@@ -3,9 +3,7 @@ const { executeProcedureTMC } = require("../../../db/procedureExecutor");
 const { executeQueryTMC } = require("../../../db/queryExecutor");
 const oracledb = require("oracledb");
 
-// ---------------------------------------------------------------------------
-// Helper: build BLOB bind
-// ---------------------------------------------------------------------------
+
 function blobBind(docBuffer) {
   const buffer =
     docBuffer && docBuffer.length > 0 ? Buffer.from(docBuffer) : Buffer.alloc(1);
@@ -17,9 +15,7 @@ function blobBind(docBuffer) {
   };
 }
 
-// ---------------------------------------------------------------------------
-// 1. Main document insert — aorts_appdoc_det (always runs)
-// ---------------------------------------------------------------------------
+
 async function insertMainDocument(params) {
   let connection;
   try {
@@ -66,9 +62,6 @@ async function insertMainDocument(params) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// 2. prop.aoms_rtsdoc_det insert (Karjat + prop services)
-// ---------------------------------------------------------------------------
 async function insertPropDoc(params) {
   let connection;
   try {
@@ -115,9 +108,7 @@ async function insertPropDoc(params) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// 3. water.aowt_rtsdoc_det insert (Karjat + water services)
-// ---------------------------------------------------------------------------
+
 async function insertWaterDoc(params) {
   let connection;
   try {
@@ -164,9 +155,7 @@ async function insertWaterDoc(params) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// 4. fire.aofr_appentry_mas lookup — get num_appentry_id by AppNo
-// ---------------------------------------------------------------------------
+
 async function getFireApplicationId(params) {
   const { appNo } = params;
 
@@ -180,9 +169,6 @@ async function getFireApplicationId(params) {
   return await executeQueryTMC(query, { appNo: String(appNo) });
 }
 
-// ---------------------------------------------------------------------------
-// 5. fire.aofr_appdoc_det insert (fire NOC final)
-// ---------------------------------------------------------------------------
 async function insertFireDoc(params) {
   let connection;
   try {
@@ -237,9 +223,6 @@ async function insertFireDoc(params) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// 6. Procedure aorts_application_ins
-// ---------------------------------------------------------------------------
 async function callApplicationIns(params) {
   const {
     ulbId, corpid, serviceid, zoneid, userid, noofcopy, appno, marriageDate, mode,
