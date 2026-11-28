@@ -209,6 +209,8 @@ async function searchBirthDetails(params) {
     if (conditions.length) query += ` AND ${conditions.join(" AND ")}`;
     query += ` ORDER BY dat_birth_birthdate DESC`;
 
+    console.log("query: ", query);
+
     return executeQueryTMC(query, { ulbId: String(ulbId), ...binds });
 }
 
@@ -304,6 +306,7 @@ async function insertApplicantInfo(params) {
     };
 
     console.log("Calling Procedure: aorts_applicant_info_ins");
+    console.log("binds: ", binds);
     return executeProcedureTMC({ sql, binds });
 }
 

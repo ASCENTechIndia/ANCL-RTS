@@ -17,6 +17,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import config from "@/utils/config";
+import { DatePicker } from "@/components/ui/calendar";
 
 const BND_SERVICES = [14, 15, 342, 343];
 const FIRE_SERVICES = [12, 13, 553];
@@ -217,7 +218,8 @@ const FrmStep0 = () => {
             setLoading((prev) => ({ ...prev, submit: true }));
             const baseUrl = import.meta.env.VITE_BASE_URL;
             const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
-            const userUniqueId = state.userUniqueId ?? user?.userUniqueId ?? user?.uniqueId ?? 4478;
+            // const userUniqueId = state.userUniqueId ?? user?.userUniqueId ?? user?.uniqueId ?? 4478;
+            const userUniqueId = userId;
             const appSource = state.mahaUlbId ? "MAHA" : config.source;
             const str = (value) => value === null || value === undefined ? "" : String(value);
             const readResult = (response) => {
@@ -601,7 +603,8 @@ const FrmStep0 = () => {
             try {
                 const response = await axios.post(
                     `${import.meta.env.VITE_BASE_URL}/api/Step0/user-mobile`,
-                    { userId: 44788, ulbId },
+                    // { userId: 44788, ulbId },
+                    { userId: userId, ulbId },
                     { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
                 );
                 const result = (response?.data?.data?.data && !Array.isArray(response.data.data.data) ? response.data.data.data : response?.data?.data && !Array.isArray(response.data.data) ? response.data.data : response?.data || {});
@@ -805,7 +808,7 @@ const FrmStep0 = () => {
                                 <Label text="Email" htmlFor="email" required={[14, 15].includes(serviceId) && ulbId !== 2} />
 
                                 <span className="text-center">:</span>
-                                <Input id="email" name="email" type="email" value={formik.values.email ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                <Input id="email" name="email" type="email" value={formik.values.email ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} maxLength={30} />
                             </div>
                             <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
                                 <Label text="Address" htmlFor="address" required />
@@ -1050,7 +1053,13 @@ const FrmStep0 = () => {
                                     <Label text={isBirth ? "Birth Date" : "Death Date"} htmlFor="bndDate" />
 
                                     <span className="text-center">:</span>
-                                    <Input id="bndDate" name="bndDate" type="date" value={formik.values.bndDate ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                    {/* <Input id="bndDate" name="bndDate" type="date" value={formik.values.bndDate ?? ""} onChange={formik.handleChange} onBlur={formik.handleBlur} /> */}
+                                     <DatePicker
+                                        id="bndDate"
+                                        value={formik.values.bndDate ? new Date(formik.values.bndDate) : undefined}
+                                        onChange={(date) => formik.setFieldValue("bndDate", date)}
+                                        className="w-full"
+                                    />
                                 </div>
                                 <div className="grid grid-cols-[8rem_0.75rem_minmax(0,1fr)] items-center gap-2 min-w-0">
                                     <Label text="Father Name" htmlFor="fatherName" />
