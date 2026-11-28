@@ -32,6 +32,7 @@ const FrmPlumberLicense = () => {
     const [educationList, setEducationList] = useState([]);
     // const [documents, setDocuments] = useState([]);
     const [loadingMasters, setLoadingMasters] = useState(false);
+    const EMAIL_REGEX = /^([\w.\-]+)@([\w\-]+)((\.(\w){2,3})+)$/;
 
     const initialValues = {
         // zoneId: "12",
@@ -187,6 +188,8 @@ const FrmPlumberLicense = () => {
         return "";
     };
 
+    
+
     const handleSubmit = async (values, { resetForm }) => {
         if (!values.zoneId) {
             Swal.fire({
@@ -232,20 +235,30 @@ const FrmPlumberLicense = () => {
                 });
                 return;
             }
+            // if (!values.email.trim()) {
+            //     Swal.fire({
+            //         // icon: "warning",
+            //         text: "Email can not be blank.",
+            //     });
+            //     return;
+            // }
+            // if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+            //     Swal.fire({
+            //         // icon: "warning",
+            //         text: "Please enter valid Email Address.",
+            //     });
+            //     return;
+            // }
+
             if (!values.email.trim()) {
-                Swal.fire({
-                    // icon: "warning",
-                    text: "Email can not be blank.",
-                });
+                Swal.fire({ text: "Email can not be blank." });
                 return;
             }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
-                Swal.fire({
-                    // icon: "warning",
-                    text: "Please enter valid Email Address.",
-                });
+            if (!EMAIL_REGEX.test(values.email.trim())) {
+                Swal.fire({ text: "Please enter valid Email Address." });
                 return;
             }
+
             if (!values.address.trim()) {
                 Swal.fire({
                     // icon: "warning",
@@ -368,20 +381,31 @@ const FrmPlumberLicense = () => {
                 });
                 return;
             }
+            // if (!values.renewalEmail.trim()) {
+            //     Swal.fire({
+            //         // icon: "warning",
+            //         text: "Email can not be blank.",
+            //     });
+            //     return;
+            // }
+            // if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.renewalEmail)) {
+            //     Swal.fire({
+            //         // icon: "warning",
+            //         text: "Please enter valid Email Address.",
+            //     });
+            //     return;
+            // }
+
             if (!values.renewalEmail.trim()) {
-                Swal.fire({
-                    // icon: "warning",
-                    text: "Email can not be blank.",
-                });
+                Swal.fire({ text: "Email can not be blank." });
                 return;
             }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.renewalEmail)) {
-                Swal.fire({
-                    // icon: "warning",
-                    text: "Please enter valid Email Address.",
-                });
+            if (!EMAIL_REGEX.test(values.renewalEmail.trim())) {
+                Swal.fire({ text: "Please enter valid Email Address." });
                 return;
             }
+
+
         }
         // if (!documents.length) {
         //     Swal.fire({
