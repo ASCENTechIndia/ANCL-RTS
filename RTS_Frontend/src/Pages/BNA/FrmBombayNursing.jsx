@@ -18,12 +18,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
-
-// Oracle returns lowercase aliases (displayname, num_service_serviceid,
-// wardname, wardid) but we keep the dual-case helper for safety.
 const col = (row, upper, lower) => row?.[upper] ?? row?.[lower] ?? "";
 
 const EMAIL_REGEX = /^([\w.\-]+)@([\w\-]+)((\.(\w){2,3})+)$/;
@@ -46,7 +40,7 @@ const initialValues = {
   hosEmail: "",
   ptaxno: "Y",
   wtTaxno: "Y",
-  firenoc: "P", // Provisional / Final
+  firenoc: "P",
   nocDoc: "",
   address: "",
 };
@@ -84,10 +78,6 @@ const RadioGroup = ({ name, value, options, onChange, disabled }) => (
   </div>
 );
 
-/* ------------------------------------------------------------------ */
-/*  Main Component                                                     */
-/* ------------------------------------------------------------------ */
-
 const FrmBombayNursing = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -112,9 +102,8 @@ const FrmBombayNursing = () => {
 
   const appSource = mahaUlbId ? "MAHA" : isChatbot ? "CBOT" : "WEB";
 
-  /* ---------- API setup ---------- */
   const BASE_URL = import.meta.env.VITE_BASE_URL;
-  const API = `${BASE_URL}/api/BombayNursingAct`; // ✅ matches app.use(...)
+  const API = `${BASE_URL}/api/BombayNursingAct`;
 
   const authHeaders = useMemo(
     () => ({
@@ -126,33 +115,27 @@ const FrmBombayNursing = () => {
 
   const unwrap = (res) => res?.data?.data?.data ?? res?.data?.data ?? [];
 
-  // ✅ POST (controller reads req.body)
   const getServiceList = (ulbID) =>
     axios.post(`${API}/get-service-list`, { ulbID }, { headers: authHeaders });
 
-  // ✅ POST (already correct)
   const getWardList = (ulbID) =>
     axios.post(`${API}/get-ward-list`, { ulbID }, { headers: authHeaders });
 
-  // ✅ Correct route name
   const insertNursingApplication = (payload) =>
     axios.post(`${API}/insert-nursing-application`, payload, {
       headers: authHeaders,
     });
 
-  // MahaOnline follow-up — will need a route on your side if you enable it
   const mahaOnlineInsert = (payload) =>
     axios.post(`${BASE_URL}/api/MahaOnline/insert`, payload, {
       headers: authHeaders,
     });
 
-  /* ---------- state ---------- */
   const [zones, setZones] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageTitle, setPageTitle] = useState("");
 
-  /* ---------- boot ---------- */
   useEffect(() => {
     if (!ulbId || didInit.current) return;
     didInit.current = true;
@@ -193,7 +176,6 @@ const FrmBombayNursing = () => {
       );
       setServices(svcData);
 
-      // Title comes from DB (service list returns `displayname`)
       const match = svcData.find(
         (s) =>
           String(col(s, "NUM_SERVICE_SERVICEID", "num_service_serviceid")) ===
@@ -214,7 +196,6 @@ const FrmBombayNursing = () => {
     }
   };
 
-  /* ---------- computed initial values ---------- */
   const computedInitialValues = useMemo(() => {
     const serviceInList =
       !serviceId ||
@@ -230,7 +211,6 @@ const FrmBombayNursing = () => {
     };
   }, [serviceId, services]);
 
-  /* ---------- validation (mirrors service-level checks) ---------- */
   const validateFields = (values) => {
     const fail = (msg) => {
       Swal.fire({ text: msg, confirmButtonColor: "#1e3a8a" });
@@ -277,7 +257,6 @@ const FrmBombayNursing = () => {
     return true;
   };
 
-  /* ---------- submit ---------- */
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     if (!validateFields(values)) return;
 
@@ -291,7 +270,6 @@ const FrmBombayNursing = () => {
     });
 
     try {
-      // ✅ Field names match controller destructuring exactly
       const payload = {
         userId,
         ulbID: ulbId,
@@ -320,8 +298,6 @@ const FrmBombayNursing = () => {
 
       const res = await insertNursingApplication(payload);
 
-      // Backend: ok(res, { appNo, errorCode }, message)
-      // → res.data = { status, message, data: { appNo, errorCode } }
       const appNo = res?.data?.data?.appNo ?? "";
       const errorCode = Number(res?.data?.data?.errorCode);
       const message = res?.data?.message ?? "";
@@ -347,7 +323,7 @@ const FrmBombayNursing = () => {
 
       if (errorCode === 9999) {
         Swal.fire({
-          icon: "success",
+          //icon: "success",
           text: message || `Application submitted successfully. App No: ${appNo}`,
           confirmButtonColor: "#1e3a8a",
         }).then((r) => {
@@ -366,10 +342,8 @@ const FrmBombayNursing = () => {
           }
         });
       } else {
-        // Backend returns 200 with success:false for business errors,
-        // so this branch fires when the stored proc returned errcode != 9999.
         Swal.fire({
-          icon: "error",
+          //icon: "error",
           text: message || "Unable to save application.",
           confirmButtonColor: "#1e3a8a",
         });
@@ -377,7 +351,7 @@ const FrmBombayNursing = () => {
     } catch (err) {
       Swal.close();
       Swal.fire({
-        icon: "error",
+        //icon: "error",
         text:
           err?.response?.data?.message ||
           err?.response?.data?.error ||
@@ -390,7 +364,6 @@ const FrmBombayNursing = () => {
     }
   };
 
-  /* ---------- reset ---------- */
   const handleReset = (resetForm) => {
     Swal.fire({
       text: "Want to Reset?",
@@ -401,7 +374,6 @@ const FrmBombayNursing = () => {
     }).then((r) => r.isConfirmed && resetForm());
   };
 
-  /* ---------- render (unchanged from your version) ---------- */
   return (
     <Formik
       initialValues={computedInitialValues}
@@ -652,7 +624,7 @@ const FrmBombayNursing = () => {
                       />
                     </FieldRow>
 
-                    <FieldRow label="Water Connection Number">
+                    <FieldRow label="Water Conn Number">
                       <RadioGroup
                         name="wtTaxno"
                         value={values.wtTaxno}
@@ -679,8 +651,13 @@ const FrmBombayNursing = () => {
                     <FieldRow label="NOC Document Number" required>
                       <Input
                         name="nocDoc"
+                        inputMode="numeric"
+                        maxLength={12}
                         value={values.nocDoc}
-                        onChange={handleChange}
+                        //onChange={handleChange}
+                        onChange={(e) =>
+                          setFieldValue("nocDoc", e.target.value.replace(/\D/g, ""))
+                        }
                         className="w-full h-9"
                       />
                     </FieldRow>
