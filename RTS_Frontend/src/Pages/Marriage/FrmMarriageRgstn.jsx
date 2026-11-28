@@ -461,7 +461,7 @@ function FrmMarriageRgstn() {
         confirmButtonText: "OK",
         allowOutsideClick: false,
       }).then(() => {
-        navigate("/app/FrmAppoints", {
+        navigate("/FrmAppoints", {
           state: { 
             appNo: applicationNo,
             mode: "1" 
