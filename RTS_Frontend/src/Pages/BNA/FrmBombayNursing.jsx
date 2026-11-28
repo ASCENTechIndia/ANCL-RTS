@@ -652,7 +652,7 @@ const FrmBombayNursing = () => {
                       />
                     </FieldRow>
 
-                    <FieldRow label="Water Connection Number">
+                    <FieldRow label="Water Conn Number">
                       <RadioGroup
                         name="wtTaxno"
                         value={values.wtTaxno}

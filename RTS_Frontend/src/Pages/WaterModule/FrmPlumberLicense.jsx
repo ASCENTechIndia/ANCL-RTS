@@ -726,7 +726,8 @@ const FrmPlumberLicense = () => {
             await Swal.fire({
                 // icon: "success",
                 // title: "Success",
-                text: `${result?.message} Application No: ${appNo}` || "Plumber License Details Saved Successfully.",
+                //text: `${result?.message} Application No: ${appNo}` || "Plumber License Details Saved Successfully.",
+                text: `${result?.message}` || "Plumber License Details Saved Successfully.",
                 // footer: `Application No: ${appNo}`,
                 confirmButtonText: "OK",
             });
