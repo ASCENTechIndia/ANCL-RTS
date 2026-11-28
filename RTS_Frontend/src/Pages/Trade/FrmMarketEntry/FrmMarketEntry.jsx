@@ -733,6 +733,15 @@ const FrmMarketEntry = () => {
     });
   };
 
+  const getImagePreviewUrl = (image) => {
+    if (!image) return "";
+    if (typeof image === "string") return image;
+    if (image instanceof File || image instanceof Blob) {
+      return URL.createObjectURL(image);
+    }
+    return "";
+  };
+
   const addDirector = (values, setFieldValue) => {
     if (!values.directorName) {
       Swal.fire({ text: "Please enter Director Name." });
@@ -757,6 +766,13 @@ const FrmMarketEntry = () => {
 
     const nextId = directorRows.length + 1;
 
+    let previewUrl = "";
+    if (values.directorImage instanceof File) {
+      previewUrl = URL.createObjectURL(values.directorImage);
+    } else if (typeof values.directorImage === "string") {
+      previewUrl = values.directorImage;
+    }
+
     setDirectorRows((prev) => [
       ...prev,
       {
@@ -771,6 +787,7 @@ const FrmMarketEntry = () => {
         applicantTypeId: values.directorApplicantType,
         applicantType: applicantType?.label || "",
         image: values.directorImage,
+        previewUrl,
       },
     ]);
 
@@ -784,8 +801,21 @@ const FrmMarketEntry = () => {
     setFieldValue("directorImage", null);
   };
 
+  // const removeDirector = (id) => {
+  //   setDirectorRows((prev) => prev.filter((item) => item.id !== id));
+  // };
+
   const removeDirector = (id) => {
-    setDirectorRows((prev) => prev.filter((item) => item.id !== id));
+    setDirectorRows((prev) => {
+      const target = prev.find((item) => item.id === id);
+      if (
+        target?.previewUrl &&
+        target.previewUrl.startsWith("blob:")
+      ) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+      return prev.filter((item) => item.id !== id);
+    });
   };
 
   // const handleDocumentFile = (id, file) => {
@@ -1132,37 +1162,6 @@ const FrmMarketEntry = () => {
 
   const submitApplication = async (values, { setSubmitting, resetForm, setFieldValue }) => {
     try {
-      if (values.email && !validateEmail(values.email)) {
-        Swal.fire({
-          icon: "warning",
-          text: "Please enter a valid email address.",
-        });
-
-        setActiveTab("primary");
-        return;
-      }
-
-      if (!values.financialFromYear) {
-        Swal.fire({ text: "Please select Financial From Year" });
-        setActiveTab("primary");
-        return;
-      }
-      if (!values.financialToYear) {
-        Swal.fire({ text: "Please select To Year" });
-        setActiveTab("primary");
-        return;
-      }
-      if (Number(values.financialFromYear) > Number(values.financialToYear)) {
-        Swal.fire({ text: "From Year must be less than or equal to To Year" });
-        setActiveTab("primary");
-        return;
-      }
-
-      const frmYear = Number(values.financialFromYear);
-      const toYear = Number(values.financialToYear);
-      const computedFromDate = `${frmYear}-04-01`;
-      const computedToDate   = `${toYear}-03-31`;
-
       if (!values.shopNameEnglish?.trim()) {
         Swal.fire({ text: "Please Enter Shop Name English" });
         setActiveTab("primary");
@@ -1187,11 +1186,49 @@ const FrmMarketEntry = () => {
         return;
       }
 
+      if (values.email && !validateEmail(values.email)) {
+        Swal.fire({
+          icon: "warning",
+          text: "Please enter a valid email address.",
+        });
+
+        setActiveTab("primary");
+        return;
+      }
+
       if (!values.wardNo) {
         Swal.fire({ text: "Please Select Ward" });
         setActiveTab("primary");
         return;
       }
+
+      if (!values.zoneNo) {
+        Swal.fire({ text: "Please Select Zone" });
+        setActiveTab("primary");
+        return;
+      }
+
+
+      if (!values.financialFromYear) {
+        Swal.fire({ text: "Please select Financial From Year" });
+        setActiveTab("primary");
+        return;
+      }
+      if (!values.financialToYear) {
+        Swal.fire({ text: "Please select To Year" });
+        setActiveTab("primary");
+        return;
+      }
+      if (Number(values.financialFromYear) > Number(values.financialToYear)) {
+        Swal.fire({ text: "From Year must be less than or equal to To Year" });
+        setActiveTab("primary");
+        return;
+      }
+
+      const frmYear = Number(values.financialFromYear);
+      const toYear = Number(values.financialToYear);
+      const computedFromDate = `${frmYear}-04-01`;
+      const computedToDate   = `${toYear}-03-31`;
 
       if (tradeTypeRateRows.length === 0) {
         Swal.fire({ text: "Please Add At Least One Trade Type" });
@@ -1211,30 +1248,103 @@ const FrmMarketEntry = () => {
         return;
       }
 
-      if (mode === 2) {
-        if (documentRows.length > 0) {
-          const missingDocuments = documentRows.filter(
-            (item) =>
-              item.active === "Y" &&
-              !item.file && 
-              !item.filebyte,
-          );
+      if (!values.rentAgreementWithWhom?.trim()) {
+        Swal.fire({ text: "Please Enter भाडे करार कोणासोबत केलेला आहे" });
+        setActiveTab("primary");
+        return;
+      }
 
-          if (missingDocuments.length > 0) {
-            setActiveTab("documents");
+      if (
+        values.usedArea === "" ||
+        values.usedArea === null ||
+        values.usedArea === undefined ||
+        Number(values.usedArea) <= 0
+      ) {
+        Swal.fire({
+          text: "Please Enter वापरात आलेले जागेचे क्षेत्र चौ. फु. मध्ये (greater than 0)",
+        });
+        setActiveTab("primary");
+        return;
+      }
 
-            await Swal.fire({
-              icon: "warning",
-              title: "Documents Required",
-              html: `
+      if (values.corporationNoc !== "Y" && values.corporationNoc !== "N") {
+        Swal.fire({
+          text: "Please select व्यवसायासाठी म. न. पा. चे नाहरकत प्रमाणपत्र घेतले आहे का",
+        });
+        setActiveTab("primary");
+        return;
+      }
+
+      if (!values.licenseType) {
+        Swal.fire({ text: "Please Select License Type" });
+        setActiveTab("primary");
+        return;
+      }
+
+      if (
+        values.businessStartYear === "" ||
+        values.businessStartYear === null ||
+        values.businessStartYear === undefined ||
+        Number(values.businessStartYear) <= 0
+      ) {
+        Swal.fire({ text: "Please Enter व्यवसाय सुरु केल्याचे वर्ष" });
+        setActiveTab("primary");
+        return;
+      }
+      if (String(values.businessStartYear).length !== 4) {
+        Swal.fire({ text: "व्यवसाय सुरु केल्याचे वर्ष must be a 4-digit year" });
+        setActiveTab("primary");
+        return;
+      }
+
+      // if (mode === 2) {
+      //   if (documentRows.length > 0) {
+      //     const missingDocuments = documentRows.filter(
+      //       (item) =>
+      //         item.active === "Y" &&
+      //         !item.file && 
+      //         !item.filebyte,
+      //     );
+
+      //     if (missingDocuments.length > 0) {
+      //       setActiveTab("documents");
+
+      //       await Swal.fire({
+      //         icon: "warning",
+      //         title: "Documents Required",
+      //         html: `
+      //         <div style="text-align: left;">
+      //           <p>Please upload all required documents.</p>
+      //         </div>
+      //       `,
+      //       });
+
+      //       return;
+      //     }
+      //   }
+      // }
+
+      if (documentRows.length > 0) {
+        const missingDocuments = documentRows.filter(
+          (item) =>
+            item.active === "Y" &&
+            !item.file &&
+            !item.filebyte,
+        );
+
+        if (missingDocuments.length > 0) {
+          setActiveTab("documents");
+
+          await Swal.fire({
+            title: "Documents Required",
+            html: `
               <div style="text-align: left;">
-                <p>Please upload all required documents.</p>
+                <p>Please upload the all required documents:</p>
               </div>
             `,
-            });
+          });
 
-            return;
-          }
+          return;
         }
       }
 
@@ -2216,10 +2326,10 @@ const FrmMarketEntry = () => {
                           <span className="pt-2 text-center">:</span>
                           <Select
                             value={values.tradeCategory}
-                            disabled={
-                              !values.tradeBusinessType ||
-                              (mode === 2 && !values.jalanShil)
-                            }
+                            // disabled={
+                            //   !values.tradeBusinessType ||
+                            //   (mode === 2 && !values.jalanShil)
+                            // }
                             onValueChange={(value) =>
                               handleTradeCategoryChange(value, setFieldValue)
                             }
@@ -3034,7 +3144,22 @@ const FrmMarketEntry = () => {
                                 </TableCell>
 
                                 <TableCell className="break-words">
-                                  {item.image?.name || ""}
+                                  {item.previewUrl ? (
+                                    <a
+                                      href={item.previewUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      title={item.image?.name || "View image"}
+                                    >
+                                      <img
+                                        src={item.previewUrl}
+                                        alt={item.directorName || "Director"}
+                                        className="h-12 w-12 rounded border border-gray-300 object-cover"
+                                      />
+                                    </a>
+                                  ) : (
+                                    <span className="text-xs text-gray-400">No image</span>
+                                  )}
                                 </TableCell>
 
                                 <TableCell>
